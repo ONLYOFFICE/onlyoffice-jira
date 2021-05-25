@@ -8,6 +8,7 @@
     <param name="configure.url">/plugins/servlet/onlyoffice/configure</param>
     <param name="post.install.url">/plugins/servlet/onlyoffice/configure</param>
     <param name="post.update.url">/plugins/servlet/onlyoffice/configure</param>
+
     <param name="plugin-icon">images/16.png</param>
     <param name="plugin-logo">images/144.png</param>
     <param name="plugin-banner">images/banner.jpg</param>
@@ -16,6 +17,21 @@
   </plugin-info>
 
   <resource type="i18n" name="i18n" location="lang-resource"/>
+
+  <web-resource key="OnlyOfficeAttachments" name="Attachments Web Resources">
+    <dependency>jira.webresources:jira-global</dependency>
+    <dependency>jira.webresources:viewissue</dependency>
+
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+
+    <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
+    <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
+    <resource type="download" name="images/" location="/images"/>
+
+    <context>jira.view.issue</context>
+  </web-resource>
 
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
