@@ -35,37 +35,45 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
-import com.atlassian.confluence.languages.LocaleManager;
-import com.atlassian.confluence.setup.settings.SettingsManager;
-import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
-import com.atlassian.confluence.user.ConfluenceUser;
-import com.atlassian.confluence.util.velocity.VelocityUtils;
-
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.jira.config.LocaleManager;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.templaterenderer.TemplateRenderer;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import javax.inject.Inject;
 
+@Scanned
 public class OnlyOfficeEditorServlet extends HttpServlet {
-    @ComponentImport
+    @JiraImport
     private final PluginSettingsFactory pluginSettingsFactory;
-    @ComponentImport
-    private final SettingsManager settingsManager;
-    @ComponentImport
+    @JiraImport
+    private final JiraAuthenticationContext jiraAuthenticationContext;
+    @JiraImport
+    private final TemplateRenderer templateRenderer;
+    @JiraImport
     private final LocaleManager localeManager;
-
+    
     private final JwtManager jwtManager;
     private final UrlManager urlManager;
+    private final DocumentManager documentManager;
+    private final AttachmentUtil attachmentUtil;
 
     @Inject
-    public OnlyOfficeEditorServlet(PluginSettingsFactory pluginSettingsFactory, LocaleManager localeManager,
-            SettingsManager settingsManager, UrlManager urlManager, JwtManager jwtManager) {
+    public OnlyOfficeEditorServlet(PluginSettingsFactory pluginSettingsFactory, JiraAuthenticationContext jiraAuthenticationContext,
+        UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
+        AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager) {
+
         this.pluginSettingsFactory = pluginSettingsFactory;
-        this.settingsManager = settingsManager;
+        this.jiraAuthenticationContext = jiraAuthenticationContext;
+
         this.jwtManager = jwtManager;
         this.urlManager = urlManager;
+        this.documentManager = documentManager;
+        this.attachmentUtil = attachmentUtil;
+        this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
     }
 
@@ -76,7 +84,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!AuthContext.checkUserAuthorisation(request, response)) {
+        if (!jiraAuthenticationContext.isLoggedInUser()) {
             return;
         }
 
@@ -93,7 +101,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String key = "";
         String fileName = "";
         String errorMessage = "";
-        ConfluenceUser user = null;
+        ApplicationUser user = null;
 
         String attachmentIdString = request.getParameter("attachmentId");
         Long attachmentId;
@@ -102,16 +110,16 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             attachmentId = Long.parseLong(attachmentIdString);
             log.info("attachmentId " + attachmentId);
 
-            user = AuthenticatedUserThreadLocal.get();
+            user = jiraAuthenticationContext.getLoggedInUser();
             log.info("user " + user);
-            if (AttachmentUtil.checkAccess(attachmentId, user, false)) {
-                key = DocumentManager.getKeyOfFile(attachmentId);
+            if (attachmentUtil.checkAccess(attachmentId, user, false)) {
+                key = documentManager.getKeyOfFile(attachmentId);
 
-                fileName = AttachmentUtil.getFileName(attachmentId);
+                fileName = attachmentUtil.getFileName(attachmentId);
 
                 fileUrl = urlManager.GetFileUri(attachmentId);
 
-                if (AttachmentUtil.checkAccess(attachmentId, user, true)) {
+                if (attachmentUtil.checkAccess(attachmentId, user, true)) {
                     callbackUrl = urlManager.getCallbackUrl(attachmentId);
                 }
             } else {
@@ -128,14 +136,15 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         }
 
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter writer = response.getWriter();
 
-        writer.write(getTemplate(apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage));
+        Map<String, Object> defaults = getTemplateConfig(apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage);
+        templateRenderer.render("templates/editor.vm", defaults, response.getWriter());
     }
 
-    private String getTemplate(String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
-            ConfluenceUser user, String errorMessage) throws UnsupportedEncodingException {
-        Map<String, Object> defaults = MacroUtils.defaultVelocityContext();
+    private Map<String, Object> getTemplateConfig(String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
+            ApplicationUser user, String errorMessage) throws UnsupportedEncodingException {
+
+        Map<String, Object> defaults = new HashMap<String, Object>();
         Map<String, String> config = new HashMap<String, String>();
 
         String docTitle = fileName.trim();
@@ -166,14 +175,15 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             permObject.put("edit", callbackUrl != null && !callbackUrl.isEmpty());
 
             responseJson.put("editorConfig", editorConfigObject);
-            editorConfigObject.put("lang", localeManager.getLocale(user).toLanguageTag());
+            
+            editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
             editorConfigObject.put("mode", "edit");
             editorConfigObject.put("callbackUrl", callbackUrl);
 
             if (user != null) {
                 editorConfigObject.put("user", userObject);
-                userObject.put("id", user.getName());
-                userObject.put("name", user.getFullName());
+                userObject.put("id", user.getUsername());
+                userObject.put("name", user.getDisplayName());
             }
 
             if (jwtManager.jwtEnabled()) {
@@ -191,7 +201,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         }
 
         defaults.putAll(config);
-        return VelocityUtils.getRenderedTemplate("templates/editor.vm", defaults);
+
+        return defaults;
     }
 
     private String getDocType(String ext) {

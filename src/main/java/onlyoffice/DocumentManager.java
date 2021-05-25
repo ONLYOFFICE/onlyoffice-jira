@@ -28,12 +28,21 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
 
+import javax.inject.Named;
+
+import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.commons.codec.binary.Hex;
 
+@Named
 public class DocumentManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
+
+    private final AttachmentUtil attachmentUtil;
+
+    public DocumentManager(AttachmentUtil attachmentUtil) {
+        this.attachmentUtil = attachmentUtil;
+    }
 
     public static long GetMaxFileSize() {
         long size;
@@ -65,8 +74,8 @@ public class DocumentManager {
         }
     }
 
-    public static String getKeyOfFile(Long attachmentId) {
-        String hashCode = AttachmentUtil.getHashCode(attachmentId);
+    public String getKeyOfFile(Long attachmentId) {
+        String hashCode = attachmentUtil.getHashCode(attachmentId);
 
         return GenerateRevisionId(hashCode);
     }
@@ -121,7 +130,7 @@ public class DocumentManager {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(str.getBytes());
-            String hex = Hex.encodeHexString(digest);
+            String hex = new String(Hex.encodeHex(digest));
 
             return hex;
         } catch (Exception ex) {

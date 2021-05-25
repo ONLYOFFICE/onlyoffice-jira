@@ -25,6 +25,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Scanner;
 
@@ -33,35 +35,55 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import com.atlassian.confluence.user.ConfluenceUser;
-import com.atlassian.confluence.user.UserAccessor;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.spring.container.ContainerManager;
+import com.atlassian.templaterenderer.TemplateRenderer;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import javax.inject.Inject;
 
+@Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
-    @ComponentImport
+    @JiraImport
     private final PluginSettingsFactory pluginSettingsFactory;
+    @JiraImport
+    private final JiraAuthenticationContext jiraAuthenticationContext;
+    @JiraImport
+    private final TemplateRenderer templateRenderer;
 
+    private final UserManager userManager;
     private final JwtManager jwtManager;
     private final PluginSettings settings;
+    private final AttachmentUtil attachmentUtil;
 
     @Inject
-    public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory, JwtManager jwtManager) {
+    public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
+    JiraAuthenticationContext jiraAuthenticationContext,
+    JwtManager jwtManager, AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer) {
+        
         this.pluginSettingsFactory = pluginSettingsFactory;
+        this.jiraAuthenticationContext = jiraAuthenticationContext;
+
         settings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
+        this.attachmentUtil = attachmentUtil;
+        this.templateRenderer = templateRenderer;
+        
+        userManager = ComponentAccessor.getUserManager();
     }
 
     @Override
@@ -73,18 +95,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
 
-        String contentType = AttachmentUtil.getMediaType(attachmentId);
+        String contentType = attachmentUtil.getMediaType(attachmentId);
         response.setContentType(contentType);
 
-        InputStream inputStream = AttachmentUtil.getAttachmentData(attachmentId);
-        response.setContentLength(inputStream.available());
-
-        byte[] buffer = new byte[10240];
+        response.setContentLength(attachmentUtil.getFilesize(attachmentId).intValue());
 
         OutputStream output = response.getOutputStream();
-        for (int length = 0; (length = inputStream.read(buffer)) > 0;) {
-            output.write(buffer, 0, length);
-        }
+        attachmentUtil.getAttachmentData(new DownloadFileStreamConsumer(output), attachmentId);
+        output.close();
     }
 
     @Override
@@ -166,17 +184,16 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
             // MustSave, Corrupted
             if (status == 2 || status == 3) {
-                ConfluenceUser user = null;
+                ApplicationUser user = null;
                 JSONArray users = jsonObj.getJSONArray("users");
                 if (users.length() > 0) {
                     String userName = users.getString(0);
 
-                    UserAccessor userAccessor = (UserAccessor) ContainerManager.getComponent("userAccessor");
-                    user = userAccessor.getUserByName(userName);
+                    user = userManager.getUserByName(userName);
                     log.info("user = " + user);
                 }
 
-                if (user == null || !AttachmentUtil.checkAccess(attachmentId, user, true)) {
+                if (user == null || !attachmentUtil.checkAccess(attachmentId, user, true)) {
                     throw new SecurityException("Try save without access: " + user);
                 }
 
@@ -191,7 +208,12 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
                 InputStream stream = connection.getInputStream();
 
-                AttachmentUtil.saveAttachment(attachmentId, stream, size, user);
+                Path tempFile = Files.createTempFile(null, null);
+                FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
+
+                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), size, user);
+
+                Files.delete(tempFile);
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -209,15 +231,10 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     private String getBody(InputStream stream) {
-        Scanner scanner = null;
-        Scanner scannerUseDelimiter = null;
-        try {
-            scanner = new Scanner(stream);
-            scannerUseDelimiter = scanner.useDelimiter("\\A");
-            return scanner.hasNext() ? scanner.next() : "";
-        } finally {
-            scannerUseDelimiter.close();
-            scanner.close();
+        try(Scanner scanner = new Scanner(stream)) {
+            try(Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
+                return scanner.hasNext() ? scanner.next() : "";
+            }
         }
     }
 }
