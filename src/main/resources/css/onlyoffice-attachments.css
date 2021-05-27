@@ -1,9 +1,17 @@
-#attachment_thumbnails .attachment-oo-edit {
-    position: absolute;
+dd[class|="attachment-oo-edit"] {
+    margin-right: 20px!important;
+    padding-left: 0px;
+    text-align: center;
+    width: 50px;
+}
+
+div[class|="attachment-oo-edit"] {
     left: auto;
-    right: 20px;
+    margin-right: 20px;
+    position: absolute;
     padding: 0;
-    margin: 0;
+    right: 0;
+    width: 20px;
 }
 
 .attachment-content:hover .attachment-oo-edit a,
@@ -22,10 +30,14 @@
     padding: 0;
     position: absolute;
     width: 1px;
-    right: 10px;
 }
 
 .attachment-content .attachment-oo-edit a span {
     background-size: contain;
     background-image: url("images/edit_icon.svg");
+}
+
+#attachment_thumbnails .attachment-content:hover .blender {
+    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
+    width: 6em!important;
 }

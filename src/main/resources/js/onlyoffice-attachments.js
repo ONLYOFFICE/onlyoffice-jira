@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+jQuery(document).ajaxStop(function() {
 
     function checkEditButton(el) {
         if (el.currentTarget.hasAttribute("oo-edit")) return;
@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
         var delButton = jQuery(el.currentTarget).find(".attachment-delete");
         var attachmentId = delButton.children("a")[0].id.substr(4);
 
-        var divWrapper = document.createElement("div");
+        var divWrapper = document.createElement(delButton.prop("tagName"));
         divWrapper.classList.add("attachment-oo-edit");
         var link = document.createElement("a");
         link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
