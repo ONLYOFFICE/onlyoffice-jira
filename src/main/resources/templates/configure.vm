@@ -48,7 +48,6 @@
                             "docInnerUrl": jq("#docInnerUrlField").attr("value"),
                             "confUrl": jq("#confUrlField").attr("value"),
                             "jwtSecret": jq("#jwtSecretField").attr("value"),
-                            "overwrite": jq("#overwriteField")[0].checked.toString()
                         };
 
                         jq.ajax({
@@ -110,10 +109,6 @@
             <div class="field-group">
                 <label for="jwtSecretField">$i18n.getText('onlyoffice.configuration.jwt-secret')</label>
                 <input type="text" id="jwtSecretField" value="${docserviceJwtSecret}" name="jwtSecretField" class="text">
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" id="overwriteField" ${overwriteSetting} name="jwtSecretField" class="checkbox">
-                <label for="overwriteField">$i18n.getText('onlyoffice.configuration.overwrite')</label>
             </div>
 
             <h3>$i18n.getText('onlyoffice.configuration.advanced-section')</h3>

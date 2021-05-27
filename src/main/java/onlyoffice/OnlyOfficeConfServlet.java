@@ -93,12 +93,10 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
 		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
-        String overwrite = (String) pluginSettings.get("onlyoffice.overwrite");
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
-        if (overwrite == null || overwrite.isEmpty()) { overwrite = "false"; }
 
         response.setContentType("text/html;charset=UTF-8");
 
@@ -108,7 +106,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         defaults.put("docserviceInnerUrl", docInnerUrl);
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
-        defaults.put("overwriteSetting", getBoolAsAttribute(overwrite));
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -131,7 +128,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl;
 		String confUrl;
         String jwtSecret;
-        String overwrite;
         try {
             JSONObject jsonObj = new JSONObject(body);
 
@@ -140,7 +136,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
             
             jwtSecret = jsonObj.getString("jwtSecret");
-            overwrite = jsonObj.getString("overwrite");
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -158,7 +153,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
 		pluginSettings.put("onlyoffice.confUrl", confUrl);
         pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
-        pluginSettings.put("onlyoffice.overwrite", overwrite);
 
         log.debug("Checking docserv url");
         if (!CheckDocServUrl(apiUrl)) {
