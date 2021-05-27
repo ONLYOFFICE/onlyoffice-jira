@@ -21,11 +21,12 @@ package onlyoffice;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -34,11 +35,8 @@ import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.attachment.Attachment;
-import com.atlassian.jira.permission.ProjectPermission;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.PermissionManager;
-import com.atlassian.jira.security.Permissions.Permission;
-import com.atlassian.jira.security.plugin.ProjectPermissionKey;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
@@ -95,14 +93,12 @@ public class AttachmentUtil {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
 
-        String overwrite = (String) pluginSettings.get("onlyoffice.overwrite");
+        String newFileName = getCorrectAttachmentName(oldAttachment.getFilename(), oldAttachment.getIssue());
 
-        attachmentManager.createAttachment(file, oldAttachment.getFilename(), oldAttachment.getMimetype(), user, oldAttachment.getIssue());
-        if (overwrite != null && overwrite.equals("true")) {
-            attachmentManager.deleteAttachment(oldAttachment);
-        } else {
-            // fix name
-        }
+        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
+                newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
+
+        attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
     public void getAttachmentData(DownloadFileStreamConsumer consumer, Long attachmentId) throws IOException {
@@ -132,5 +128,29 @@ public class AttachmentUtil {
 
         Timestamp ts = attachment.getCreated();
         return attachmentId + "_" + ts.toInstant().getEpochSecond() + "_" + hashCode;
+    }
+
+    public String getCorrectAttachmentName (String fileName, Issue issue) {
+        Collection<Attachment> attachments = issue.getAttachments();
+
+        String basename = fileName.substring(0, fileName.lastIndexOf('.'));
+        String ext = fileName.substring(fileName.lastIndexOf("."));
+
+        int count = 0;
+        Boolean exist = true;
+
+        while (exist) {
+            exist = false;
+            for (Attachment attachment : attachments) {
+                if (attachment.getFilename().equals(fileName)) {
+                    count++;
+                    fileName = basename + "-" + count + ext;
+                    exist = true;
+                    break;
+                }
+            }
+        }
+
+        return fileName;
     }
 }
