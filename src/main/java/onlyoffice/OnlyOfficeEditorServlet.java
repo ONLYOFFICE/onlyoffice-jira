@@ -172,13 +172,21 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             documentObject.put("fileType", docExt);
             documentObject.put("key", key);
             documentObject.put("permissions", permObject);
-            permObject.put("edit", callbackUrl != null && !callbackUrl.isEmpty());
 
             responseJson.put("editorConfig", editorConfigObject);
-            
+
             editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
-            editorConfigObject.put("mode", "edit");
-            editorConfigObject.put("callbackUrl", callbackUrl);
+
+            Boolean canEdit = documentManager.GetEditedExts().contains(docExt) && callbackUrl != null && !callbackUrl.isEmpty();
+
+            if (canEdit) {
+                permObject.put("edit", true);
+                editorConfigObject.put("mode", "edit");
+                editorConfigObject.put("callbackUrl", callbackUrl);
+            } else {
+                permObject.put("edit", false);
+                editorConfigObject.put("mode", "view");
+            }
 
             if (user != null) {
                 editorConfigObject.put("user", userObject);
