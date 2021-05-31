@@ -18,12 +18,7 @@
 
 package onlyoffice;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
@@ -59,19 +54,23 @@ public class DocumentManager {
     }
 
     public static List<String> GetEditedExts() {
-        try {
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String exts = properties.getProperty("files.docservice.edited-docs");
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        List<String> editedExts = configurationManager.getListDefaultProperty("files.docservice.edited-docs");
 
-            return Arrays.asList(exts.split("\\|"));
-        } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            log.error(e.toString() + "\n" + sw.toString());
-            return new ArrayList<String>();
-        }
+        return editedExts;
+    }
+
+    public String getDocType(String ext) {
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        List<String> wordFormats = configurationManager.getListDefaultProperty("files.docservice.type.word");
+        List<String> cellFormats = configurationManager.getListDefaultProperty("files.docservice.type.cell");
+        List<String> slideFormats = configurationManager.getListDefaultProperty("files.docservice.type.slide");
+
+        if (wordFormats.contains(ext)) return "text";
+        if (cellFormats.contains(ext)) return "spreadsheet";
+        if (slideFormats.contains(ext)) return "presentation";
+
+        return null;
     }
 
     public String getKeyOfFile(Long attachmentId) {

@@ -18,18 +18,35 @@
 
 package onlyoffice;
 
-import java.io.IOException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class ConfigurationManager {
+    private static final Logger log = LogManager.getLogger("onlyoffice.ConfigurationManager");
 
-    public Properties GetProperties() throws IOException {
-        Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("onlyoffice-config.properties");
-        if (inputStream != null) {
-            properties.load(inputStream);
+    public Properties GetProperties() {
+        try {
+            Properties properties = new Properties();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("onlyoffice-config.properties");
+            if (inputStream != null) {
+                properties.load(inputStream);
+            }
+            return properties;
+        } catch (Exception e) {
+            log.error(e);
+            return null;
         }
-        return properties;
+    }
+
+    public List<String> getListDefaultProperty(String nameProperty) {
+        Properties properties = GetProperties();
+        String property = properties.getProperty(nameProperty);
+
+        return Arrays.asList(property.split("\\|"));
     }
 }
