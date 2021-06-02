@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.sal.api.message.I18nResolver;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -39,7 +40,6 @@ import org.json.JSONObject;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
@@ -49,26 +49,26 @@ import javax.inject.Inject;
 @Scanned
 public class OnlyOfficeEditorServlet extends HttpServlet {
     @JiraImport
-    private final PluginSettingsFactory pluginSettingsFactory;
-    @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
     @JiraImport
     private final TemplateRenderer templateRenderer;
     @JiraImport
     private final LocaleManager localeManager;
-    
+    @JiraImport
+    private final I18nResolver i18n;
+
     private final JwtManager jwtManager;
     private final UrlManager urlManager;
     private final DocumentManager documentManager;
     private final AttachmentUtil attachmentUtil;
 
     @Inject
-    public OnlyOfficeEditorServlet(PluginSettingsFactory pluginSettingsFactory, JiraAuthenticationContext jiraAuthenticationContext,
-        UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
+    public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
+        I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
         AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager) {
 
-        this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
+        this.i18n = i18n;
 
         this.jwtManager = jwtManager;
         this.urlManager = urlManager;
@@ -127,8 +127,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                     callbackUrl = urlManager.getCallbackUrl(attachmentId);
                 }
             } else {
-                log.error("access deny");
-                errorMessage = "You don not have enough permission to view the file";
+                log.info("User don't have enough permission to view the file");
+                errorMessage = i18n.getText("onlyoffice.connector.message.AccessDenied");
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -136,7 +136,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             ex.printStackTrace(pw);
             String error = ex.toString() + "\n" + sw.toString();
             log.error(error);
-            errorMessage = ex.toString();
+            response.sendError(404, error);
         }
 
         response.setContentType("text/html;charset=UTF-8");
@@ -153,10 +153,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         String docTitle = fileName.trim();
         String docExt = docTitle.substring(docTitle.lastIndexOf(".") + 1).trim().toLowerCase();
-
-        config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
-        config.put("errorMessage", errorMessage);
-        config.put("docTitle", docTitle);
+        String documentType = documentManager.getDocType(docExt);
 
         JSONObject responseJson = new JSONObject();
         JSONObject documentObject = new JSONObject();
@@ -168,39 +165,49 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             responseJson.put("type", "desktop");
             responseJson.put("width", "100%");
             responseJson.put("height", "100%");
-            responseJson.put("documentType", documentManager.getDocType(docExt));
+            if (errorMessage == null || errorMessage.isEmpty()) {
+                if (documentType != null) {
+                    responseJson.put("documentType", documentType);
 
-            responseJson.put("document", documentObject);
-            documentObject.put("title", docTitle);
-            documentObject.put("url", fileUrl);
-            documentObject.put("fileType", docExt);
-            documentObject.put("key", key);
-            documentObject.put("permissions", permObject);
+                    responseJson.put("document", documentObject);
+                    documentObject.put("title", docTitle);
+                    documentObject.put("url", fileUrl);
+                    documentObject.put("fileType", docExt);
+                    documentObject.put("key", key);
+                    documentObject.put("permissions", permObject);
 
-            responseJson.put("editorConfig", editorConfigObject);
+                    responseJson.put("editorConfig", editorConfigObject);
 
-            editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
+                    editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
 
-            Boolean canEdit = documentManager.GetEditedExts().contains(docExt) && callbackUrl != null && !callbackUrl.isEmpty();
+                    Boolean canEdit = documentManager.GetEditedExts().contains(docExt) && callbackUrl != null && !callbackUrl.isEmpty();
 
-            if (canEdit) {
-                permObject.put("edit", true);
-                editorConfigObject.put("mode", "edit");
-                editorConfigObject.put("callbackUrl", callbackUrl);
-            } else {
-                permObject.put("edit", false);
-                editorConfigObject.put("mode", "view");
+                    if (canEdit) {
+                        permObject.put("edit", true);
+                        editorConfigObject.put("mode", "edit");
+                        editorConfigObject.put("callbackUrl", callbackUrl);
+                    } else {
+                        permObject.put("edit", false);
+                        editorConfigObject.put("mode", "view");
+                    }
+
+                    if (user != null) {
+                        editorConfigObject.put("user", userObject);
+                        userObject.put("id", user.getUsername());
+                        userObject.put("name", user.getDisplayName());
+                    }
+
+                    if (jwtManager.jwtEnabled()) {
+                        responseJson.put("token", jwtManager.createToken(responseJson));
+                    }
+                } else {
+                    errorMessage = i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + " (." + docExt + ")";
+                }
             }
 
-            if (user != null) {
-                editorConfigObject.put("user", userObject);
-                userObject.put("id", user.getUsername());
-                userObject.put("name", user.getDisplayName());
-            }
-
-            if (jwtManager.jwtEnabled()) {
-                responseJson.put("token", jwtManager.createToken(responseJson));
-            }
+            config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
+            config.put("errorMessage", errorMessage);
+            config.put("docTitle", docTitle);
 
             // AsHtml at the end disables automatic html encoding
             config.put("jsonAsHtml", responseJson.toString());
