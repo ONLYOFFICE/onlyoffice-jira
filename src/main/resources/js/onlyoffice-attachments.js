@@ -98,8 +98,8 @@ jQuery(function() {
     }
 
     JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function(e, context, reason) {
-        var context = jQuery(context);
-        if (context.find("#attachmentmodule").length != 0) {
+        var context = jQuery("#attachmentmodule");
+        if (context.length != 0) {
             init(context);
         }
     });

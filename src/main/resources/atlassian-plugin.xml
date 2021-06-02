@@ -31,6 +31,8 @@
     <resource type="download" name="images/" location="/images"/>
 
     <context>jira.view.issue</context>
+    <context>gh-rapid-plan</context>
+    <context>gh-rapid-work</context>
   </web-resource>
 
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
