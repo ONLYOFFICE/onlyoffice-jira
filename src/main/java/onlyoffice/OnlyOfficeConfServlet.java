@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.sal.api.user.UserProfile;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -81,8 +82,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserKey userKey = userManager.getRemoteUser(request).getUserKey();
-        if (userKey == null || !userManager.isSystemAdmin(userKey)) {
+        UserProfile user = userManager.getRemoteUser(request);
+        if (user == null || !userManager.isSystemAdmin(user.getUserKey())) {
             String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
             response.sendRedirect(baseUrl);
             return;

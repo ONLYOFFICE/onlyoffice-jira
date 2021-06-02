@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -85,6 +86,9 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!jiraAuthenticationContext.isLoggedInUser()) {
+            String currentURL= request.getRequestURI() + "?" + request.getQueryString();
+            String query ="?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
+            response.sendRedirect ("/login.jsp" + query);
             return;
         }
 
