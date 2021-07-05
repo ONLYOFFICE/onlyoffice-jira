@@ -64,9 +64,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
     @Inject
     public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
-        I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
-        AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager) {
-
+                                   I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
+                                   AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
 
