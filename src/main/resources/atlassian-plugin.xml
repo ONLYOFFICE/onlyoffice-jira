@@ -35,14 +35,9 @@
     <context>gh-rapid-work</context>
   </web-resource>
 
-<!--  <web-resource key="onlyoffice-jira-plugin-resources" name="Link for Web Resources rendering">-->
-<!--    <resource type="download" name="images/" location="images/"/>-->
-<!--  </web-resource>-->
-
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
     <url-pattern>/onlyoffice/doceditor</url-pattern>
-    <resource type="download" name="images/word.ico" location="/images/word.ico"/>
   </servlet>
   <servlet key="OnlyOfficeSaveFileHandler" class="onlyoffice.OnlyOfficeSaveFileServlet" name="Save File Handler">
     <description>The callback URL, used to inform the document storage service about the end of the document editing and return the link to the modified document so that it could be saved correctly.</description>
