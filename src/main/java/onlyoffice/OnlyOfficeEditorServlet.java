@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.plugin.webresource.WebResourceUrlProvider;
+import com.atlassian.plugin.webresource.UrlMode;
 import com.atlassian.sal.api.message.I18nResolver;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -56,6 +58,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final LocaleManager localeManager;
     @JiraImport
     private final I18nResolver i18n;
+    @JiraImport
+    private final WebResourceUrlProvider webResourceUrlProvider;
 
     private final JwtManager jwtManager;
     private final UrlManager urlManager;
@@ -65,7 +69,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     @Inject
     public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
             I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
-            AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager) {
+            AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
+            WebResourceUrlProvider webResourceUrlProvider) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -76,6 +81,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.attachmentUtil = attachmentUtil;
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
+        this.webResourceUrlProvider = webResourceUrlProvider;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
@@ -208,6 +214,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
             config.put("errorMessage", errorMessage);
             config.put("docTitle", docTitle);
+            config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-plugin:editor-page-resources",
+                    documentType +".ico", UrlMode.ABSOLUTE));
 
             // AsHtml at the end disables automatic html encoding
             config.put("jsonAsHtml", responseJson.toString());

@@ -32,6 +32,12 @@
     <context>gh-rapid-work</context>
   </web-resource>
 
+  <web-resource key="editor-page-resources" name="Editor Page Web Resources">
+    <resource type="download" name="text.ico" location="/images/word.ico"/>
+    <resource type="download" name="spreadsheet.ico" location="/images/cell.ico"/>
+    <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
+  </web-resource>
+
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
     <url-pattern>/onlyoffice/doceditor</url-pattern>
