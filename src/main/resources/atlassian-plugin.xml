@@ -6,9 +6,6 @@
     <version>${project.version}</version>
     <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     <param name="configure.url">/plugins/servlet/onlyoffice/configure</param>
-    <param name="post.install.url">/plugins/servlet/onlyoffice/configure</param>
-    <param name="post.update.url">/plugins/servlet/onlyoffice/configure</param>
-
     <param name="plugin-icon">images/16.png</param>
     <param name="plugin-logo">images/144.png</param>
     <param name="plugin-banner">images/banner.jpg</param>
@@ -47,4 +44,10 @@
     <description>The configuration page.</description>
     <url-pattern>/onlyoffice/configure</url-pattern>
   </servlet>
+
+  <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">
+    <description>Link to configuration page.</description>
+    <label key="${project.name}" />
+    <link linkId="onlyoffice-admin-link">/plugins/servlet/onlyoffice/configure</link>
+  </web-item>
 </atlassian-plugin>

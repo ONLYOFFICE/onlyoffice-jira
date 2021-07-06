@@ -99,8 +99,9 @@
 
             })(jQuery);
         </script>
-        <div id="onlyofficeMsg"></div>
+        <h1>ONLYOFFICE</h1>
         <form id="onlyofficeConf" class="aui top-label">
+            <div id="onlyofficeMsg"></div>
             <h3>$i18n.getText('onlyoffice.configuration.doc-section')</h3>
             <div class="field-group">
                 <label for="apiUrlField">$i18n.getText('onlyoffice.configuration.doc-url')</label>
