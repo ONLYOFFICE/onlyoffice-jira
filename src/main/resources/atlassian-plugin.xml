@@ -25,7 +25,7 @@
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
-    <resource type="download" name="images/" location="/images"/>
+    <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
 
     <context>jira.view.issue</context>
     <context>gh-rapid-plan</context>

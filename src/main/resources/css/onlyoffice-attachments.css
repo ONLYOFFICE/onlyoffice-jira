@@ -36,7 +36,7 @@ div[class~="attachment-oo-edit"] {
 
 .attachment-content .attachment-oo-edit a span {
     background-size: contain;
-    background-image: url("images/edit_icon.svg");
+    background-image: url("edit_icon.svg");
 }
 
 #attachment_thumbnails .attachment-content:hover .blender-edit {
