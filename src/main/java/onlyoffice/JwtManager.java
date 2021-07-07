@@ -86,6 +86,11 @@ public class JwtManager {
         return true;
     }
 
+    public String getJwtHeader() {
+        String header = (String) settings.get("onlyoffice.jwtHeader");
+        return header == null || header.isEmpty() ? "Authorization" : header;
+    }
+
     private String calculateHash(String header, String payload) throws Exception {
         Mac hasher;
         hasher = getHasher();
