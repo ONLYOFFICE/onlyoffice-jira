@@ -134,7 +134,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                 }
             } else {
                 log.info("User don't have enough permission to view the file");
-                errorMessage = i18n.getText("onlyoffice.connector.message.AccessDenied");
+                errorMessage = i18n.getText("onlyoffice.connector.error.AccessDenied");
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
