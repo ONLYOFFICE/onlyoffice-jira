@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.codec.binary.Hex;
@@ -35,6 +36,7 @@ public class DocumentManager {
 
     private final AttachmentUtil attachmentUtil;
 
+    @Inject
     public DocumentManager(AttachmentUtil attachmentUtil) {
         this.attachmentUtil = attachmentUtil;
     }
