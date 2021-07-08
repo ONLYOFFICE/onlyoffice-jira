@@ -6,6 +6,7 @@ This plugin enables users to edit office documents from [Jira Software](https://
 
 The plugin allows to:
 
+* Edit text documents, spreadsheets, and presentations
 * Co-edit documents in real-time: use two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.
 
 Supported formats:
@@ -16,7 +17,7 @@ XLSX, XLSM, XLTZ , XLTX, XLTM, ODS, FODS, OTS, CSV, PPS, PPSX, PPSM, PPT, PPTX, 
 
 ## Installing ONLYOFFICE Docs
 
-You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Jira and any end clients (version 3.0 and later are supported for use with the plugin). ONLYOFFICE Document Server must also be able to POST to Jira directly.
+You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Jira and any end clients (version 3.0 and later are supported). ONLYOFFICE Document Server must also be able to POST to Jira directly.
 
 You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
 
@@ -32,7 +33,7 @@ Upload the compiled ***target/onlyoffice-jira-plugin.jar*** to Jira on the `Mana
 
 The latest compiled package files are available [here](https://github.com/ONLYOFFICE/onlyoffice-jira/releases) and on [Atlassian Marketplace](https://marketplace.atlassian.com/???).
 
-You could also install plugin from Jira administration panel:
+You can also install plugin from Jira administration panel:
 
 1. Navigate to `Manage apps` page.
 2. Click **Find new apps** on the left panel.
@@ -41,7 +42,7 @@ You could also install plugin from Jira administration panel:
 
 ## Configuring Jira ONLYOFFICE integration plugin
 
-Find the uploaded ***ONLYOFFICE Jira plugin*** on the `Manage apps` page. Click `Configure` and enter the name of the server with the ONLYOFFICE Document Server installed:
+Find the uploaded ***ONLYOFFICE Jira plugin*** on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Document Server installed:
 ```
 http://documentserver/
 ```
@@ -73,7 +74,7 @@ The ONLYOFFICE integration follows the API documented here https://api.onlyoffic
   * **title**: the document Title (name).
 * Jira takes this object and constructs a page from a freemarker template, filling in all of those values so that the client browser can load up the editor.
 * The client browser makes a request for the javascript library from ONLYOFFICE Document Server and sends ONLYOFFICE Document Server the docEditor configuration with the above properties.
-* Then ONLYOFFICE Document Server downloads the document from Document storage and the user begins editing.
+* Then ONLYOFFICE Document Server downloads the document from document storage and the user begins editing.
 * When all users and client browsers are done with editing, they close the editing window.
 * After 10 seconds of inactivity, ONLYOFFICE Document Server sends a POST to the `callback` URL letting Jira know that the clients have finished editing the document and closed it.
 * Jira downloads the new version of the document, replacing the old one.
@@ -91,7 +92,7 @@ The table below will help you make the right choice.
 
 | Pricing and licensing | Community Edition | Enterprise Edition |
 | ------------- | ------------- | ------------- |
-| | [Get it now](https://www.onlyoffice.com/download.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  | [Start Free Trial](https://www.onlyoffice.com/enterprise-edition-free.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
+| | [Get it now](https://www.onlyoffice.com/download.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  | [Start Free Trial](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
 | Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/enterprise-edition.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
 | Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
 | Number of users | up to 20 recommended | As in chosen pricing plan |
@@ -106,7 +107,7 @@ The table below will help you make the right choice.
 | **Interface** | **Community Edition** | **Enterprise Edition** |
 | Tabbed interface                       | + | + |
 | White Label                            | - | - |
-| Integrated test example (node.js)     | - | + |
+| Integrated test example (node.js)     | + | + |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
 | Plugins                           | + | + |
 | Macros                            | + | + |
@@ -133,6 +134,7 @@ The table below will help you make the right choice.
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
 | Conditional formatting  for viewing | +** | +** |
+| Sheet Views                     | - | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
