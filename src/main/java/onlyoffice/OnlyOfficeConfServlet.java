@@ -156,7 +156,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
 
         log.debug("Checking docserv url");
-        if (!CheckDocServUrl(apiUrl)) {
+        if (!CheckDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
             response.getWriter().write("{\"success\": false, \"message\": \"docservunreachable\"}");
             return;
         }
