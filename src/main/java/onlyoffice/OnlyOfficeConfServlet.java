@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -99,14 +100,17 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
 
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        Properties properties = configurationManager.GetProperties();
+
         response.setContentType("text/html;charset=UTF-8");
 
         Map<String, Object> defaults = new HashMap<String, Object>();
-
         defaults.put("docserviceApiUrl", apiUrl);
         defaults.put("docserviceInnerUrl", docInnerUrl);
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
+        defaults.put("pathApiUrl", properties.getProperty("files.docservice.url.api"));
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
