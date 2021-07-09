@@ -69,12 +69,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final JwtManager jwtManager;
     private final PluginSettings settings;
     private final AttachmentUtil attachmentUtil;
+    private final UrlManager urlManager;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
-    JiraAuthenticationContext jiraAuthenticationContext,
-    JwtManager jwtManager, AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer) {
-        
+            JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
+            TemplateRenderer templateRenderer, UrlManager urlManager) {
+
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
 
@@ -82,7 +83,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.jwtManager = jwtManager;
         this.attachmentUtil = attachmentUtil;
         this.templateRenderer = templateRenderer;
-        
+        this.urlManager = urlManager;
+
         userManager = ComponentAccessor.getUserManager();
     }
 
@@ -212,6 +214,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 }
 
                 String downloadUrl = jsonObj.getString("url");
+                downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
                 log.info("downloadUri = " + downloadUrl);
 
                 URL url = new URL(downloadUrl);
