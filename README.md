@@ -46,7 +46,7 @@ Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the
 ```
 http://documentserver/
 ```
-## Compiling Jira ONLYOFFICE integration plugin
+## Compiling Jira ONLYOFFICE integration app
 
 You will need:
 
