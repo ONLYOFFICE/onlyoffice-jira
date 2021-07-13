@@ -1,10 +1,10 @@
-# Jira ONLYOFFICE integration plugin
+# Jira ONLYOFFICE integration app
 
-This plugin enables users to edit office documents from [Jira Software](https://www.atlassian.com/software/jira) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
+This app enables users to edit office documents from [Jira Software](https://www.atlassian.com/software/jira) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
 
 ## Features
 
-The plugin allows to:
+The app allows to:
 
 * Edit text documents, spreadsheets, and presentations
 * Co-edit documents in real-time: use two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.
@@ -27,22 +27,22 @@ To install Enterprise Edition, follow instructions [here](https://helpcenter.onl
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
-## Installing Jira ONLYOFFICE integration plugin
+## Installing Jira ONLYOFFICE integration app
 
 Upload the compiled ***target/onlyoffice-jira-plugin.jar*** to Jira on the `Manage apps` page.
 
 The latest compiled package files are available [here](https://github.com/ONLYOFFICE/onlyoffice-jira/releases) and on [Atlassian Marketplace](https://marketplace.atlassian.com/???).
 
-You can also install plugin from Jira administration panel:
+You can also install the app from Jira administration panel:
 
 1. Navigate to `Manage apps` page.
 2. Click **Find new apps** on the left panel.
 3. Locate **ONLYOFFICE Connector for Jira** using search.
 4. Click **Install** to download and install the app.
 
-## Configuring Jira ONLYOFFICE integration plugin
+## Configuring Jira ONLYOFFICE integration app
 
-Find the uploaded ***ONLYOFFICE Jira plugin*** on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Document Server installed:
+Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Document Server installed:
 ```
 http://documentserver/
 ```
@@ -93,12 +93,12 @@ The table below will help you make the right choice.
 | Pricing and licensing | Community Edition | Enterprise Edition |
 | ------------- | ------------- | ------------- |
 | | [Get it now](https://www.onlyoffice.com/download.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  | [Start Free Trial](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
-| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/enterprise-edition.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
+| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
 | Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
 | Number of users | up to 20 recommended | As in chosen pricing plan |
 | License | GNU AGPL v.3 | Proprietary |
 | **Support** | **Community Edition** | **Enterprise Edition** | 
-| Documentation | [Help Center](https://helpcenter.onlyoffice.com/server/docker/opensource/index.aspx) | [Help Center](https://helpcenter.onlyoffice.com/server/integration-edition/index.aspx) |
+| Documentation | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx) |
 | Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or paid | One year support included |
 | Premium support | [Buy Now](https://www.onlyoffice.com/support.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira) | [Buy Now](https://www.onlyoffice.com/support.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira) |
 | **Services** | **Community Edition** | **Enterprise Edition** | 
@@ -106,6 +106,8 @@ The table below will help you make the right choice.
 | Document Builder Service          | + | + | 
 | **Interface** | **Community Edition** | **Enterprise Edition** |
 | Tabbed interface                       | + | + |
+| Dark theme                             | + | + |
+| 150% scaling                           | + | + |
 | White Label                            | - | - |
 | Integrated test example (node.js)     | + | + |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
@@ -133,12 +135,13 @@ The table below will help you make the right choice.
 | Functions, formulas, equations  | + | + |
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
+| Data validation                 | + | + |
 | Conditional formatting  for viewing | +** | +** |
 | Sheet Views                     | - | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
-| Animations                      | + | + |
+| Transitions                     | + | + |
 | Presenter mode                  | + | + |
 | Notes                           | + | + |
 | | [Get it now](https://www.onlyoffice.com/download.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  | [Start Free Trial](https://www.onlyoffice.com/enterprise-edition-free.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
