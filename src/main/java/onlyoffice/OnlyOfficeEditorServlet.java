@@ -214,7 +214,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
             config.put("errorMessage", errorMessage);
             config.put("docTitle", docTitle);
-            config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-plugin:editor-page-resources",
+            config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-app:editor-page-resources",
                     documentType +".ico", UrlMode.ABSOLUTE));
 
             // AsHtml at the end disables automatic html encoding
