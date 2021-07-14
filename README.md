@@ -17,7 +17,7 @@ XLSX, XLSM, XLTZ , XLTX, XLTM, ODS, FODS, OTS, CSV, PPS, PPSX, PPSM, PPT, PPTX, 
 
 ## Installing ONLYOFFICE Docs
 
-You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Jira and any end clients (version 3.0 and later are supported). ONLYOFFICE Document Server must also be able to POST to Jira directly.
+You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Jira and any end clients. ONLYOFFICE Document Server must also be able to POST to Jira directly.
 
 You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
 
