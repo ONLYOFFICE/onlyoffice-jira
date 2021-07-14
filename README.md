@@ -29,7 +29,7 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 ## Installing Jira ONLYOFFICE integration app
 
-Upload the compiled ***target/onlyoffice-jira-plugin.jar*** to Jira on the `Manage apps` page.
+Upload the compiled ***target/onlyoffice-jira-app.jar*** to Jira on the `Manage apps` page.
 
 The latest compiled package files are available [here](https://github.com/ONLYOFFICE/onlyoffice-jira/releases) and on [Atlassian Marketplace](https://marketplace.atlassian.com/???).
 
