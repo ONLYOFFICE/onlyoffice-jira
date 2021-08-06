@@ -155,6 +155,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         }
 
         HttpURLConnection connection = null;
+        Path tempFile = null;
+
         try {
             Long attachmentId = Long.parseLong(attachmentIdString);
 
@@ -225,12 +227,10 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
                 InputStream stream = connection.getInputStream();
 
-                Path tempFile = Files.createTempFile(null, null);
+                tempFile = Files.createTempFile(null, null);
                 FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
 
                 attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), size, user);
-
-                Files.delete(tempFile);
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -243,6 +243,10 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         } finally {
             if (connection != null) {
                 connection.disconnect();
+            }
+
+            if (tempFile != null && Files.exists(tempFile)) {
+                Files.delete(tempFile);
             }
         }
     }
