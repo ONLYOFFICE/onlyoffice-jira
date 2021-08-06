@@ -20,7 +20,6 @@ package onlyoffice;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import com.atlassian.jira.ofbiz.FieldMap;
@@ -130,15 +129,6 @@ public class AttachmentUtil {
     public String getFileName(Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         return attachment.getFilename();
-    }
-
-    public String getHashCode(Long attachmentId) {
-        Attachment attachment = attachmentManager.getAttachment(attachmentId);
-        int hashCode = attachment.hashCode();
-        log.info("hashCode = " + hashCode);
-
-        Timestamp ts = attachment.getCreated();
-        return attachmentId + "_" + ts.toInstant().getEpochSecond() + "_" + hashCode;
     }
 
     public String getCorrectAttachmentName (String fileName, Issue issue) {

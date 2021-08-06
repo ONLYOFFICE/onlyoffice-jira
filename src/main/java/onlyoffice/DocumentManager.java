@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,18 +77,13 @@ public class DocumentManager {
     }
 
     public String getKeyOfFile(Long attachmentId) {
-        String hashCode = attachmentUtil.getHashCode(attachmentId);
+        String key = attachmentUtil.getProperty(attachmentId, "onlyoffice-collaborative-editor-key");
 
-        return GenerateRevisionId(hashCode);
-    }
-
-    private static String GenerateRevisionId(String expectedKey) {
-        if (expectedKey.length() > 20) {
-            expectedKey = Integer.toString(expectedKey.hashCode());
+        if (key == null || key.isEmpty()) {
+            key = UUID.randomUUID().toString().replace("-", "");
+            attachmentUtil.setProperty(attachmentId, "onlyoffice-collaborative-editor-key", key);
         }
-        String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
-        key = key.substring(0, Math.min(key.length(), 20));
-        log.info("key = " + key);
+
         return key;
     }
 

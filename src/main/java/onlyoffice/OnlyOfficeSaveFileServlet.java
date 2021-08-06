@@ -231,6 +231,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
 
                 attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), size, user);
+                attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
