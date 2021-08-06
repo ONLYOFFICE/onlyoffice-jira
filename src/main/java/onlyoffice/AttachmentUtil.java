@@ -21,11 +21,20 @@ package onlyoffice;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.*;
+
+import com.atlassian.jira.ofbiz.FieldMap;
+import com.atlassian.jira.ofbiz.OfBizDelegator;
+import com.opensymphony.module.propertyset.PropertySet;
+import org.ofbiz.core.entity.GenericValue;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -57,6 +66,7 @@ public class AttachmentUtil {
     private final PluginSettingsFactory pluginSettingsFactory;
 
     private final PluginSettings pluginSettings;
+    private final OfBizDelegator ofBizDelegator;
 
     @Inject
     public AttachmentUtil(AttachmentManager attachmentManager,
@@ -68,6 +78,7 @@ public class AttachmentUtil {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
+        ofBizDelegator = ComponentAccessor.getOfBizDelegator();
     }
 
     public boolean checkAccess(Long attachmentId, ApplicationUser user, boolean forEdit) {
@@ -152,5 +163,55 @@ public class AttachmentUtil {
         }
 
         return fileName;
+    }
+
+    public String getProperty(Long attachmentId, String key) {
+        String property = null;
+        Attachment attachment = attachmentManager.getAttachment(attachmentId);
+        PropertySet properties = attachment.getProperties();
+        if (properties != null && properties.exists(key)) {
+            property = properties.getString(key);
+        }
+
+        return property;
+    }
+
+    public void setProperty (Long attachmentId, String key, String value) {
+        FieldMap fieldMap = FieldMap.build(
+                "entityId", attachmentId,
+                "propertyKey", key,
+                "type", "5",
+                "entityName", "FileAttachment"
+        );
+
+        List<GenericValue> properties = ofBizDelegator.findByAnd("OSPropertyEntry", fieldMap);
+
+        GenericValue property = null;
+
+        if (properties != null && !properties.isEmpty()) {
+            property = properties.stream().max((p1, p2) -> p1.getLong("id").compareTo(p2.getLong("id"))).get();
+        } else {
+            property = ofBizDelegator.createValue("OSPropertyEntry", fieldMap);
+        }
+
+        GenericValue propertyValue = ofBizDelegator.makeValue("OSPropertyString", FieldMap.build("id", property.getLong("id"), "value", value));
+
+        ofBizDelegator.storeAll(Collections.singletonList(propertyValue));
+    }
+
+    public void removeProperty (Long attachmentId, String key) {
+        FieldMap fieldMap = FieldMap.build(
+                "entityId", attachmentId,
+                "propertyKey", key
+        );
+
+        List<GenericValue> properties = ofBizDelegator.findByAnd("OSPropertyEntry", fieldMap);
+
+        if (properties != null && !properties.isEmpty()) {
+            ofBizDelegator.removeAll(properties);
+            for (GenericValue property : properties) {
+                ofBizDelegator.removeById("OSPropertyString", property.getLong("id"));
+            }
+        }
     }
 }
