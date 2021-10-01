@@ -41,15 +41,12 @@ import org.apache.log4j.Logger;
 import com.atlassian.jira.exception.RemoveException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 @Named
 public class AttachmentUtil {
@@ -59,24 +56,15 @@ public class AttachmentUtil {
     private final AttachmentManager attachmentManager;
     @ComponentImport
     private final PermissionManager permissionManager;
-    @ComponentImport
-    private final IssueManager issueManager;
-    @ComponentImport
-    private final PluginSettingsFactory pluginSettingsFactory;
 
-    private final PluginSettings pluginSettings;
     private final OfBizDelegator ofBizDelegator;
 
     @Inject
-    public AttachmentUtil(AttachmentManager attachmentManager,
-        PermissionManager permissionManager, IssueManager issueManager, PluginSettingsFactory pluginSettingsFactory) {
+    public AttachmentUtil(AttachmentManager attachmentManager, PermissionManager permissionManager) {
 
         this.attachmentManager = attachmentManager;
         this.permissionManager = permissionManager;
-        this.issueManager = issueManager;
 
-        this.pluginSettingsFactory = pluginSettingsFactory;
-        pluginSettings = pluginSettingsFactory.createGlobalSettings();
         ofBizDelegator = ComponentAccessor.getOfBizDelegator();
     }
 
@@ -91,7 +79,7 @@ public class AttachmentUtil {
 
         Issue issue = attachment.getIssue();
         if (forEdit) {
-            return permissionManager.hasPermission(ProjectPermissions.EDIT_ISSUES, issue, user)
+            return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
                 && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
