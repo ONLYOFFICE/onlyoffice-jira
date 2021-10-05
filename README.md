@@ -6,7 +6,7 @@ This app enables users to edit office documents from [Jira Software](https://www
 
 The app allows to:
 
-* Edit text documents, spreadsheets, and presentations
+* Edit text documents, spreadsheets, and presentations.
 * Co-edit documents in real-time: use two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.
 
 Supported formats:
@@ -23,7 +23,7 @@ You can install free Community version of ONLYOFFICE Docs or scalable Enterprise
 
 To install free Community version, use [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or follow [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx) for Debian, Ubuntu, or derivatives.  
 
-To install Enterprise Edition, follow instructions [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
+To install Enterprise Edition, follow the instructions [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
@@ -33,10 +33,10 @@ Upload the compiled ***target/onlyoffice-jira-app.jar*** to Jira on the `Manage 
 
 The latest compiled package files are available [here](https://github.com/ONLYOFFICE/onlyoffice-jira/releases) and on [Atlassian Marketplace](https://marketplace.atlassian.com/???).
 
-You can also install the app from Jira administration panel:
+You can also install the app from the Jira administration panel:
 
-1. Navigate to `Manage apps` page.
-2. Click **Find new apps** on the left panel.
+1. Navigate to the `Manage apps` page.
+2. Click **Find new apps** on the left-side panel.
 3. Locate **ONLYOFFICE Connector for Jira** using search.
 4. Click **Install** to download and install the app.
 
@@ -46,26 +46,40 @@ Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the
 ```
 http://documentserver/
 ```
+Enter the **Secret key** to enable JWT protection of your documents from unauthorized access (further information can be found [here](https://api.onlyoffice.com/editors/signature/)).
+
+Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Document Server using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Document Server address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Document Server. 
+
 ## Compiling Jira ONLYOFFICE integration app
 
 You will need:
 
-* 1.8.X of the Oracle Java SE Development Kit 8,
+* 1.8.X of the Oracle Java SE Development Kit 8
 
-* Atlassian Plugin SDK,
+* Atlassian Plugin SDK
 
 * Compile package:
   ```bash
   atlas-package
   ```
 
+## Using Jira ONLYOFFICE integration plugin
+
+With the ONLYOFFICE integration plugin, you can view, edit and co-author office files attached to tasks right within your Jira dashboard. 
+
+To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment — the corresponding online editor will be opened in a new tab.
+
+After the editing session, a document with all the changes will be saved as a new attachment. You will recognize it by the name with a postfix.
+
+If you’re editing an attachment collaboratively, the changes are saved in the same file version after the last user quits the editor.
+
 ## How it works
 
-The ONLYOFFICE integration follows the API documented here https://api.onlyoffice.com/editors/basic:
+The ONLYOFFICE integration follows the API documented [here](https://api.onlyoffice.com/editors/basic):
 
-* User navigates to a Jira attachments and selects the `Edit in ONLYOFFICE` action.
+* User navigates to the Jira attachments and selects the `Edit in ONLYOFFICE` action.
 * Jira makes a request to OnlyOfficeEditorServlet (URL of the form: `/plugins/servlet/onlyoffice/doceditor?attachmentId=$attachment.id`).
-* Jira sends document to ONLYOFFICE Document storage service and receive a temporary link.
+* Jira sends the document to ONLYOFFICE Document storage service and receives a temporary link.
 * Jira prepares a JSON object with the following properties:
   * **url**: the temporary link that ONLYOFFICE Document Server uses to download the document,
   * **callbackUrl**: the URL that ONLYOFFICE Document Server informs about status of the document editing,
@@ -94,20 +108,20 @@ The table below will help you make the right choice.
 | ------------- | ------------- | ------------- |
 | | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
 | Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
-| Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
-| Number of users | up to 20 recommended | As in chosen pricing plan |
+| Simultaneous connections | Up to 20 maximum  | As in chosen pricing plan |
+| Number of users | Up to 20 recommended | As in chosen pricing plan |
 | License | GNU AGPL v.3 | Proprietary |
 | **Support** | **Community Edition** | **Enterprise Edition** | 
 | Documentation | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx) |
 | Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or paid | One year support included |
-| Premium support | [Buy Now](https://www.onlyoffice.com/support.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira) | [Buy Now](https://www.onlyoffice.com/support.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira) |
+| Premium support | [Send a request](mailto:sales@onlyoffice.com) | [Send a request](mailto:sales@onlyoffice.com) |
 | **Services** | **Community Edition** | **Enterprise Edition** | 
 | Conversion Service                | + | + | 
 | Document Builder Service          | + | + | 
 | **Interface** | **Community Edition** | **Enterprise Edition** |
 | Tabbed interface                       | + | + |
 | Dark theme                             | + | + |
-| 150% scaling                           | + | + |
+| Scaling options                        | + | + |
 | White Label                            | - | - |
 | Integrated test example (node.js)     | + | + |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
@@ -128,7 +142,7 @@ The table below will help you make the right choice.
 | Layout tools                    | + | + |
 | Table of contents               | + | + |
 | Navigation panel                | + | + |
-| Comparing Documents             | - | +* |
+| Comparing Documents             | - | + |
 | **Spreadsheet Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
@@ -136,7 +150,7 @@ The table below will help you make the right choice.
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
 | Data validation                 | + | + |
-| Conditional formatting  for viewing | +** | +** |
+| Conditional formatting  for viewing | + | + |
 | Sheet Views                     | - | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
@@ -145,7 +159,3 @@ The table below will help you make the right choice.
 | Presenter mode                  | + | + |
 | Notes                           | + | + |
 | | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
-
-\* It's possible to add documents for comparison from your local drive or from URL. Adding files for comparison from storage is not available yet. 
-
-\** Support for all conditions and gradient. Adding/Editing capabilities are coming soon
