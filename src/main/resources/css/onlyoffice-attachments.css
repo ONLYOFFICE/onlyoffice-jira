@@ -1,0 +1,45 @@
+dd[class~="attachment-oo-edit"] {
+    padding-left: 0px;
+    text-align: center;
+    width: 50px;
+}
+
+div[class~="attachment-oo-edit"] {
+    left: auto;
+    position: absolute;
+    padding: 0;
+    right: 0;
+    width: 20px;
+}
+
+.margin-delete{
+    margin-right: 20px!important;
+}
+
+.attachment-content:hover .attachment-oo-edit a,
+.attachment-content .attachment-oo-edit a:focus {
+    width: auto;
+    height: auto;
+    clip: auto;
+}
+
+.attachment-content .attachment-oo-edit a {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.attachment-content .attachment-oo-edit a span {
+    background-size: contain;
+    background-image: url("edit_icon.svg");
+}
+
+#attachment_thumbnails .attachment-content:hover .blender-edit {
+    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
+    width: 6em!important;
+}
