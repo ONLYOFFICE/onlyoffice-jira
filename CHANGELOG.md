@@ -1,5 +1,7 @@
 # Change Log
 
+## Added
+- compatible with Data Center
 
 ## 1.0.0
 ## Added
