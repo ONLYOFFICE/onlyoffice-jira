@@ -158,7 +158,7 @@ public class AttachmentUtil {
         FieldMap fieldMap = FieldMap.build(
                 "entityId", attachmentId,
                 "propertyKey", key,
-                "type", "5",
+                "type", 5,
                 "entityName", "FileAttachment"
         );
 
