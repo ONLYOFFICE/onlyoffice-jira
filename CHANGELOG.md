@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.2
+## Added
+- compatible with v8.20
+
 ## 1.0.1
 ## Added
 - compatible with Data Center
