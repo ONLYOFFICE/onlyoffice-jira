@@ -186,7 +186,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
                     editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
 
-                    Boolean canEdit = documentManager.GetEditedExts().contains(docExt) && callbackUrl != null && !callbackUrl.isEmpty();
+                    Boolean canEdit = (documentManager.GetEditedExts().contains(docExt) || documentManager.GetFillFormExts().contains(docExt)) && callbackUrl != null && !callbackUrl.isEmpty();
 
                     if (canEdit) {
                         permObject.put("edit", true);

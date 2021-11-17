@@ -18,6 +18,7 @@
 
 jQuery(function() {
     var editExt = ["docx", "xlsx", "pptx", "docxf"];
+    var fillFormExt = ["oform"];
     var viewExt = ["doc", "docm", "dot", "dotx", "dotm", "odt", "fodt", "ott", "rtf", "txt", "html", "htm", "mht", "pdf",
                    "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
                    "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
@@ -32,9 +33,9 @@ jQuery(function() {
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
-        if (editExt.indexOf(ext) != -1 && dropZone.length != 0) {
+        if ((editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) && dropZone.length != 0) {
             addEditButton(el, attachmentId, true);
-        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1) {
+        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) {
             addEditButton(el, attachmentId, false);
         }
     }
