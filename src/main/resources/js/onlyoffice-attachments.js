@@ -17,7 +17,7 @@
  */
 
 jQuery(function() {
-    var editExt = ["docx", "xlsx", "pptx"];
+    var editExt = ["docx", "xlsx", "pptx", "docxf"];
     var viewExt = ["doc", "docm", "dot", "dotx", "dotm", "odt", "fodt", "ott", "rtf", "txt", "html", "htm", "mht", "pdf",
                    "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
                    "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
