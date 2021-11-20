@@ -33,17 +33,23 @@ jQuery(function() {
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
-        if ((editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) && dropZone.length != 0) {
-            addEditButton(el, attachmentId, true);
+        if (editExt.indexOf(ext) != -1 && dropZone.length != 0) {
+            addEditButton(el, attachmentId, true, false);
+        } else if (fillFormExt.indexOf(ext) != -1 && dropZone.length != 0){
+            addEditButton(el, attachmentId, true, true);
         } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) {
-            addEditButton(el, attachmentId, false);
+            addEditButton(el, attachmentId, false, false);
         }
     }
 
-    function addEditButton(el, attachmentId, edit) {
+    function addEditButton(el, attachmentId, edit, form) {
         var link = document.createElement("a");
         if (edit) {
-            link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
+            if (form) {
+                link.title = AJS.I18n.getText("onlyoffice.connector.fillFormlink");
+            } else {
+                link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
+            }
         } else {
             link.title = AJS.I18n.getText("onlyoffice.connector.viewlink");
         }
