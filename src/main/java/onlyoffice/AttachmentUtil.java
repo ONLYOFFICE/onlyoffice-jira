@@ -85,7 +85,7 @@ public class AttachmentUtil {
         }
     }
 
-    public void saveAttachment(Long attachmentId, File file, int size, ApplicationUser user)
+    public void saveAttachment(Long attachmentId, File file, ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);

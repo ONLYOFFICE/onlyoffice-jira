@@ -224,15 +224,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 URL url = new URL(downloadUrl);
 
                 connection = (HttpURLConnection) url.openConnection();
-                int size = connection.getContentLength();
-                log.info("size = " + size);
 
                 InputStream stream = connection.getInputStream();
 
                 tempFile = Files.createTempFile(null, null);
                 FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
 
-                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), size, user);
+                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), user);
                 attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
             }
         } catch (Exception ex) {
