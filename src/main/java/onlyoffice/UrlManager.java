@@ -38,6 +38,7 @@ public class UrlManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
     private static final String callbackServler = "plugins/servlet/onlyoffice/save";
+    private final String APIServlet = "plugins/servlet/onlyoffice/api";
 
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
@@ -100,4 +101,11 @@ public class UrlManager {
         }
         return url;
     }
+
+    public String getSaveAsUri() {
+        String saveAsUri = getJiraBaseUrl() + APIServlet + "?type=save-as";
+
+        return saveAsUri;
+    }
+
 }

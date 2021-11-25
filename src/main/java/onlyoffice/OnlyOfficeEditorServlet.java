@@ -114,7 +114,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         ApplicationUser user = null;
 
         String attachmentIdString = request.getParameter("attachmentId");
-        Long attachmentId;
+        Long attachmentId = null;
 
         try {
             attachmentId = Long.parseLong(attachmentIdString);
@@ -147,11 +147,11 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        Map<String, Object> defaults = getTemplateConfig(apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage);
+        Map<String, Object> defaults = getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage);
         templateRenderer.render("templates/editor.vm", defaults, response.getWriter());
     }
 
-    private Map<String, Object> getTemplateConfig(String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
+    private Map<String, Object> getTemplateConfig(Long attachmentId, String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
             ApplicationUser user, String errorMessage) throws UnsupportedEncodingException {
 
         Map<String, Object> defaults = new HashMap<String, Object>();
@@ -212,6 +212,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             }
 
             config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
+            config.put("saveAsUriAsHtml", urlManager.getSaveAsUri());
+            config.put("attachmentId", attachmentId.toString());
             config.put("errorMessage", errorMessage);
             config.put("docTitle", docTitle);
             config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-app:editor-page-resources",

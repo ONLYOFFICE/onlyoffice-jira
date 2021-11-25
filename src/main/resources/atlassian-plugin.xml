@@ -52,6 +52,10 @@
     <description>The configuration page.</description>
     <url-pattern>/onlyoffice/configure</url-pattern>
   </servlet>
+  <servlet key="OnlyOfficeAPI" class="onlyoffice.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
+    <description>ONLYOFFICE API Handler.</description>
+    <url-pattern>/onlyoffice/api</url-pattern>
+  </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">
     <description>Link to configuration page.</description>

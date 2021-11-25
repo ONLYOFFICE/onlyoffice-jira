@@ -38,7 +38,6 @@ import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.atlassian.jira.exception.RemoveException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.attachment.Attachment;
@@ -87,11 +86,27 @@ public class AttachmentUtil {
     }
 
     public void saveAttachment(Long attachmentId, File file, int size, ApplicationUser user)
-            throws IOException, IllegalArgumentException, RemoveException, AttachmentException {
+            throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
 
         String newFileName = getCorrectAttachmentName(oldAttachment.getFilename(), oldAttachment.getIssue());
+
+        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
+                newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
+
+        attachmentManager.createAttachment(createAttachmentParamsBean);
+    }
+
+    public void saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
+            throws IllegalArgumentException, AttachmentException {
+
+        Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
+
+        String oldFileName = oldAttachment.getFilename();
+        String newFileName = oldFileName.substring(0, oldFileName.lastIndexOf(".") + 1) + ext;
+
+        newFileName = getCorrectAttachmentName(newFileName, oldAttachment.getIssue());
 
         CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
                 newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
