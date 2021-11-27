@@ -34,7 +34,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.plugin.webresource.UrlMode;
+import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.webresource.api.assembler.WebResourceAssembler;
+import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -60,6 +63,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final I18nResolver i18n;
     @JiraImport
     private final WebResourceUrlProvider webResourceUrlProvider;
+    @JiraImport
+    private final WebResourceAssemblerFactory webResourceAssemblerFactory;
 
     private final JwtManager jwtManager;
     private final UrlManager urlManager;
@@ -70,7 +75,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
             I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
             AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
-            WebResourceUrlProvider webResourceUrlProvider) {
+            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -82,6 +87,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
         this.webResourceUrlProvider = webResourceUrlProvider;
+        this.webResourceAssemblerFactory = webResourceAssemblerFactory;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
@@ -148,6 +154,9 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         Map<String, Object> defaults = getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage);
+        WebResourceAssembler webResourceAssembler = webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
+        webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
+        webResourceAssembler.assembled().drainIncludedResources().writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
         templateRenderer.render("templates/editor.vm", defaults, response.getWriter());
     }
 

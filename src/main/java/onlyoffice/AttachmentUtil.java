@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.ofbiz.FieldMap;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.opensymphony.module.propertyset.PropertySet;
@@ -98,7 +99,7 @@ public class AttachmentUtil {
         attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
-    public void saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
+    public ChangeItemBean saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
@@ -111,7 +112,7 @@ public class AttachmentUtil {
         CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
                 newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
 
-        attachmentManager.createAttachment(createAttachmentParamsBean);
+        return attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
     public void getAttachmentData(DownloadFileStreamConsumer consumer, Long attachmentId) throws IOException {

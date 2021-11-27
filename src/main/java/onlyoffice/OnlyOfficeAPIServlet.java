@@ -18,6 +18,7 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
@@ -122,7 +123,11 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
             tempFile = Files.createTempFile(null, null);
             FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
 
-            attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
+            ChangeItemBean changeItemBean = attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
+
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" + changeItemBean.getToString() + "\"}");
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();

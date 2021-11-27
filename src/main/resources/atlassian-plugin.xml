@@ -38,6 +38,7 @@
     <resource type="download" name="text.ico" location="/images/word.ico"/>
     <resource type="download" name="spreadsheet.ico" location="/images/cell.ico"/>
     <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
+    <dependency>jira.webresources:messages</dependency>
   </web-resource>
 
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
