@@ -71,6 +71,7 @@
             }
 
             var json = '${jsonAsHtml}';
+            var saveAs = JSON.parse('${saveAsAsHtml}');
 
             var onAppReady = function () {
                 var errorMessage = "${errorMessage}";
@@ -84,7 +85,7 @@
                 var fileType = event.data.fileType;
 
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "${saveAsUriAsHtml}", true);
+                xhr.open("POST", saveAs.uri, true);
                 xhr.send(JSON.stringify({
                     url: url,
                     fileType: fileType,
@@ -110,10 +111,13 @@
 
             var config = {
                 "events" : {
-                    "onAppReady": onAppReady,
-                    "onRequestSaveAs": onRequestSaveAs
+                    "onAppReady": onAppReady
                 },
             };
+
+            if (saveAs.available) {
+                config.events.onRequestSaveAs = onRequestSaveAs;
+            }
 
             if (json) {
                 Object.assign(config, JSON.parse(json));

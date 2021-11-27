@@ -221,7 +221,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             }
 
             config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
-            config.put("saveAsUriAsHtml", urlManager.getSaveAsUri());
+            config.put("saveAsAsHtml", urlManager.getSaveAsObject(attachmentId, user).toString());
             config.put("attachmentId", attachmentId.toString());
             config.put("errorMessage", errorMessage);
             config.put("docTitle", docTitle);
