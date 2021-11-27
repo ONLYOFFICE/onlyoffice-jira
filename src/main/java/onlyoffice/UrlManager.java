@@ -19,6 +19,7 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.user.ApplicationUser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 
@@ -38,16 +41,19 @@ public class UrlManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
     private static final String callbackServler = "plugins/servlet/onlyoffice/save";
+    private final String APIServlet = "plugins/servlet/onlyoffice/api";
 
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
     private final PluginSettings pluginSettings;
+    private final AttachmentUtil attachmentUtil;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory) {
+    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
+        this.attachmentUtil = attachmentUtil;
     }
 
     public String getPublicDocEditorUrl() {
@@ -100,4 +106,13 @@ public class UrlManager {
         }
         return url;
     }
+
+    public JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user) throws JSONException {
+        JSONObject saveAs = new JSONObject();
+        saveAs.put("uri", getJiraBaseUrl() + APIServlet + "?type=save-as");
+        saveAs.put("available", attachmentUtil.checkAccess(attachmentId, user, true));
+
+        return saveAs;
+    }
+
 }

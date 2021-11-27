@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.ofbiz.FieldMap;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.opensymphony.module.propertyset.PropertySet;
@@ -38,7 +39,6 @@ import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.atlassian.jira.exception.RemoveException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.attachment.Attachment;
@@ -86,8 +86,8 @@ public class AttachmentUtil {
         }
     }
 
-    public void saveAttachment(Long attachmentId, File file, int size, ApplicationUser user)
-            throws IOException, IllegalArgumentException, RemoveException, AttachmentException {
+    public void saveAttachment(Long attachmentId, File file, ApplicationUser user)
+            throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
 
@@ -97,6 +97,22 @@ public class AttachmentUtil {
                 newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
 
         attachmentManager.createAttachment(createAttachmentParamsBean);
+    }
+
+    public ChangeItemBean saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
+            throws IllegalArgumentException, AttachmentException {
+
+        Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
+
+        String oldFileName = oldAttachment.getFilename();
+        String newFileName = oldFileName.substring(0, oldFileName.lastIndexOf(".") + 1) + ext;
+
+        newFileName = getCorrectAttachmentName(newFileName, oldAttachment.getIssue());
+
+        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
+                newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
+
+        return attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
     public void getAttachmentData(DownloadFileStreamConsumer consumer, Long attachmentId) throws IOException {

@@ -36,15 +36,10 @@
 
         body {
             background: #fff;
-            color: #333;
-            font-family: Arial, Tahoma, sans-serif;
-            font-size: 12px;
-            font-weight: normal;
             height: 100%;
             margin: 0;
             overflow-y: hidden;
             padding: 0;
-            text-decoration: none;
         }
 
         .form {
@@ -76,16 +71,53 @@
             }
 
             var json = '${jsonAsHtml}';
+            var saveAs = JSON.parse('${saveAsAsHtml}');
+
+            var onAppReady = function () {
+                var errorMessage = "${errorMessage}";
+                if (errorMessage) {
+                    docEditor.showMessage(errorMessage);
+                }
+            };
+
+            var onRequestSaveAs = function (event) {
+                var url = event.data.url;
+                var fileType = event.data.fileType;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", saveAs.uri, true);
+                xhr.send(JSON.stringify({
+                    url: url,
+                    fileType: fileType,
+                    attachmentId: "${attachmentId}"
+                }));
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState != 4) return;
+                    if (xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText)
+                        var successMessage = "$i18n.getText('onlyoffice.editor.save-as.message.success')".replace("$",
+                            '<a href="/plugins/servlet/onlyoffice/doceditor?attachmentId=' + response.attachmentId + '" target="_blank"><b>' + response.fileName + '</b></a>'
+                            );
+
+                        JIRA.Messages.showSuccessMsg(successMessage, {closeable: true});
+                    } else if (xhr.status == 403) {
+                        JIRA.Messages.showErrorMsg("$i18n.getText('attachment.service.error.create.no.permission')", {closeable: true});
+                    } else {
+                       JIRA.Messages.showErrorMsg("$i18n.getText('rest.error.unexpected')", {closeable: true});
+                    }
+                }
+            };
+
             var config = {
                 "events" : {
-                    "onAppReady": function () {
-                        var errorMessage = "${errorMessage}";
-                        if (errorMessage) {
-                            docEditor.showMessage(errorMessage);
-                        }
-                    },
+                    "onAppReady": onAppReady
                 },
             };
+
+            if (saveAs.available) {
+                config.events.onRequestSaveAs = onRequestSaveAs;
+            }
 
             if (json) {
                 Object.assign(config, JSON.parse(json));
