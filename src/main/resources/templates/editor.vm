@@ -123,6 +123,12 @@
                 Object.assign(config, JSON.parse(json));
             }
 
+            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
+                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                alert("$i18n.getText('onlyoffice.editor.forms.error.version')");
+                return;
+            }
+
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
