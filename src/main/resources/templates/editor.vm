@@ -82,7 +82,7 @@
 
             var onRequestSaveAs = function (event) {
                 var url = event.data.url;
-                var fileType = event.data.fileType;
+                var fileType = event.data.fileType ? event.data.fileType : event.data.title.split(".").pop();
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", saveAs.uri, true);
