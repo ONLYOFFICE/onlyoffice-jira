@@ -1,5 +1,9 @@
 # Change Log
 
+## 
+## Added
+- "save copy as" from editor
+
 ## 1.0.2
 ## Added
 - compatible with v8.20
