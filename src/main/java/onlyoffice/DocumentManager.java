@@ -63,6 +63,13 @@ public class DocumentManager {
         return editedExts;
     }
 
+    public static List<String> GetFillFormExts() {
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        List<String> fillformExts = configurationManager.getListDefaultProperty("files.docservice.fill-docs");
+
+        return fillformExts;
+    }
+
     public String getDocType(String ext) {
         ConfigurationManager configurationManager = new ConfigurationManager();
         List<String> wordFormats = configurationManager.getListDefaultProperty("files.docservice.type.word");

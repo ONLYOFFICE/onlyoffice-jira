@@ -70,11 +70,12 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final PluginSettings settings;
     private final AttachmentUtil attachmentUtil;
     private final UrlManager urlManager;
+    private final ParsingUtil parsingUtil;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
-            JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-            TemplateRenderer templateRenderer, UrlManager urlManager) {
+                                     JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
+                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -84,6 +85,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.attachmentUtil = attachmentUtil;
         this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
+        this.parsingUtil = parsingUtil;
 
         userManager = ComponentAccessor.getUserManager();
     }
@@ -160,7 +162,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         try {
             Long attachmentId = Long.parseLong(attachmentIdString);
 
-            String body = getBody(requestStream);
+            String body = parsingUtil.getBody(requestStream);
             log.info("body = " + body);
             if (body.isEmpty()) {
                 throw new IllegalArgumentException("requestBody is empty");
@@ -222,15 +224,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 URL url = new URL(downloadUrl);
 
                 connection = (HttpURLConnection) url.openConnection();
-                int size = connection.getContentLength();
-                log.info("size = " + size);
 
                 InputStream stream = connection.getInputStream();
 
                 tempFile = Files.createTempFile(null, null);
                 FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
 
-                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), size, user);
+                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), user);
                 attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
             }
         } catch (Exception ex) {
@@ -248,14 +248,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
             if (tempFile != null && Files.exists(tempFile)) {
                 Files.delete(tempFile);
-            }
-        }
-    }
-
-    private String getBody(InputStream stream) {
-        try(Scanner scanner = new Scanner(stream)) {
-            try(Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
-                return scanner.hasNext() ? scanner.next() : "";
             }
         }
     }
