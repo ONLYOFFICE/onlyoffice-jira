@@ -11,7 +11,7 @@ The app allows to:
 
 Supported formats:
 
-* For editing: DOCX, XLSX, PPTX. 
+* For editing: DOCX, XLSX, PPTX, DOCXF, OFORM. 
 * For viewing: DOC, DOCX, DOCM, DOC, DOTX, DOTM, ODT, FODT, OTT, RTF, TXT, HTML, HTM, MHT, PDF, DJVU, FB2, EPUB, XPS, XLS,
 XLSX, XLSM, XLTZ , XLTX, XLTM, ODS, FODS, OTS, CSV, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP.
 
