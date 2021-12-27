@@ -1,6 +1,6 @@
 # Change Log
 
-## 
+## 1.1.0
 ## Added
 - support docxf and oform formats
 - "save as" in editor
