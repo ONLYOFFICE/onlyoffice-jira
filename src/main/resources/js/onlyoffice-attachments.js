@@ -17,7 +17,8 @@
  */
 
 jQuery(function() {
-    var editExt = ["docx", "xlsx", "pptx"];
+    var editExt = ["docx", "xlsx", "pptx", "docxf"];
+    var fillFormExt = ["oform"];
     var viewExt = ["doc", "docm", "dot", "dotx", "dotm", "odt", "fodt", "ott", "rtf", "txt", "html", "htm", "mht", "pdf",
                    "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
                    "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
@@ -33,16 +34,22 @@ jQuery(function() {
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
         if (editExt.indexOf(ext) != -1 && dropZone.length != 0) {
-            addEditButton(el, attachmentId, true);
-        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1) {
-            addEditButton(el, attachmentId, false);
+            addEditButton(el, attachmentId, true, false);
+        } else if (fillFormExt.indexOf(ext) != -1 && dropZone.length != 0){
+            addEditButton(el, attachmentId, true, true);
+        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) {
+            addEditButton(el, attachmentId, false, false);
         }
     }
 
-    function addEditButton(el, attachmentId, edit) {
+    function addEditButton(el, attachmentId, edit, form) {
         var link = document.createElement("a");
         if (edit) {
-            link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
+            if (form) {
+                link.title = AJS.I18n.getText("onlyoffice.connector.fillFormlink");
+            } else {
+                link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
+            }
         } else {
             link.title = AJS.I18n.getText("onlyoffice.connector.viewlink");
         }
