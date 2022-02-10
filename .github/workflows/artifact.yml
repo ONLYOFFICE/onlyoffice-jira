@@ -1,4 +1,4 @@
-name: artifact
+name: Artifact
 
 on:
   workflow_dispatch:
