@@ -70,6 +70,12 @@
                 return;
             }
 
+            var docsVersion = DocsAPI.DocEditor.version().split(".");
+            if (docsVersion[0] < 6 || docsVersion[0] == 6 && docsVersion[1] == 0) {
+                alert("$i18n.getText('onlyoffice.editor.error.version')");
+                return;
+            }
+
             var json = '${jsonAsHtml}';
             var saveAs = JSON.parse('${saveAsAsHtml}');
 
@@ -124,7 +130,7 @@
             }
 
             if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                && docsVersion[0] < 7) {
                 alert("$i18n.getText('onlyoffice.editor.forms.error.version')");
                 return;
             }
