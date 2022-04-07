@@ -1,5 +1,9 @@
 # Change Log
 
+##
+## Changed
+- document server v6.0 and earlier is no longer supported
+
 ## 1.1.0
 ## Added
 - support docxf and oform formats
