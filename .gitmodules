@@ -1,0 +1,3 @@
+[submodule "src/main/resources/document-templates"]
+	path = src/main/resources/document-templates
+	url = git@github.com:ONLYOFFICE/document-templates.git
