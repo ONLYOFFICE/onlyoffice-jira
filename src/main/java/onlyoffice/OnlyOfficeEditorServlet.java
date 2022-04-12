@@ -26,6 +26,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -118,9 +120,21 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String fileName = "";
         String errorMessage = "";
         ApplicationUser user = null;
+        String userAgent = request.getHeader("User-Agent").toLowerCase();
+        String regex = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge|maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)|plucker|pocket|psp|symbian|treo|up.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i";
+        String type = "desktop";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(userAgent);
 
         String attachmentIdString = request.getParameter("attachmentId");
         Long attachmentId = null;
+
+        if (userAgent != null) {
+            if (matcher.find()) {
+                type = "mobile";
+            }
+        }
 
         try {
             attachmentId = Long.parseLong(attachmentIdString);
@@ -153,7 +167,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        Map<String, Object> defaults = getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage);
+        Map<String, Object> defaults = getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage, type);
         WebResourceAssembler webResourceAssembler = webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
         webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
         webResourceAssembler.assembled().drainIncludedResources().writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
@@ -161,7 +175,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     }
 
     private Map<String, Object> getTemplateConfig(Long attachmentId, String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
-            ApplicationUser user, String errorMessage) throws UnsupportedEncodingException {
+            ApplicationUser user, String errorMessage, String type) throws UnsupportedEncodingException {
 
         Map<String, Object> defaults = new HashMap<String, Object>();
         Map<String, String> config = new HashMap<String, String>();
@@ -177,7 +191,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         JSONObject permObject = new JSONObject();
 
         try {
-            responseJson.put("type", "desktop");
+            responseJson.put("type", type);
             responseJson.put("width", "100%");
             responseJson.put("height", "100%");
             if (errorMessage == null || errorMessage.isEmpty()) {
