@@ -99,6 +99,16 @@ public class AttachmentUtil {
         attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
+    public static void createFileToAttachment( File file, String filename, String contentType, ApplicationUser user, 
+                                        Issue issue, AttachmentManager attachmentManager)
+            throws IllegalArgumentException, AttachmentException {
+
+        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
+            filename, contentType, user, issue).build();
+
+        attachmentManager.createAttachment(createAttachmentParamsBean);
+    }
+
     public ChangeItemBean saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
