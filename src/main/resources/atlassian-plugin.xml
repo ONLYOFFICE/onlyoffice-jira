@@ -28,6 +28,8 @@
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
+    <resource type="download" name="create_blue_icon.svg" location="/images/create_blue_icon.svg"/>
+    <resource type="download" name="create_dark_icon.svg" location="/images/create_dark_icon.svg"/>
 
     <context>jira.view.issue</context>
     <context>gh-rapid-plan</context>
@@ -56,6 +58,10 @@
   <servlet key="OnlyOfficeAPI" class="onlyoffice.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
     <description>ONLYOFFICE API Handler.</description>
     <url-pattern>/onlyoffice/api</url-pattern>
+  </servlet>
+  <servlet key="OnlyOffeceFileCreationServlet" class="onlyoffice.OnlyOffeceFileCreationServlet" name="Document Editor">
+    <description>Add attachments from temlpates</description>
+    <url-pattern>/onlyoffice/create</url-pattern>
   </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">
