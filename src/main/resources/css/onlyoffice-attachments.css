@@ -43,3 +43,127 @@ div[class~="attachment-oo-edit"] {
     background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
     width: 6em!important;
 }
+
+.onlioffice-form-create{
+    z-index: 3300;
+
+    overflow: visible;
+    position: fixed;
+    top: 100px;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 500px;
+    min-height: 250px;
+
+    box-shadow: 0 8px 16px -4px var(--aui-shadow2),0 0 1px var(--aui-shadow2);
+    background-color: var(--aui-dialog-bg-color);
+    box-sizing: border-box;
+    border-radius: 3px;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    right: 0;
+
+    font-size: 1rem;
+    text-align: left;
+}
+
+.onlioffice-form-create-content {
+    opacity: 1;
+    transition: opacity .2s;
+    transition-delay: 0s;
+    visibility: visible;
+
+    min-height: 200px;
+
+    flex: 1;
+}
+
+.onlioffice-form-blanket {
+    opacity: 0;
+    visibility: hidden;
+    background: var(--aui-blanket);
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2500;
+}
+
+.onlioffice-create-div {
+    padding-top: 5%;
+    display: inline-flex;
+}
+
+fieldset.group .onlioffice-create-div {
+    padding-top: 1%;
+    padding-bottom: 3%;
+    display: inline-flex;
+}
+
+.onlioffice-create-div a {
+    margin: 0;
+
+    border-top-right-radius: 3.01px;
+    border-bottom-right-radius: 3.01px;
+    border-top-left-radius: 3.01px;
+    border-bottom-left-radius: 3.01px;
+
+    background-image: none;
+    background-color: var(--aui-btn-bg);
+    border: 1px solid var(--aui-btn-border);
+    color: var(--aui-btn-text);
+    text-decoration: none;
+
+    --aui-btn-bg: var(--aui-button-default-bg-color);
+    --aui-btn-border: var(--aui-button-default-border-color,transparent);
+    --aui-btn-text: var(--aui-button-default-text-color);
+
+    box-sizing: border-box;
+    transition: background-color .1s ease-out;
+    border-radius: 3.01px;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-variant: normal;
+    font-weight: 400;
+    background-image: none;
+    background-color: var(--aui-btn-bg);
+    border: 1px solid var(--aui-btn-border);
+    color: var(--aui-btn-text);
+    display: inline-block;
+    height: 2.14285714em;
+    line-height: 1.42857143em;
+    margin: 0;
+    padding: 4px 10px;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+
+.onlioffice-create-div a .onlioffice-create-icon{
+    background-size: contain;
+    background-image: url("create_dark_icon.svg");
+    margin: 1% 0 0 0;
+    
+    display: inline-block;
+    height: 14px;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+    text-indent: -999em;
+    vertical-align: text-top;
+    width: 16px;
+
+    --aui-icon-size: 16px;
+
+    color: inherit;
+}
+
+.onlioffice-create-div a .onlioffice-create-label{
+    padding-left: 3%;
+}
