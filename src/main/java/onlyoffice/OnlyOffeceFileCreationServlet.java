@@ -88,44 +88,6 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
 
     }
 
-    // http://192.168.1.69:8080/plugins/servlet/onlyoffice/create?fileExt=docx&filename=123456
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
-        
-        String ext = request.getParameter("fileExt");
-        String filename = request.getParameter("filename") + "." + ext;
-
-        String contentType = FileUtil.getMimeType(filename);
-        String locale = localeManager.getLocaleFor(user).toLanguageTag();
-
-        File file = null;
-
-        String path = "/document-templates/" + locale + "/new." + ext;
-
-        byte[] fileBytes = new byte[1024];
-
-        try {
-            file = new File(".", "new." + ext);
-            
-            InputStream inputStream = pluginAccessor.getDynamicResourceAsStream(path);
-            FileUtil.InputStreamToFile(inputStream, file);
-
-            fileBytes = new byte[(int)file.length()];
-            FileInputStream f = new FileInputStream(file);
-            f.read(fileBytes);
-            
-        } catch (Exception ex) {
-            response.setHeader( "---ERROR 0---", ex.toString());
-        }
-
-        response.setHeader( "---Ext---", ext);
-        response.setHeader( "---Filename---", filename);
-        response.setHeader( "---ContentType---", contentType);
-        response.setHeader( "---File---", fileBytes.toString());
-        return;
-    }
-
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -166,7 +128,7 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
         }
 
         file.delete();
-        response.sendRedirect(request.getHeader("referer"));
+        //response.sendRedirect(request.getHeader("referer"));
         return;
     }
 
