@@ -112,75 +112,46 @@ jQuery(function() {
 
         if (context.length != 0 && $(".onlioffice-create-div").length == 0){
             AddCrateButton('#attachmentmodule');
-            var issueId = '';
-            if ($('.issue-link').length != 0) {
-                issueId = $('.issue-link')[0].rel;
-            }
-            if ($('#ghx-detail-issue').length != 0) {
-                issueId = $('#ghx-detail-issue')[0].getAttribute('data-issueid');
-            }
+            var issueId = JIRA.Issue.getIssueId();
             formCreate(issueId);
-            
-        }
 
-        if (context.length != 0 && $('fieldset.group').length == 1) {
-            AddCrateButton('fieldset.group');
         }
     });
 
     function sendScript() {
-        var script = '';
-        //var data = {
-        //    fileExt: "docx",
-        //    filename: "secret"
-        //};
-        //$.ajax({
-        //    type: 'GET',
-        //    url: 'http://192.168.1.69:8080/plugins/servlet/onlyoffice/create',
-        //    contentType: "application/json; charset=utf-8",
-        //    data: JSON.stringify(data)
-        //}).always(function (result, textStatus, jqXHR) {
-        //    console.log(result)
-        //});
+        var script =''+
+        'function showForm(isShow) {' +
+        '   if (isShow) {' +
+        '       $("#onlioffice-form-create")[0].setAttribute("open", true);' +
+        '       $("#background")[0].style = "z-index: 3280; opacity: 1;transition: opacity .2s;transition-delay: .1s;visibility: visible;";' +
+        '   }else{' +
+        '       $("#onlioffice-form-create")[0].removeAttribute("open");' +
+        '       $("#background")[0].style = "";' +
+        '}}' +
+        'function sendAjaxCreate() {' +
+        //'   var data = {' +
+        //'        issueId: $("#issueId")[0].value,' +
+        //'        fileExt: $("#fileExt")[0].value,' +
+        //'        filename: $("#filename")[0].value' +
+        //'    };' +
+        '    console.log(data);' +
+        '    $.ajax({' +
+        '        type: "POST",' +
+        '        url: "/plugins/servlet/onlyoffice/create?issueId=" + data["issueId"] + "&fileExt=" + data["fileExt"] + "&filename=" + data["filename"],' +
+        '        contentType: "application/json; charset=utf-8",' +
+        //'        data: JSON.stringify(data)' +
+        '    }).always(function (result, textStatus, jqXHR) {' +
+        '       JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);' +
+        '   });' +
+        '}' +
+        'var form = $("#onlioffice-dialog-form")[0];' +
+        'form.addEventListener("submit", function(event) {' +
+        '    event.preventDefault();' +
+        '    sendAjaxCreate();' +
+        '    showForm(false);' +
+        '    form.reset();' +
+        '}, false );';
 
-        //function getFile(bytes, type, filename) {
-        //var blob = new Blob(bytes.split(''), {type: type});
-
-        //const file1 = new File(blob, filename, {
-            //type: blob.type,
-        //});
-
-        //const file2 = new File(bytes.split(''), filename, {
-            //type: type,
-        //});
-
-        //console.log(file1);
-        //console.log(file2);
-
-        script += 'function getFile(bytes, filename, type) {';
-        script += 'var blob = new Blob(bytes.split(""), {type: type});';
-        script += 'const options = {autoProcessQueue: false, url: "/file/post"};';
-        script += 'const myDropzone = new Dropzone( $(".issue-drop-zone__file").get(1), options);';
-        script += 'blob.name = filename; myDropzone.addFile(blob);'
-        script += 'console.log(blob);console.log(bytes);console.log(type);}';
-
-        script += 'function sendAJAX() {var data = {fileExt: "docx",filename: "secret"};';
-        script += "var a = $.ajax({type: 'GET',url: 'http://192.168.1.69:8080/plugins/servlet/onlyoffice/create',";
-        script += 'contentType: "application/json; charset=utf-8",data: JSON.stringify(data)';
-        script += '}).always(function (result, textStatus, jqXHR) { console.log(a.getAllResponseHeaders()); getFile(a.getResponseHeader("---file---"), a.getResponseHeader("---filename---"), a.getResponseHeader("---contenttype---")) }); }';
-
-        return script;
-    }
-
-    function showForm(isShow) {
-        var script = '';
-        if (isShow) {
-            script += "$('#onlioffice-form-create')[0].setAttribute('open', true);"
-            script += "$('#background')[0].style = 'z-index: 2980; opacity: 1;transition: opacity .2s;transition-delay: .1s;visibility: visible;';";
-        }else{
-            script += "$('#onlioffice-form-create')[0].removeAttribute('open');"
-            script += "$('#background')[0].style = ''";
-        }
         return script;
     }
 
@@ -194,11 +165,11 @@ jQuery(function() {
         spanIcon.classList.add("onlioffice-create-icon");   
         spanText.classList.add("onlioffice-create-label");
 
-        a.title = "Create file with ONLYOFFICE";
+        a.title = AJS.I18n.getText("onlyoffice.create.file");
         a.href = "#";
-        a.setAttribute('onclick', showForm(true));
+        a.setAttribute('onclick', 'showForm(true)');
 
-        spanText.innerText = "Create file with ONLYOFFICE";
+        spanText.innerText = AJS.I18n.getText("onlyoffice.create.file");
 
         a.append(spanIcon);
         a.append(spanText);
@@ -215,8 +186,8 @@ jQuery(function() {
         var header = document.createElement("header");
         header.classList.add("aui-dialog2-header", "jira-dialog-core-heading")
         var header_h2 = document.createElement("h2");
-        header_h2.title = "Create file with ONLYOFFICE";
-        header_h2.innerText = "Create file with ONLYOFFICE";
+        header_h2.title = AJS.I18n.getText("onlyoffice.create.file");
+        header_h2.innerText = AJS.I18n.getText("onlyoffice.create.file");
         header.append(header_h2);
 
 
@@ -232,23 +203,24 @@ jQuery(function() {
         form.id="onlioffice-dialog-form"
         form.method="post"
         form.action = "/plugins/servlet/onlyoffice/create";
-        form.innerHTML = '<input type="hidden" name="issueId" value="'+ issueId +'"></input>'
+        form.innerHTML = '<input type="hidden" id="issueId" name="issueId" value="'+ issueId +'"></input>'
 
         var form_content = document.createElement("div");
         form_content.classList.add("content");
         var field_group_type = document.createElement("div");
         field_group_type.classList.add("field-group");
-        field_group_type.innerHTML = '<label for="fileExt">' + 'Тип файла' + '<span class="visually-hidden">Обязательно</span><span class="aui-icon icon-required" aria-hidden="true"></span></label>';
-        field_group_type.innerHTML += '<select class="select" id="fileExt" name="fileExt"><option value="docx">Document</option><option value="xlsx">Spreadsheet</option><option value="pptx">Presentation</option></select>';
+        field_group_type.innerHTML = '<label for="fileExt">' + AJS.I18n.getText("onlyoffice.create.filetype") + '<span class="visually-hidden">Обязательно</span><span class="aui-icon icon-required" aria-hidden="true"></span></label>';
+        field_group_type.innerHTML += '<select class="select" id="fileExt" name="fileExt"><option value="docx">'+ AJS.I18n.getText("onlyoffice.context.create.type.docx") +'</option><option value="xlsx">'+ AJS.I18n.getText("onlyoffice.context.create.type.xlsx") +'</option><option value="pptx">'+ AJS.I18n.getText("onlyoffice.context.create.type.pptx") +'</option></select>';
         var field_group_filename = document.createElement("div");
         field_group_filename.classList.add("field-group");
-        field_group_filename.innerHTML = '<label for="filename">' + 'Имя' + '<span class="visually-hidden">Обязательно</span><span class="aui-icon icon-required" aria-hidden="true"></span></label>';
+        field_group_filename.innerHTML = '<label for="filename">' + AJS.I18n.getText("onlyoffice.create.filename") + '<span class="visually-hidden">Обязательно</span><span class="aui-icon icon-required" aria-hidden="true"></span></label>';
         field_group_filename.innerHTML += '<input class="text" id="filename" name="filename" type="text" data-qe-no-aria-label="true" required >';
 
         form_content.append(field_group_type);
         form_content.append(field_group_filename);
         form.append(form_content);
         content.append(form);
+
 
         var footer = document.createElement("footer");
         footer.classList.add("aui-dialog2-footer");
@@ -257,23 +229,22 @@ jQuery(function() {
         var footer_div_buttons = document.createElement("div");
         footer_div_buttons.classList.add("buttons");
 
-
         var footer_span = document.createElement("span");
         footer_span.classList.add("throbber");
         var footer_input = document.createElement("input");
         footer_input.classList.add("button", "aui-button", "aui-button-primary");
-        footer_input.title = "Нажмите Alt + S, чтобы отправить эту форму";
+        footer_input.title = AJS.I18n.getText("onlyoffice.jira.helper.alt.s");
         footer_input.type = "submit";
-        footer_input.value = "Создать";
+        footer_input.value = AJS.I18n.getText("onlyoffice.create");
         footer_input.setAttribute('accesskey', "S");
         footer_input.setAttribute('form', "onlioffice-dialog-form");
         footer_input.setAttribute('resolved', true);
         var footer_button = document.createElement("button");
         footer_button.classList.add("aui-button", "aui-button-link", "cancel");
-        footer_button.title = "Нажмите Alt + ` для отмены";
+        footer_button.title = AJS.I18n.getText("onlyoffice.jira.helper.alt.tild");
         footer_button.type = "button";
-        footer_button.setAttribute('onclick', showForm(false));
-        footer_button.innerText = "Отмена";
+        footer_button.setAttribute('onclick', 'showForm(false)');
+        footer_button.innerText = AJS.I18n.getText("onlyoffice.cancel");
         footer_button.setAttribute('accesskey', "`");
         footer_button.setAttribute('resolved', true);
 
@@ -287,6 +258,7 @@ jQuery(function() {
         section.append(content);
         section.append(footer);
 
+        $('body').append(section);
 
         var script = document.createElement("script");
         script.type="text/javascript";
@@ -294,8 +266,6 @@ jQuery(function() {
         script.innerHTML = sendScript();
 
         $('body').append(script);
-
-        $('body').append(section);
 
         var divBlanket = document.createElement("div");
         divBlanket.id = "background";
