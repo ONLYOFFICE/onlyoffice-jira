@@ -39,7 +39,8 @@
                         jsonparse: "$i18n.getText('onlyoffice.configuration.jsonparse')",
                         docservunreachable: "$i18n.getText('onlyoffice.configuration.docservunreachable')",
                         docservcommand: "$i18n.getText('onlyoffice.configuration.docservcommand')",
-                        jwterror: "$i18n.getText('onlyoffice.configuration.jwterror')"
+                        jwterror: "$i18n.getText('onlyoffice.configuration.jwterror')",
+                        demoOver: "$i18n.getText('onlyoffice.demo.over')"
                     };
 
                     function updateConfig() {
@@ -48,6 +49,7 @@
                             "docInnerUrl": jq("#docInnerUrlField").attr("value"),
                             "confUrl": jq("#confUrlField").attr("value"),
                             "jwtSecret": jq("#jwtSecretField").attr("value"),
+                            "isDemo": $('#isDemoConnect')[0].checked,
                         };
 
                         jq.ajax({
@@ -131,9 +133,28 @@
                     });
 
                     AJS.$(".onlyoffice-tooltip").tooltip();
+
+                    $("#isDemoConnect")[0].checked = ${isDemo}
+                    inputsStatus();
                 });
 
             })(jQuery);
+
+            function inputsStatus() {
+                if($('#isDemoConnect')[0].checked){
+                    $('#apiUrlField')[0].setAttribute('disabled', 'disabled');
+                    $('#jwtSecretField')[0].setAttribute('disabled', 'disabled');
+                    $('#confUrlField')[0].setAttribute('disabled', 'disabled');
+                    $('#docInnerUrlField')[0].setAttribute('disabled', 'disabled');
+                }else {
+                    $('#apiUrlField')[0].removeAttribute('disabled');
+                    $('#jwtSecretField')[0].removeAttribute('disabled');
+                    $('#confUrlField')[0].removeAttribute('disabled');
+                    $('#confUrlField')[0].value = '';
+                    $('#docInnerUrlField')[0].removeAttribute('disabled');
+                    $('#docInnerUrlField')[0].value = '';
+                }
+            }
         </script>
         <h1>ONLYOFFICE</h1>
         <form id="onlyofficeConf" class="aui top-label">
@@ -146,6 +167,11 @@
             <div class="field-group">
                 <label for="jwtSecretField">$i18n.getText('onlyoffice.configuration.jwt-secret')</label>
                 <input type="text" id="jwtSecretField" value="${docserviceJwtSecret}" name="jwtSecretField" class="text">
+            </div>
+
+            <div class="field-group">
+                <label for="isDemoConnect">$i18n.getText('onlyoffice.demo.connect')</label>
+                <input type="checkbox" id="isDemoConnect" name="isDemoConnect" class="checkbox" onclick="inputsStatus()">
             </div>
 
             <h3>$i18n.getText('onlyoffice.configuration.advanced-section')</h3>
