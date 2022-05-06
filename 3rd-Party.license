@@ -24,3 +24,7 @@ License File:         javax.inject.license
 json                - JSON is a light-weight, language independent, data interchange format. See http://www.JSON.org/ The files in this package implement JSON encoders/decoders in Java. It also includes the capability to convert between JSON and XML, HTTP headers, Cookies, and CDL. This is a reference implementation. (http://json.org/license.html)
 License:              JSON
 License File:         json.license
+
+JSON.simple         - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (http://www.apache.org/licenses/LICENSE-2.0.txt)
+License:              Apache 2.0
+License File:         JSON.simple.license
