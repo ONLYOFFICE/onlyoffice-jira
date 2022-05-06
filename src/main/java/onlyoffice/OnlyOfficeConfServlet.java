@@ -46,6 +46,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.atlassian.jira.config.util.AttachmentPathManager;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -65,17 +66,20 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final PluginSettingsFactory pluginSettingsFactory;
     @JiraImport
     private final TemplateRenderer templateRenderer;
+    @JiraImport
+    private final AttachmentPathManager attachmentPathManager;
 
     private final JwtManager jwtManager;
 
     @Inject
     public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer) {
+            JwtManager jwtManager, TemplateRenderer templateRenderer, AttachmentPathManager attachmentPathManager) {
                 
         this.userManager = userManager;
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
+        this.attachmentPathManager = attachmentPathManager;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
@@ -95,10 +99,16 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
 		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
+        String oldJwtSecret = (String) pluginSettings.get("onlyoffice.oldJwtSecret");
+        String oldApiUrl = (String) pluginSettings.get("onlyoffice.oldApiUrl");
+        String isDemo = (String) pluginSettings.get("onlyoffice.isDemo");
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
+        if (oldApiUrl == null || oldApiUrl.isEmpty()) { oldApiUrl = ""; }
+        if (oldJwtSecret == null || oldJwtSecret.isEmpty()) { oldJwtSecret = ""; }
+        if (isDemo == null || isDemo.isEmpty()) { isDemo = ""; }
 
         ConfigurationManager configurationManager = new ConfigurationManager();
         Properties properties = configurationManager.GetProperties();
@@ -110,7 +120,14 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         defaults.put("docserviceInnerUrl", docInnerUrl);
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
+        if (isDemo.equals("true")) {
+            defaults.put("docserviceApiUrl", oldApiUrl); 
+            defaults.put("docserviceJwtSecret", oldJwtSecret);
+        }
+
         defaults.put("pathApiUrl", properties.getProperty("files.docservice.url.api"));
+
+        defaults.put("isDemo", isDemo);
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -133,6 +150,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl;
 		String confUrl;
         String jwtSecret;
+        String isDemo;
+        String demoDate = "";
         try {
             JSONObject jsonObj = new JSONObject(body);
 
@@ -141,6 +160,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
             
             jwtSecret = jsonObj.getString("jwtSecret");
+
+            isDemo = jsonObj.getString("isDemo");
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -158,6 +179,29 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
 		pluginSettings.put("onlyoffice.confUrl", confUrl);
         pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
+        pluginSettings.put("onlyoffice.oldApiUrl", apiUrl);
+        pluginSettings.put("onlyoffice.oldJwtSecret", jwtSecret);
+        pluginSettings.put("onlyoffice.isDemo", isDemo);
+        try {
+            if (isDemo.equals("true")) {
+                demoDate = getDemoData(isDemo);
+                if (DemoManager.istrial(demoDate)){
+                    String[] demoConf = DemoManager.getDemoConf();
+                    pluginSettings.put("onlyoffice.apiUrl", demoConf[0]);
+                    pluginSettings.put("onlyoffice.jwtHeader", demoConf[1]);
+                    pluginSettings.put("onlyoffice.jwtSecret", demoConf[2]);
+                } else {
+                    pluginSettings.put("onlyoffice.apiUrl", apiUrl);
+                    pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
+                    pluginSettings.put("onlyoffice.jwtHeader", null);
+                    pluginSettings.put("onlyoffice.isDemo", "false");
+                    response.getWriter().write("{\"success\": false, \"message\": \"demoOver\"}");
+                    return;
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex);
+        }
 
         log.debug("Checking docserv url");
         if (!CheckDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
@@ -266,5 +310,9 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
     private String getBoolAsAttribute(String value) {
         return value.equals("true") ? "checked=\"\"" : "";
+    }
+
+    private String getDemoData(String isDemo) throws Exception {
+        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
     }
 }
