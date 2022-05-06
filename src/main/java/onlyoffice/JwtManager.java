@@ -19,6 +19,8 @@
 package onlyoffice;
 
 import org.json.JSONObject;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -30,24 +32,37 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Mac;
 
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.atlassian.jira.config.util.AttachmentPathManager;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
 public class JwtManager {
+    private static final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
+    @JiraImport
+    private final AttachmentPathManager attachmentPathManager;
+
     private final PluginSettings settings;
 
     @Inject
-    public JwtManager(PluginSettingsFactory pluginSettingsFactory) {
+    public JwtManager(PluginSettingsFactory pluginSettingsFactory, AttachmentPathManager attachmentPathManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
+        this.attachmentPathManager = attachmentPathManager;
         settings = pluginSettingsFactory.createGlobalSettings();
     }
 
     public Boolean jwtEnabled() {
+        try {
+            checkDemo();
+        } catch (Exception ex) {
+            log.error(ex);
+        }
+
         return settings.get("onlyoffice.jwtSecret") != null
                 && !((String) settings.get("onlyoffice.jwtSecret")).isEmpty();
     }
@@ -87,6 +102,12 @@ public class JwtManager {
     }
 
     public String getJwtHeader() {
+        try {
+            checkDemo();
+        } catch (Exception ex) {
+            log.error(ex);
+        }
+
         String header = (String) settings.get("onlyoffice.jwtHeader");
         return header == null || header.isEmpty() ? "Authorization" : header;
     }
@@ -99,6 +120,8 @@ public class JwtManager {
     }
 
     private Mac getHasher() throws Exception {
+        checkDemo();
+
         String jwts = (String) settings.get("onlyoffice.jwtSecret");
 
         Mac sha256 = Mac.getInstance("HmacSHA256");
@@ -106,5 +129,28 @@ public class JwtManager {
         sha256.init(secret_key);
 
         return sha256;
+    }
+
+    public void checkDemo() throws Exception {
+        String isDemo = (String) settings.get("onlyoffice.isDemo");
+        String demoDate = "";
+
+        if (isDemo.equals("true")) {
+            demoDate = getDemoData(isDemo);
+
+            if (!DemoManager.istrial(demoDate)){
+                returnSettings();
+            }
+        }
+    }
+
+    public void returnSettings() throws Exception {
+        String jwtSecret = (String) settings.get("onlyoffice.oldJwtSecret");
+        settings.put("onlyoffice.jwtSecret", jwtSecret);
+        return;
+    }
+    
+    private String getDemoData(String isDemo) throws Exception {
+        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
     }
 }

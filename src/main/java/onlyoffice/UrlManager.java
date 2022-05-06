@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 import com.atlassian.jira.component.ComponentAccessor;
 
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.atlassian.jira.config.util.AttachmentPathManager;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.json.JSONException;
@@ -46,17 +48,28 @@ public class UrlManager {
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
+    @JiraImport
+    private final AttachmentPathManager attachmentPathManager;
+
     private final PluginSettings pluginSettings;
     private final AttachmentUtil attachmentUtil;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil) {
+    public UrlManager(  PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil, 
+                        AttachmentPathManager attachmentPathManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
+        this.attachmentPathManager = attachmentPathManager;
     }
 
     public String getPublicDocEditorUrl() {
+        try {
+            checkDemo();
+        } catch (Exception ex) {
+            log.error(ex);
+        }
+        
         String url = (String) pluginSettings.get("onlyoffice.apiUrl");
         return (url == null || url.isEmpty()) ? "" : url;
     }
@@ -98,7 +111,7 @@ public class UrlManager {
         }
     }
 
-    public String replaceDocEditorURLToInternal(String url) {
+    public String replaceDocEditorURLToInternal(String url) throws Exception {
         String innerDocEditorUrl = getInnerDocEditorUrl();
         String publicDocEditorUrl = getPublicDocEditorUrl();
         if (!publicDocEditorUrl.equals(innerDocEditorUrl)) {
@@ -115,4 +128,26 @@ public class UrlManager {
         return saveAs;
     }
 
+    public void checkDemo() throws Exception {
+        String isDemo = (String) pluginSettings.get("onlyoffice.isDemo");
+        String demoDate = "";
+
+        if (isDemo.equals("true")) {
+            demoDate = getDemoData(isDemo);
+
+            if (!DemoManager.istrial(demoDate)){
+                returnSettings();
+            }
+        }
+    }
+
+    public void returnSettings(){
+        String apiUrl = (String) pluginSettings.get("onlyoffice.oldApiUrl");
+        pluginSettings.put("onlyoffice.apiUrl", apiUrl);
+        return;
+    }
+    
+    private String getDemoData(String isDemo) throws Exception {
+        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
+    }
 }
