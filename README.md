@@ -69,10 +69,8 @@ With the ONLYOFFICE integration plugin, you can view, edit and co-author office 
 
 To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment — the corresponding online editor will be opened in a new tab.
 
-After the editing session, a document with all the changes will be saved as a new attachment. You will recognize it by the name with a postfix.
-
-If you’re editing an attachment collaboratively, the changes are saved in the same file version after the last user quits the editor.
-
+After the editing session is over, a document with all the changes will be saved as a new attachment. You will recognize it by the same name with a postfix. If you’re editing an attachment collaboratively, the changes are saved only after the last user quits the editor.
+ 
 ## How it works
 
 The ONLYOFFICE integration follows the API documented [here](https://api.onlyoffice.com/editors/basic):
@@ -91,7 +89,7 @@ The ONLYOFFICE integration follows the API documented [here](https://api.onlyoff
 * Then ONLYOFFICE Document Server downloads the document from document storage and the user begins editing.
 * When all users and client browsers are done with editing, they close the editing window.
 * After 10 seconds of inactivity, ONLYOFFICE Document Server sends a POST to the `callback` URL letting Jira know that the clients have finished editing the document and closed it.
-* Jira downloads the new version of the document, replacing the old one.
+* The document with all the changes is saved as a new attachment with the postfix added to the file name.
 
 ## ONLYOFFICE Docs editions 
 
