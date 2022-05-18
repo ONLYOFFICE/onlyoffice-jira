@@ -187,7 +187,9 @@ public class OnlyOfficeConfServlet extends HttpServlet {
                 demoDate = getDemoData(isDemo);
                 if (DemoManager.istrial(demoDate)){
                     String[] demoConf = DemoManager.getDemoConf();
-                    pluginSettings.put("onlyoffice.apiUrl", demoConf[0]);
+                    apiUrl = demoConf[0];
+                    docInnerUrl = null;
+                    pluginSettings.put("onlyoffice.apiUrl", apiUrl);
                     pluginSettings.put("onlyoffice.jwtHeader", demoConf[1]);
                     pluginSettings.put("onlyoffice.jwtSecret", demoConf[2]);
                 } else {
