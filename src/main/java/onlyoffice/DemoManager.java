@@ -63,7 +63,7 @@ public class DemoManager {
     }
 
     public static String init(String demoActevate, String rootAttachPath) throws Exception {
-        String DemoDir = "ONLIOFFICE";
+        String DemoDir = "ONLIOFFICE_config";
         String Config = "config.json";
         String path = rootAttachPath + "/" + DemoDir + "/" + Config;
         String data;
