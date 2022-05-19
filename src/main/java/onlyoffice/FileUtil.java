@@ -25,6 +25,8 @@ import java.io.InputStream;
 
 import java.util.Collection;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,33 +35,200 @@ import com.atlassian.jira.issue.attachment.Attachment;
 
 @Named
 public class FileUtil {
-    private static final String[] extsDocument = new String[] { ".doc", ".docx", ".docm", ".dot", 
-                                                                ".dotx", ".dotm", ".docxf", ".oform",
-                                                                ".odt", ".fodt", ".ott", ".rtf", ".txt", 
-                                                                ".html", ".htm", ".mht", ".xml", ".pdf", 
-                                                                ".djvu", ".fb2", ".epub", ".xps"};
 
-    private static final String[] extsSpreadsheet = new String[] {  ".xls", ".xlsx", ".xlsm", ".xlt", 
-                                                                    ".xltx", ".xltm", ".ods", ".fods", 
-                                                                    ".ots", ".csv"};
+    private static final Map<String, Object> formats = new HashMap<String, Object>();
+    static {
+        Map<String, Object> format = new HashMap<String, Object>();
+//document
+    //"djvu"
+        format.put("type", "word");
+        formats.put("djvu", format);
+    //"doc"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/msword"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("doc", format);
+    //"docm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-word.document.macroEnabled.12"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("docm", format);
+    //"docx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("edit", true); format.put("def", true); format.put("saveas", new String[] {"odt", "pdf", "rtf", "txt", "docxf"});
+        formats.put("docx", format);
+    //"docxf"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf"); format.put("type", "word"); format.put("edit", true); format.put("def", true); format.put("createForm", true); format.put("saveas", new String[] {"odt", "pdf", "rtf", "txt"});
+        formats.put("docxf", format);
+    //"dot"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("dot", format);
+    //"dotm"
+    //"dotx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.template"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("dotx", format);
+    //"epub"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/epub+zip"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("epub", format);
+    //"fb2"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("fb2", format);
+    //"fodt"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("fodt", format);
+    //"htm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("conv", true);
+        formats.put("htm", format);
+    //"html"
+        format = new HashMap<String, Object>();
+        format.put("mime", "text/html"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("html", format);
+    //"mht"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("mht", format);
+    //"odt"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.text"); format.put("type", "word"); format.put("conv", true); format.put("editable", true); format.put("saveas", new String[] {"docx", "pdf", "rtf", "txt"});
+        formats.put("odt", format);
+    //"ott" 
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.text-template"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("ott", format);
+    //"oxps"
+        format = new HashMap<String, Object>();
+        format.put("type", "word");
+        formats.put("oxps", format);
+    //"pdf"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/pdf"); format.put("type", "word");
+        formats.put("pdf", format);
+    //"rtf"
+        format = new HashMap<String, Object>();
+        format.put("mime", "text/rtf"); format.put("type", "word"); format.put("conv", true); format.put("editable", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "txt"});
+        formats.put("rtf", format);
+    //"txt"
+        format = new HashMap<String, Object>();
+        format.put("mime", "text/plain"); format.put("type", "word"); format.put("edit", true); format.put("editable", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf"});
+        formats.put("txt", format);
+    //"xps"
+        format = new HashMap<String, Object>();
+        format.put("type", "word");
+        formats.put("xps", format);
+    //"xml"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/xml"); format.put("type", "word"); format.put("conv", true); format.put("saveas", new String[] {"docx", "odt", "pdf", "rtf", "txt"});
+        formats.put("xml", format);
+    //"oform"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform"); format.put("type", "word"); format.put("def", true); format.put("fillForms", true);
+        formats.put("oform", format);
 
-    private static final String[] extsPresentation = new String[] { ".pps", ".ppsx", ".ppsm", ".ppt", 
-                                                                    ".pptx", ".pptm", ".pot", ".potx", 
-                                                                    ".potm", ".odp", ".fodp", ".otp"};
+//presentation  
+    //"fodp"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.presentationml.presentation"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("fodp", format);
+    //"odp"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.presentation"); format.put("type", "slide"); format.put("conv", true); format.put("editable", true); format.put("saveas", new String[] {"pdf", "pptx"});
+        formats.put("odp", format);
+    //"otp"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.presentation-template"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("otp", format);
+    //"pot"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.presentation-template"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("pot", format);
+    //"potm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-powerpoint.template.macroEnabled.12"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("potm", format);
+    //"potx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.presentationml.template"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("potx", format);
+    //"pps"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.presentationml.presentation"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("pps", format);
+    //"ppsm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("ppsm", format);
+    //"ppsx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("ppsx", format);
+    //"ppt"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-powerpoint"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("ppt", format);
+    //"pptm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-powerpoint.presentation.macroEnabled.12"); format.put("type", "slide"); format.put("conv", true); format.put("saveas", new String[] {"pdf", "pptx", "odp"});
+        formats.put("pptm", format);
+    //"pptx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.presentationml.presentation"); format.put("type", "slide"); format.put("edit", true); format.put("def", true); format.put("saveas", new String[] {"pdf", "odp"});
+        formats.put("pptx", format);
+
+//spreadsheet
+    //"csv"
+        format = new HashMap<String, Object>();
+        format.put("mime", "text/csv"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"ods", "pdf", "xlsx"});
+        formats.put("csv", format);
+    //"fods"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); format.put("type", "cell"); format.put("conv", true); format.put("editable", true); format.put("saveas", new String[] {"csv", "pdf", "xlsx"});
+        formats.put("fods", format);
+    //"ods"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.spreadsheet"); format.put("type", "cell"); format.put("conv", true); format.put("editable", true); format.put("saveas", new String[] {"csv", "pdf", "xlsx"});
+        formats.put("ods", format);
+    //"ots"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.oasis.opendocument.spreadsheet-template"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("ots", format);
+    //"xls"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-excel"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("xls", format);
+    //"xlsm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-excel.sheet.macroEnabled.12"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("xlsm", format);
+    //"xlsx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); format.put("type", "cell"); format.put("edit", true); format.put("def", true); format.put("saveas", new String[] {"csv", "ods", "pdf"});
+        formats.put("xlsx", format);
+    //"xlt"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("xlt", format);
+    //"xltm"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.ms-excel.template.macroEnabled.12"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("xltm", format);
+    //"xltx"
+        format = new HashMap<String, Object>();
+        format.put("mime", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"); format.put("type", "cell"); format.put("conv", true); format.put("saveas", new String[] {"csv", "ods", "pdf", "xlsx"});
+        formats.put("xltx", format);
+    }
 
     private static final String[] extsNewDocs = new String[] {".docx", ".xlsx", ".pptx", ".docxf"};
     
     public static String getType(String fileName) {
         String ext = getExt(fileName);
 
-        if (Arrays.asList(extsDocument).contains(ext)) {
-            return "word";
-        }
-        if (Arrays.asList(extsSpreadsheet).contains(ext)) {
-            return "cell";
-        }
-        if (Arrays.asList(extsPresentation).contains(ext)) {
-            return "slide";
+        if (formats.containsKey(ext)) {
+            return (String)((Map)formats.get(ext)).get("type");
         }
         return "word";
     }
@@ -80,35 +249,17 @@ public class FileUtil {
     public static String getMimeType(String fileName) {
         String ext = getExt(fileName);
 
-        if (Arrays.asList(extsDocument).contains(ext)) {
-            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        }
-        if (Arrays.asList(extsSpreadsheet).contains(ext)) {
-            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        }
-        if (Arrays.asList(extsPresentation).contains(ext)) {
-            return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        if (formats.containsKey(ext)) {
+            if ((String)((Map)formats.get(ext)).get("mime") != null){
+                return (String)((Map)formats.get(ext)).get("mime");
+            }
         }
         return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     }
     
-    public static void InputStreamToFile(InputStream inputStream, File file)
-        throws IOException  {
-    
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-    
-            int read;
-            byte[] bytes = new byte[1024];
-    
-            while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-        }
-    }
-
     public static String getExt(String fileName) {
 
-        int lastIndexOf = fileName.lastIndexOf(".");
+        int lastIndexOf = fileName.lastIndexOf(".") + 1;
 
         if (lastIndexOf == -1) {
             return "";
@@ -141,7 +292,7 @@ public class FileUtil {
             for (Attachment attachment : attachments) {
                 if (attachment.getFilename().equals(fileName)) {
                     count++;
-                    fileName = basename + "-" + count + ext;
+                    fileName = basename + "-" + count + "." + ext;
                     exist = true;
                     break;
                 }
