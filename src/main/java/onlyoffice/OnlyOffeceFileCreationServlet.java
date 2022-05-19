@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -116,19 +117,18 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
             file = new File(".", "new." + ext);
 
             InputStream inputStream = pluginAccessor.getDynamicResourceAsStream(path);
-
-            FileUtil.InputStreamToFile(inputStream, file);
+            FileUtils.copyInputStreamToFile(inputStream, file);
 
             filename = FileUtil.getCorrectName(filename, issue.getAttachments());
 
             AttachmentUtil.createFileToAttachment(file, filename, contentType, user, issue, attachmentManager);
 
         } catch (Exception ex) {
-            response.setHeader( "---ERROR 0---", ex.toString());
+            log.error(ex);
+        } finally {
+            file.delete();
         }
 
-        file.delete();
-        //response.sendRedirect(request.getHeader("referer"));
         return;
     }
 
