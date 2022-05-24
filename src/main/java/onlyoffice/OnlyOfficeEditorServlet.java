@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.plugin.webresource.UrlMode;
 import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
@@ -67,17 +69,21 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final WebResourceUrlProvider webResourceUrlProvider;
     @JiraImport
     private final WebResourceAssemblerFactory webResourceAssemblerFactory;
+    @JiraImport
+    private final PluginSettingsFactory pluginSettingsFactory;
 
     private final JwtManager jwtManager;
     private final UrlManager urlManager;
     private final DocumentManager documentManager;
     private final AttachmentUtil attachmentUtil;
+    private final SSLUtil ssl;
 
     @Inject
     public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
             I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
             AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
-            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory) {
+            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory, 
+            PluginSettingsFactory pluginSettingsFactory, SSLUtil ssl) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -90,6 +96,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.localeManager = localeManager;
         this.webResourceUrlProvider = webResourceUrlProvider;
         this.webResourceAssemblerFactory = webResourceAssemblerFactory;
+        this.pluginSettingsFactory = pluginSettingsFactory;
+        this.ssl = ssl;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
@@ -137,6 +145,10 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         }
 
         try {
+            PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+            String isCert = (String) pluginSettings.get("onlyoffice.isCert");
+            ssl.checkCert(isCert);
+
             attachmentId = Long.parseLong(attachmentIdString);
             log.info("attachmentId " + attachmentId);
 
