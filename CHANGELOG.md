@@ -2,6 +2,7 @@
 
 ## Added
 - detecting mobile browser
+- certificate verification
 
 ##
 ## Changed
