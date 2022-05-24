@@ -18,6 +18,8 @@
 
 package onlyoffice;
 
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
@@ -45,22 +47,43 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
+    @JiraImport
+    private final PluginSettingsFactory pluginSettingsFactory;
 
     private final AttachmentUtil attachmentUtil;
     private final ParsingUtil parsingUtil;
     private final UrlManager urlManager;
+    private final SSLUtil ssl;
 
     @Inject
     public OnlyOfficeAPIServlet(JiraAuthenticationContext jiraAuthenticationContext, AttachmentUtil attachmentUtil,
-                                ParsingUtil parsingUtil, UrlManager urlManager) {
+                                ParsingUtil parsingUtil, UrlManager urlManager, PluginSettingsFactory pluginSettingsFactory, 
+                                SSLUtil ssl) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.attachmentUtil = attachmentUtil;
         this.parsingUtil = parsingUtil;
         this.urlManager = urlManager;
+        this.pluginSettingsFactory = pluginSettingsFactory;
+        this.ssl = ssl;
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        try {
+            PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+            String isCert = (String) pluginSettings.get("onlyoffice.isCert");
+            ssl.checkCert(isCert);
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String error = ex.toString() + "\n" + sw.toString();
+            log.error(error);
+            response.sendError(500, error);
+            return;
+        }
+
         String type = request.getParameter("type");
         if (type != null) {
             switch (type.toLowerCase())

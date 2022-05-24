@@ -48,6 +48,7 @@
                             "docInnerUrl": jq("#docInnerUrlField").attr("value"),
                             "confUrl": jq("#confUrlField").attr("value"),
                             "jwtSecret": jq("#jwtSecretField").attr("value"),
+                            "isCert": $('#isCert')[0].checked,
                         };
 
                         jq.ajax({
@@ -131,6 +132,8 @@
                     });
 
                     AJS.$(".onlyoffice-tooltip").tooltip();
+
+                    $("#isCert")[0].checked = !${docserviceisCert}
                 });
 
             })(jQuery);
@@ -156,6 +159,10 @@
             <div class="field-group">
                 <label for="docInnerUrlField">$i18n.getText('onlyoffice.configuration.doc-url-inner')</label>
                 <input type="text" id="docInnerUrlField" value="${docserviceInnerUrl}" name="docInnerUrlField" class="text onlyoffice-tooltip" title="$i18n.getText('onlyoffice.configuration.doc-url-inner-tooltip')">
+            </div>
+            <div class="field-group">
+                <label for="isCert">$i18n.getText('onlyoffice.configuration.certificate')</label>
+                <input type="checkbox" id="isCert" name="isCert" class="checkbox">
             </div>
 
             <div class="field-group">

@@ -71,11 +71,12 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final AttachmentUtil attachmentUtil;
     private final UrlManager urlManager;
     private final ParsingUtil parsingUtil;
+    private final SSLUtil ssl;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
                                      JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil) {
+                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil, SSLUtil ssl) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -86,12 +87,27 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
         this.parsingUtil = parsingUtil;
+        this.ssl = ssl;
 
         userManager = ComponentAccessor.getUserManager();
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        try {
+            String isCert = (String) settings.get("onlyoffice.isCert");
+            ssl.checkCert(isCert);
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String error = ex.toString() + "\n" + sw.toString();
+            log.error(error);
+            response.sendError(500, error);
+            return;
+        }
+
         if (jwtManager.jwtEnabled()) {
             String jwth = jwtManager.getJwtHeader();
             String header = (String) request.getHeader(jwth);
@@ -133,6 +149,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String error = "";
         try {
+            String isCert = (String) settings.get("onlyoffice.isCert");
+            ssl.checkCert(isCert);
             processData(attachmentIdString, request);
         } catch (Exception e) {
             error = e.getMessage();
