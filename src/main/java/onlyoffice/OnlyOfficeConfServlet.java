@@ -67,15 +67,17 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final TemplateRenderer templateRenderer;
 
     private final JwtManager jwtManager;
+    private final SSLUtil ssl;
 
     @Inject
     public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer) {
+            JwtManager jwtManager, TemplateRenderer templateRenderer, SSLUtil ssl) {
                 
         this.userManager = userManager;
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
+        this.ssl = ssl;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
@@ -95,10 +97,14 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
 		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
+        String isCert = (String) pluginSettings.get("onlyoffice.isCert");
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
+        if (isCert == null || isCert.isEmpty()) { isCert = ""; }
+
+        ssl.checkCert(isCert);
 
         ConfigurationManager configurationManager = new ConfigurationManager();
         Properties properties = configurationManager.GetProperties();
@@ -111,6 +117,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
         defaults.put("pathApiUrl", properties.getProperty("files.docservice.url.api"));
+        defaults.put("docserviceisCert", isCert);
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -133,13 +140,16 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl;
 		String confUrl;
         String jwtSecret;
+        String isCert;
         try {
             JSONObject jsonObj = new JSONObject(body);
 
             apiUrl = AppendSlash(jsonObj.getString("apiUrl"));
             docInnerUrl = AppendSlash(jsonObj.getString("docInnerUrl"));
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
-            
+            isCert = "false";
+            if(jsonObj.getString("isCert").equals("false")){isCert = "true";}
+            ssl.checkCert(isCert);
             jwtSecret = jsonObj.getString("jwtSecret");
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -158,6 +168,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
 		pluginSettings.put("onlyoffice.confUrl", confUrl);
         pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
+        pluginSettings.put("onlyoffice.isCert", isCert);
 
         log.debug("Checking docserv url");
         if (!CheckDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
