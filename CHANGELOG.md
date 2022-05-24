@@ -2,6 +2,7 @@
 
 ## Added
 - detecting mobile browser
+- сonnecting trial
 
 ##
 ## Changed
