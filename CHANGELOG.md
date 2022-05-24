@@ -1,5 +1,8 @@
 # Change Log
 
+## Added
+- creat file from manager
+
 ##
 ## Changed
 - document server v6.0 and earlier is no longer supported
