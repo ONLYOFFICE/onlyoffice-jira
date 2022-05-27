@@ -27,6 +27,7 @@
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
+    <resource type="download" name="onlyoffice-form-create.js" location="/js/onlyoffice-form-create.js"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
     <resource type="download" name="create_blue_icon.svg" location="/images/create_blue_icon.svg"/>
     <resource type="download" name="create_dark_icon.svg" location="/images/create_dark_icon.svg"/>
