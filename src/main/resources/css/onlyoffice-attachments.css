@@ -44,7 +44,7 @@ div[class~="attachment-oo-edit"] {
     width: 6em!important;
 }
 
-.onlioffice-form-create{
+.onlyoffice-form-create{
     z-index: 3300;
 
     overflow: visible;
@@ -70,7 +70,7 @@ div[class~="attachment-oo-edit"] {
     text-align: left;
 }
 
-.onlioffice-form-create-content {
+.onlyoffice-form-create-content {
     opacity: 1;
     transition: opacity .2s;
     transition-delay: 0s;
@@ -81,7 +81,7 @@ div[class~="attachment-oo-edit"] {
     flex: 1;
 }
 
-.onlioffice-form-blanket {
+.onlyoffice-form-blanket {
     opacity: 0;
     visibility: hidden;
     background: var(--aui-blanket);
@@ -93,18 +93,17 @@ div[class~="attachment-oo-edit"] {
     z-index: 2500;
 }
 
-.onlioffice-create-div {
-    padding-top: 5%;
+.onlyoffice-create-button {
     display: inline-flex;
 }
 
-fieldset.group .onlioffice-create-div {
+fieldset.group .onlyoffice-create-button {
     padding-top: 1%;
     padding-bottom: 3%;
     display: inline-flex;
 }
 
-.onlioffice-create-div a {
+.onlyoffice-create-button a {
     margin: 0;
 
     border-top-right-radius: 3.01px;
@@ -145,7 +144,7 @@ fieldset.group .onlioffice-create-div {
     white-space: nowrap;
 }
 
-.onlioffice-create-div a .onlioffice-create-icon{
+.onlyoffice-create-button a .onlyoffice-create-icon{
     background-size: contain;
     background-image: url("create_dark_icon.svg");
     margin: 1% 0 0 0;
@@ -164,6 +163,11 @@ fieldset.group .onlioffice-create-div {
     color: inherit;
 }
 
-.onlioffice-create-div a .onlioffice-create-label{
+.onlyoffice-create-button a .onlyoffice-create-label{
     padding-left: 3%;
+}
+
+.onlyoffice-create-button-parent {
+    display: flex;
+    align-items: center;
 }
