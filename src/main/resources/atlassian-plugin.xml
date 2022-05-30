@@ -70,4 +70,11 @@
     <label key="${project.name}" />
     <link linkId="onlyoffice-admin-link">/plugins/servlet/onlyoffice/configure</link>
   </web-item>
+
+  <web-item key="onlyoffice-create-file-button" name="OnlyofficeCreateFileButton" section="com.atlassian.jira.jira-view-issue-plugin:attachmentmodule/header" weight="10" application="jira">
+    <description>Button to create a file</description>
+    <label key="onlyoffice.create.file" />
+    <link></link>
+    <styleClass>onlyoffice-button-file-create</styleClass>
+  </web-item>
 </atlassian-plugin>
