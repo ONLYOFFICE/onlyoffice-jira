@@ -20,7 +20,7 @@
 
     JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function(e, context, reason) {
 
-        if (context.length != 0 && $("#onlioffice-dialog-form-create").length == 0){
+        if (context.length != 0 && $("#onlyoffice-dialog-form-create").length == 0){
             var issueId = JIRA.Issue.getIssueId();
             var dialog = createDialog(issueId);
             var form = $("#onlyoffice-form-create")[0];
@@ -35,9 +35,9 @@
 
     function createDialog(issueId) {
         var dialog = new AJS.Dialog({
-            id: "onlioffice-dialog-form-create",
-            width:800,
-            height:500, 
+            id: "onlyoffice-dialog-form-create",
+            width:450,
+            height:210, 
             closeOnOutsideClick: false
         });
 
@@ -48,7 +48,7 @@
         dialog.addCancel(AJS.I18n.getText("onlyoffice.cancel"), function (dialog) {
             dialog.hide();
         });
-        $("#onlioffice-dialog-form-create .dialog-page-menu").remove();
+        $("#onlyoffice-dialog-form-create .dialog-page-menu").remove();
 
         form =  '<form class="aui" id="onlyoffice-form-create">'+
                     '<input type="hidden" id="onlyoffice-form-issueId" name="onlyoffice-form-issueId" value="'+ issueId +'"></input>'+
@@ -66,7 +66,7 @@
                     '</div>'+
                     '<input type="submit" id="submit-onlyoffice-form-create" class="hidden" />'+
                 '</form>'
-        $('#onlioffice-dialog-form-create .dialog-page-body')[0].innerHTML += form;
+        $('#onlyoffice-dialog-form-create .dialog-page-body')[0].innerHTML += form;
         return dialog;
     }
 
