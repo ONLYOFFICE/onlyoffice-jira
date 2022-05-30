@@ -110,9 +110,11 @@ jQuery(function() {
             init(context);
         }
 
-        if (context.length != 0 && $(".onlioffice-create-div").length == 0){
-            addCreatButton('#attachmentmodule');
-            
+        if ($(".onlyoffice-button-file-create").length != 0 && $(".onlyoffice-create-button").length == 0){
+            addCreatButton($(".onlyoffice-button-file-create")[0].parentNode);
+            $('.onlyoffice-create-button')[0].parentNode.parentNode.classList.add('onlyoffice-create-button-parent');
+            $(".onlyoffice-button-file-create")[0].remove();
+
             var script = document.createElement("script");
             script.type="text/javascript";
             script.setAttribute('language', "javascript");
@@ -125,37 +127,19 @@ jQuery(function() {
     function sendScript() {
         var script =''+
         'function showForm() {' +
-        '       $("#onlioffice-dialog-form-create").show();' +
-        //'       $("#background")[0].style = "z-index: 3280; opacity: 1;transition: opacity .2s;transition-delay: .1s;visibility: visible;";' +
+        '       $("#onlyoffice-dialog-form-create").show();' +
         '}'
         return script;
     }
 
-    function addCreatButton(parentElement) {
-        var div = document.createElement("div");
-        var a = document.createElement("a");
-        var spanIcon = document.createElement("span");
-        var spanText = document.createElement("span");
-
-        div.classList.add("onlioffice-create-div");
-        spanIcon.classList.add("onlioffice-create-icon");   
-        spanText.classList.add("onlioffice-create-label");
-
-        a.title = AJS.I18n.getText("onlyoffice.create.file");
-        a.href = "#";
-        a.id = "onlyoffice-form-file-create";
-        a.setAttribute('onclick', 'showForm()');
-
-        spanText.innerText = AJS.I18n.getText("onlyoffice.create.file");
-
-        a.append(spanIcon);
-        a.append(spanText);
-        div.append(a);
-        $(parentElement)[0].append(div);
-
-        var divBlanket = document.createElement("div");
-        divBlanket.id = "background";
-        divBlanket.classList.add("onlioffice-form-blanket");
-        $('body').append(divBlanket);
+    function addCreatButton(element) {
+        var button = ''+
+        '<div class="onlyoffice-create-button">'+
+        '    <a title="'+ AJS.I18n.getText("onlyoffice.create.file") +'" href="#" id="onlyoffice-form-file-create" onclick="showForm()">'+
+        '        <span class="onlyoffice-create-icon"></span>'+
+        '        <span class="onlyoffice-create-label">'+ AJS.I18n.getText("onlyoffice.create.file") +'</span>'+
+        '    </a>'+
+        '</div>';
+        element.innerHTML += button;
     }
 });
