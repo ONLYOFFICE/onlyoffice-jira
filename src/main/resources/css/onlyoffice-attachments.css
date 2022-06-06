@@ -1,15 +1,18 @@
-dd[class~="attachment-oo-edit"] {
+dd[class~="attachment-oo-edit"], dd[class~="attachment-oo-downloadAs"] {
     padding-left: 0px;
     text-align: center;
     width: 50px;
 }
 
-div[class~="attachment-oo-edit"] {
+div[class~="attachment-oo-edit"], div[class~="attachment-oo-downloadAs"] {
     left: auto;
     position: absolute;
     padding: 0;
     right: 0;
     width: 20px;
+}
+div[class~="attachment-oo-downloadAs"] {
+    width: 40px;
 }
 
 .margin-delete{
@@ -17,13 +20,16 @@ div[class~="attachment-oo-edit"] {
 }
 
 .attachment-content:hover .attachment-oo-edit a,
-.attachment-content .attachment-oo-edit a:focus {
+.attachment-content .attachment-oo-edit a:focus,
+.attachment-content:hover .attachment-oo-downloadAs div,
+.attachment-content .attachment-oo-downloadAs div:focus {
     width: auto;
     height: auto;
     clip: auto;
 }
 
-.attachment-content .attachment-oo-edit a {
+.attachment-content .attachment-oo-edit a,
+.attachment-content .attachment-oo-downloadAs div {
     border: 0;
     clip: rect(0 0 0 0);
     height: 1px;
@@ -39,7 +45,13 @@ div[class~="attachment-oo-edit"] {
     background-image: url("edit_icon.svg");
 }
 
-#attachment_thumbnails .attachment-content:hover .blender-edit {
+#attachment_thumbnails .attachment-content:hover .blender-edit, 
+#attachment_thumbnails .attachment-content:hover .blender-downloadAs {
     background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
     width: 6em!important;
+}
+
+.attachment-content .attachment-oo-downloadAs div span {
+    background-size: contain;
+    background-image: url("download_as.svg");
 }
