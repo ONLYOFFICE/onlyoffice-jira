@@ -158,17 +158,11 @@ jQuery(function() {
 
         dialog.addHeader(AJS.I18n.getText("onlyoffice.conversion.download.as"));
         dialog.addButton(AJS.I18n.getText("onlyoffice.conversion.download"), function () {
-            sendAjaxConversion();
-            $('.button-panel-button')[0].disabled = true;
-            //$('#submit-onlyoffice-form-conversion')[0].click();
-            //var form = $("#onlyoffice-form-conversion")[0];
-            //form.addEventListener("submit", function(event) {
-            //    event.preventDefault();
-            //    sendAjaxConversion();
-            //    $('.button-panel-button')[0].disabled = true;
-            //    dialog.remove();
-            //}, false );
-            dialog.remove();
+            if (isFormError()){
+                sendAjaxConversion();
+                $('.button-panel-button')[0].disabled = true;
+                dialog.remove();
+            }
         });
         dialog.addCancel(AJS.I18n.getText("onlyoffice.cancel"), function (dialog) {
             dialog.remove();
@@ -176,20 +170,21 @@ jQuery(function() {
         $("#onlioffice-dialog-conversion .dialog-page-menu").remove();
         var form =  '<form class="aui" id="onlyoffice-form-conversion">'+
                         '<input type="hidden" id="onlyoffice-form-conversion-attachmentId" value="'+ attachmentId +'"></input>'+
-                        '<input type="hidden" id="onlyoffice-form-conversion-fileUrl" value="'+ el.target.firstChild.href +'"></input>'+
                         '<div class="field-group">'+
                             '<label for="onlyoffice-form-conversion-filename">' + AJS.I18n.getText("onlyoffice.conversion.filename") + '<span class="aui-icon icon-required">required</span></label>'+
                             '<input value="'+ attachmentTitle.split(".").shift() +'" class="text" type="text" id="onlyoffice-form-conversion-filename" required>'+
+                            '<div class="error" id="onlyoffice-form-conversion-filename-error">'+ 'Это поле является обязательным' +'</div>'+
                         '</div>'+
                         '<div class="field-group">'+
                             '<label for="onlyoffice-form-conversion-origin-format">' + AJS.I18n.getText("onlyoffice.conversion.origin.format") + '</label>'+
                             '<input value="'+ ext +'" class="text" type="text" id="onlyoffice-form-conversion-origin-format" disabled>'+
                         '</div>'+
                         '<div class="field-group">'+
-                            '<label for="fileExt">'+ AJS.I18n.getText("onlyoffice.conversion.file.format") +'</label>'+
+                            '<label for="onlyoffice-form-conversion-fileExt">'+ AJS.I18n.getText("onlyoffice.conversion.file.format") +'</label>'+
                             '<select class="select" id="onlyoffice-form-conversion-fileExt" name="onlyoffice-form-fileExt">'+
-                                '<option>'+ AJS.I18n.getText("onlyoffice.conversion.select.format") +'</option>'+
+                                '<option value>'+ AJS.I18n.getText("onlyoffice.conversion.select.format") +'</option>'+
                             '</select>'+
+                            '<div class="error" id="onlyoffice-form-conversion-fileExt-error">'+ 'Выдолжны заполнить это поле' +'</div>'+
                         '</div>'+
                         '<input type="submit" id="submit-onlyoffice-form-conversion" class="hidden" />'+
                     '</form>'
@@ -211,7 +206,6 @@ jQuery(function() {
     function sendAjaxConversion() {
         var data = {
             attachmentId: $("#onlyoffice-form-conversion-attachmentId")[0].value,
-            fileUrl: $("#onlyoffice-form-conversion-fileUrl")[0].value,
             filename: $("#onlyoffice-form-conversion-filename")[0].value,
             originFormat: $("#onlyoffice-form-conversion-origin-format")[0].value,
             fileExt: $("#onlyoffice-form-conversion-fileExt")[0].value
@@ -227,10 +221,10 @@ jQuery(function() {
                 sendAjaxConversion();
                 return;
             }
-            url = "http://192.168.1.70:8080/plugins/servlet/onlyoffice/save?vkey=OThmNjU5M2I4NWU2ZTYxN2FjN2U4MGE3OTVlNjZkOTA2OWUzNDYyYTM1OTAwMTliODM2ZTY1NTQ0YTg1MjliZD8xMDEwMQ%3D%3D";
+            //url = "http://192.168.1.70:8080/plugins/servlet/onlyoffice/save?vkey=OThmNjU5M2I4NWU2ZTYxN2FjN2U4MGE3OTVlNjZkOTA2OWUzNDYyYTM1OTAwMTliODM2ZTY1NTQ0YTg1MjliZD8xMDEwMQ%3D%3D";
             //sendDownloadFile(url);
             sendDownloadFile(result);
-            $('.button-panel-button')[0].disabled = false;
+            //$('.button-panel-button')[0].disabled = false;
         });
     }
 
@@ -242,5 +236,27 @@ jQuery(function() {
             link.click();
             document.body.removeChild(link);
             delete link;
+    }
+
+    function isFormError() {
+        function isShow(el, bool){
+            if (bool) $(el)[0].style = "display: block";
+            else $(el)[0].style = "display: none";
+        }
+        var isSend = true;
+        var dialogHeight = Number($('#onlioffice-dialog-conversion')[0].style.height.slice(0,-2));
+
+        if ($('#onlyoffice-form-conversion-filename')[0].value == "") {
+            isShow('#onlyoffice-form-conversion-filename-error', true);
+            isSend = false; dialogHeight += 20;
+        } else isShow('#onlyoffice-form-conversion-filename-error', false);
+
+        if ($('#onlyoffice-form-conversion-fileExt')[0].value == "") {
+            isShow('#onlyoffice-form-conversion-fileExt-error', true);
+            isSend = false; dialogHeight += 20;
+        } else isShow('#onlyoffice-form-conversion-fileExt-error', false);
+
+        $('#onlioffice-dialog-conversion')[0].style.height = dialogHeight + "px"
+        return isSend;
     }
 });

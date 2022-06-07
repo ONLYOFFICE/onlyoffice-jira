@@ -55,3 +55,8 @@ div[class~="attachment-oo-downloadAs"] {
     background-size: contain;
     background-image: url("download_as.svg");
 }
+
+#onlyoffice-form-conversion-filename-error,
+#onlyoffice-form-conversion-fileExt-error {
+    display: none;
+}
