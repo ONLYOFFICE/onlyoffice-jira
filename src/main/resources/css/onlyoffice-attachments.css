@@ -60,3 +60,12 @@ div[class~="attachment-oo-downloadAs"] {
 #onlyoffice-form-conversion-fileExt-error {
     display: none;
 }
+
+.aui-test-spinner-container {
+    width: 120px;
+    height: 100px;
+    margin: 10px;
+    display: inline-block;
+    border: 1px solid grey;
+    z-index: 3000;
+}
