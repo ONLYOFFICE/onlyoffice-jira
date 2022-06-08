@@ -20,12 +20,10 @@ package onlyoffice;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,10 +35,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 
 public class OnlyOfficeConversionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -110,14 +106,14 @@ public class OnlyOfficeConversionServlet extends HttpServlet {
             String originFormat = request.getParameter("originFormat");
             String fileExt = request.getParameter("fileExt");
             String lang = localeManager.getLocaleFor(user).toLanguageTag();
-            Path tempFile = Files.createTempFile(null, null);
 
             PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
             String docUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
             if (docUrl == null || docUrl.isEmpty()) { docUrl = (String) pluginSettings.get("onlyoffice.apiUrl"); }
             String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
+
             String convertFile = conversionManager.GetConvertedUri( docUrl, jwtSecret, fileUrl, filename, originFormat, 
-                                                                    fileExt, "", true, lang, response);
+                                                                    fileExt, "", true, lang);
             response.setStatus(response.SC_OK);
             response.getWriter().write(convertFile);
             response.getWriter().flush();
