@@ -41,6 +41,8 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.attachment.Attachment;
+import com.atlassian.jira.permission.ProjectPermissions;
+import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
@@ -58,6 +60,8 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
     private final AttachmentManager attachmentManager;
     @ComponentImport
     private final IssueManager issueManager;
+    @ComponentImport
+    private final PermissionManager permissionManager;
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
@@ -76,7 +80,7 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
     public OnlyOffeceFileCreationServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
             TemplateRenderer templateRenderer, LocaleManager localeManager, AttachmentManager attachmentManager, 
             IssueManager issueManager, JiraAuthenticationContext jiraAuthenticationContext,
-            PluginAccessor pluginAccessor) {
+            PluginAccessor pluginAccessor, PermissionManager permissionManager) {
                 
         this.userManager = userManager;
         this.pluginSettingsFactory = pluginSettingsFactory;
@@ -86,6 +90,7 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
         this.issueManager = issueManager;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.pluginAccessor = pluginAccessor;
+        this.permissionManager = permissionManager;
 
     }
 
@@ -110,6 +115,10 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
         String locale = localeManager.getLocaleFor(user).toLanguageTag();
 
         Issue issue = issueManager.getIssueObject(issueId);
+        if (!checkPermission(issue, user, true)) {
+            response.setStatus(response.SC_FORBIDDEN);
+            return;
+        }
 
         String path = "/document-templates/" + locale + "/new." + ext;
 
@@ -132,4 +141,12 @@ public class OnlyOffeceFileCreationServlet extends HttpServlet {
         return;
     }
 
+    public boolean checkPermission(Issue issue, ApplicationUser user, boolean forEdit) {
+        if (forEdit) {
+            return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
+                && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
+        } else {
+            return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
+        }
+    }
 }
