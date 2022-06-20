@@ -80,12 +80,22 @@
             type: "POST",
             url: "/plugins/servlet/onlyoffice/create?issueId=" + data["issueId"] + "&fileExt=" + data["fileExt"] + "&filename=" + data["filename"],
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(data)
+            data: JSON.stringify(data),
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                showFlag('error', AJS.I18n.getText("onlyoffice.permission.not.enough"));
+            }
         }).always(function (result, textStatus, jqXHR) {
            JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
        });
     }
  });
 
+function showFlag(type, message) {
+    var flag = AJS.flag({
+        type: type,
+        body: message,
+    });
+    setTimeout(flag.close, 2000);
+}
 
  
