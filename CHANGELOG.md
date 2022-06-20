@@ -2,6 +2,7 @@
 
 ## Added
 - creat file from manager
+- detecting mobile browser
 
 ##
 ## Changed
