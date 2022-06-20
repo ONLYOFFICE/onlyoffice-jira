@@ -2,6 +2,7 @@
 
 ## Added
 - detecting mobile browser
+- go back from editor to manager
 
 ##
 ## Changed
