@@ -37,6 +37,17 @@
     <context>gh-rapid-work</context>
   </web-resource>
 
+  <web-resource key="soy-templates">
+    <transformation extension="soy"> 
+      <transformer key="soyTransformer"/> 
+    </transformation>
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+    <resource type="soy" name="downloadAs" location="/templates/downloadAs.soy"/>
+    <resource type="download" name="downloadAs.soy.js" location="/templates/downloadAs.soy"/>
+  </web-resource>
+
   <web-resource key="editor-page-resources" name="Editor Page Web Resources">
     <resource type="download" name="text.ico" location="/images/word.ico"/>
     <resource type="download" name="spreadsheet.ico" location="/images/cell.ico"/>

@@ -50,22 +50,26 @@
         });
         $("#onlyoffice-dialog-form-create .dialog-page-menu").remove();
 
-        form =  '<form class="aui" id="onlyoffice-form-create">'+
-                    '<input type="hidden" id="onlyoffice-form-issueId" name="onlyoffice-form-issueId" value="'+ issueId +'"></input>'+
-                    '<div class="field-group">'+
-                        '<label for="fileExt">'+ AJS.I18n.getText("onlyoffice.create.filetype") +'</label>'+
-                        '<select class="select" id="onlyoffice-form-fileExt" name="onlyoffice-form-fileExt">'+
-                            '<option value="docx">'+ AJS.I18n.getText("onlyoffice.context.create.type.docx") +'</option>'+
-                            '<option value="xlsx">'+ AJS.I18n.getText("onlyoffice.context.create.type.xlsx") +'</option>'+
-                            '<option value="pptx">'+ AJS.I18n.getText("onlyoffice.context.create.type.pptx") +'</option>'+
-                        '</select>'+
-                    '</div>'+
-                    '<div class="field-group">'+
-                        '<label for="text-input">' + AJS.I18n.getText("onlyoffice.create.filename") + '<span class="aui-icon icon-required">required</span></label>'+
-                        '<input class="text" type="text" id="onlyoffice-form-filename" name="onlyoffice-form-filename" title="Text input" required>'+
-                    '</div>'+
-                    '<input type="submit" id="submit-onlyoffice-form-create" class="hidden" />'+
-                '</form>'
+        var params = { issueId: issueId }   
+        var template = JIRA.Templates.OnlyOffice.DownloadAs.form(params);
+        form = template;
+
+        //form =  '<form class="aui" id="onlyoffice-form-create">'+
+        //            '<input type="hidden" id="onlyoffice-form-issueId" name="onlyoffice-form-issueId" value="'+ issueId +'"></input>'+
+        //            '<div class="field-group">'+
+        //                '<label for="fileExt">'+ AJS.I18n.getText("onlyoffice.create.filetype") +'</label>'+
+        //                '<select class="select" id="onlyoffice-form-fileExt" name="onlyoffice-form-fileExt">'+
+        //                   '<option value="docx">'+ AJS.I18n.getText("onlyoffice.context.create.type.docx") +'</option>'+
+        //                    '<option value="xlsx">'+ AJS.I18n.getText("onlyoffice.context.create.type.xlsx") +'</option>'+
+        //                    '<option value="pptx">'+ AJS.I18n.getText("onlyoffice.context.create.type.pptx") +'</option>'+
+        //                '</select>'+
+        //            '</div>'+
+        //            '<div class="field-group">'+
+        //                '<label for="text-input">' + AJS.I18n.getText("onlyoffice.create.filename") + '<span class="aui-icon icon-required">required</span></label>'+
+        //                '<input class="text" type="text" id="onlyoffice-form-filename" name="onlyoffice-form-filename" title="Text input" required>'+
+        //            '</div>'+
+        //            '<input type="submit" id="submit-onlyoffice-form-create" class="hidden" />'+
+        //        '</form>'
         $('#onlyoffice-dialog-form-create .dialog-page-body')[0].innerHTML += form;
         return dialog;
     }
