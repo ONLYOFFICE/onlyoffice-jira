@@ -94,14 +94,14 @@ public enum Format {
         false, true, true, false, false, new String[] {"pdf", "odp"});
 
     Format(    String extension, String mime, DocumentType type, 
-                Boolean conv, Boolean edit, Boolean def, Boolean createForm, Boolean fillForms,
+                Boolean conv, Boolean edit, Boolean byDefault, Boolean createForm, Boolean fillForms,
                 String[] saveas) {
         this.extension = extension;
         this.mime = mime;
         this.type = type;
         this.conv = conv;
         this.edit = edit;
-        this.def = def;
+        this.byDefault = byDefault;
         this.createForm = createForm;
         this.fillForms = fillForms;
         this.saveas = saveas;
@@ -111,7 +111,7 @@ public enum Format {
     private DocumentType type;
     private Boolean conv;
     private Boolean edit;
-    private Boolean def;
+    private Boolean byDefault;
     private Boolean createForm;
     private Boolean fillForms;
     private String[] saveas;
@@ -123,7 +123,7 @@ public enum Format {
         return mime;
     }
 
-    public Boolean isConv() {
+    public Boolean isConvert() {
         return conv;
     }
     public Boolean isEdit() {
