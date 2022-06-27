@@ -136,7 +136,8 @@ public class JwtManager {
         String demoDate = "";
 
         if (isDemo.equals("true")) {
-            demoDate = getDemoData(isDemo);
+            DemoManager.init(isDemo, settings);
+            demoDate = (String) settings.get("onlyoffice.trial.date");
 
             if (!DemoManager.istrial(demoDate)){
                 returnSettings();
@@ -149,8 +150,5 @@ public class JwtManager {
         settings.put("onlyoffice.jwtSecret", jwtSecret);
         return;
     }
-    
-    private String getDemoData(String isDemo) throws Exception {
-        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
-    }
+
 }

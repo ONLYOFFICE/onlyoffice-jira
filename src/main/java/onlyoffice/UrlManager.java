@@ -133,7 +133,8 @@ public class UrlManager {
         String demoDate = "";
 
         if (isDemo.equals("true")) {
-            demoDate = getDemoData(isDemo);
+            DemoManager.init(isDemo, pluginSettings);
+            demoDate = (String) pluginSettings.get("onlyoffice.trial.date");
 
             if (!DemoManager.istrial(demoDate)){
                 returnSettings();
@@ -146,8 +147,5 @@ public class UrlManager {
         pluginSettings.put("onlyoffice.apiUrl", apiUrl);
         return;
     }
-    
-    private String getDemoData(String isDemo) throws Exception {
-        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
-    }
+
 }

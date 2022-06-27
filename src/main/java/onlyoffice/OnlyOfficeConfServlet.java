@@ -184,11 +184,11 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         pluginSettings.put("onlyoffice.isDemo", isDemo);
         try {
             if (isDemo.equals("true")) {
-                demoDate = getDemoData(isDemo);
+                DemoManager.init(isDemo, pluginSettings);
+                demoDate = (String) pluginSettings.get("onlyoffice.trial.date");
                 if (DemoManager.istrial(demoDate)){
                     String[] demoConf = DemoManager.getDemoConf();
                     apiUrl = demoConf[0];
-                    docInnerUrl = null;
                     pluginSettings.put("onlyoffice.apiUrl", apiUrl);
                     pluginSettings.put("onlyoffice.jwtHeader", demoConf[1]);
                     pluginSettings.put("onlyoffice.jwtSecret", demoConf[2]);
@@ -314,7 +314,4 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         return value.equals("true") ? "checked=\"\"" : "";
     }
 
-    private String getDemoData(String isDemo) throws Exception {
-        return DemoManager.init(isDemo, attachmentPathManager.getDefaultAttachmentPath());
-    }
 }
