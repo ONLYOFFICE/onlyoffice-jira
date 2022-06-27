@@ -42,7 +42,7 @@ import java.io.IOException;
 public class DemoManager {
     private static final JSONObject demoConf = new JSONObject();
     static {
-        demoConf.put("confUrl", "https://onlinedocs.onlyoffice.com/");
+        demoConf.put("apiUrl", "https://onlinedocs.onlyoffice.com/");
         demoConf.put("jwtHeader", "AuthorizationJWT");
         demoConf.put("jwtSecret", "sn2puSUF7muF5Jas");
         demoConf.put("trial", "30");
@@ -62,49 +62,19 @@ public class DemoManager {
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
     }
 
-    public static String init(String demoActevate, String rootAttachPath) throws Exception {
-        String DemoDir = "ONLIOFFICE_config";
-        String Config = "config.json";
-        String path = rootAttachPath + "/" + DemoDir + "/" + Config;
-        String data;
-        String date;
-
-        new File(rootAttachPath + "/" + DemoDir).mkdirs();
-        File file = new File(path);
-
-        if (file.createNewFile()){
-            createTrialData(file, false);
-        }
-
-        JSONObject jsonObject = (JSONObject) readJson(path);
-        date = jsonObject.get("date").toString();
-        if (date.equals("none")) {
-            if(demoActevate == "true"){
-                createTrialData(file, true);
-                jsonObject = (JSONObject) readJson(path);
-            }
-        }
-
-        FileWriter writer = new FileWriter (rootAttachPath + "/" + DemoDir + "/test.json");
-        writer.write(demoConf.toJSONString());
-        writer.close();
-
-        return jsonObject.get("date").toString();
-    }
-
-    public static void createTrialData(File file, Boolean activate) throws Exception {
+    public static void init(String demoActevate, PluginSettings pluginSettings) throws Exception {
+        String trialDate = (String) pluginSettings.get("onlyoffice.trial.date");
         Date date = new Date();
 
-        JSONObject dataObject = new JSONObject();
-        if (activate){
-            dataObject.put("date", date.getTime());
-        } else {
-            dataObject.put("date", "none");
+        if (trialDate == null || trialDate.isEmpty()) { 
+            pluginSettings.put("onlyoffice.trial.date", "none");
         }
 
-        FileWriter writer = new FileWriter (file);
-        writer.write(dataObject.toJSONString());
-        writer.close();
+        if (trialDate.equals("none")) {
+            if(demoActevate.equals("true")){
+                pluginSettings.put("onlyoffice.trial.date", Long.toString(date.getTime()));
+            }
+        }
     }
 
     public static Boolean istrial(String date) {
@@ -120,7 +90,7 @@ public class DemoManager {
     }
 
     public static String[] getDemoConf() throws Exception {
-        String address = demoConf.get("confUrl").toString();
+        String address = demoConf.get("apiUrl").toString();
         String jwtHeader = demoConf.get("jwtHeader").toString();
         String jwtsecret = demoConf.get("jwtSecret").toString();
 
