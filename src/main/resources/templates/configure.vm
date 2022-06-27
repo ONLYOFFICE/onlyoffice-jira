@@ -144,15 +144,9 @@
                 if($('#isDemoConnect')[0].checked){
                     $('#apiUrlField')[0].setAttribute('disabled', 'disabled');
                     $('#jwtSecretField')[0].setAttribute('disabled', 'disabled');
-                    $('#confUrlField')[0].setAttribute('disabled', 'disabled');
-                    $('#docInnerUrlField')[0].setAttribute('disabled', 'disabled');
                 }else {
                     $('#apiUrlField')[0].removeAttribute('disabled');
                     $('#jwtSecretField')[0].removeAttribute('disabled');
-                    $('#confUrlField')[0].removeAttribute('disabled');
-                    $('#confUrlField')[0].value = '';
-                    $('#docInnerUrlField')[0].removeAttribute('disabled');
-                    $('#docInnerUrlField')[0].value = '';
                 }
             }
         </script>
