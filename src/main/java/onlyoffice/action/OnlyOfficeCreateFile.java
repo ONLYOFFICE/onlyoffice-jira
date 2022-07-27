@@ -91,8 +91,13 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
             String fileExt = documentManager.getDefaultExtByType(fileType);
             String correctFileName = attachmentUtil.getCorrectAttachmentName(fileName + "." + fileExt, getIssueObject());
             String mimeType = documentManager.getMimeType(correctFileName);
+            String pathToDemoFile = "app_data/" + getLocale().toLanguageTag();
 
-            demoFileStream = pluginAccessor.getDynamicResourceAsStream("app_data/new." + fileExt);
+            if (pluginAccessor.getDynamicResourceAsStream(pathToDemoFile) == null) {
+                pathToDemoFile = "app_data/en-US";
+            }
+
+            demoFileStream = pluginAccessor.getDynamicResourceAsStream(pathToDemoFile + "/new." + fileExt);
             demoFile = Files.createTempFile(null, null).toFile();
 
             FileUtils.copyInputStreamToFile(demoFileStream, demoFile);
