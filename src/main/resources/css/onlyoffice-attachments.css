@@ -43,3 +43,13 @@ div[class~="attachment-oo-edit"] {
     background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
     width: 6em!important;
 }
+
+#onlyoffice-create-file-button span {
+    background-image: url("сreate_icon.svg");
+    padding-left: 24px;
+    --aui-icon-size: 16px;
+    background-repeat: no-repeat;
+    background-position: left;
+    height: var(--aui-icon-size);
+    vertical-align: text-bottom;
+}
