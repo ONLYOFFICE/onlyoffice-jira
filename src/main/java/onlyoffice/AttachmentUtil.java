@@ -147,6 +147,8 @@ public class AttachmentUtil {
         String basename = fileName.substring(0, fileName.lastIndexOf('.'));
         String ext = fileName.substring(fileName.lastIndexOf("."));
 
+        basename = basename.replaceAll("[*?:\"<>/|\\\\]","_");
+
         int count = 0;
         Boolean exist = true;
 

@@ -18,6 +18,10 @@
 
 package onlyoffice;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
@@ -83,6 +87,19 @@ public class DocumentManager {
         return null;
     }
 
+    public String getDefaultExtByType(String type) {
+        switch (type) {
+            case "word":
+                return "docx";
+            case "cell":
+                return "xlsx";
+            case "slide":
+                return "pptx";
+            default:
+                return null;
+        }
+    }
+
     public String getKeyOfFile(Long attachmentId) {
         String key = attachmentUtil.getProperty(attachmentId, "onlyoffice-collaborative-editor-key");
 
@@ -141,5 +158,16 @@ public class DocumentManager {
             log.error(ex);
         }
         return "";
+    }
+
+    public String getMimeType(String name) {
+        Path path = new File(name).toPath();
+        String mimeType = null;
+        try {
+            mimeType = Files.probeContentType(path);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return mimeType != null ? mimeType : "application/octet-stream";
     }
 }
