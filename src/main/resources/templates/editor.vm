@@ -86,6 +86,10 @@
                 if (errorMessage) {
                     docEditor.showMessage(errorMessage);
                 }
+
+                if (${demo}) {
+                    docEditor.showMessage("$i18n.getText('onlyoffice.editor.message.demo')");
+                }
             };
 
             var onRequestSaveAs = function (event) {
