@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -66,16 +65,18 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final PluginSettings pluginSettings;
 
     private final JwtManager jwtManager;
+    private final ConfigurationManager configurationManager;
     private final DemoManager demoManager;
 
     @Inject
     public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer, DemoManager demoManager) {
+            JwtManager jwtManager, TemplateRenderer templateRenderer, ConfigurationManager configurationManager, DemoManager demoManager) {
                 
         this.userManager = userManager;
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
+        this.configurationManager = configurationManager;
         this.demoManager = demoManager;
     }
 
@@ -101,9 +102,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
-
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        Properties properties = configurationManager.GetProperties();
 
         response.setContentType("text/html;charset=UTF-8");
 

@@ -21,7 +21,6 @@ package onlyoffice;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -36,18 +35,18 @@ public class DocumentManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
 
     private final AttachmentUtil attachmentUtil;
+    private final ConfigurationManager configurationManager;
 
     @Inject
-    public DocumentManager(AttachmentUtil attachmentUtil) {
+    public DocumentManager(AttachmentUtil attachmentUtil, ConfigurationManager configurationManager) {
         this.attachmentUtil = attachmentUtil;
+        this.configurationManager = configurationManager;
     }
 
-    public static long GetMaxFileSize() {
+    public long GetMaxFileSize() {
         long size;
         try {
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String filesizeMax = properties.getProperty("filesize-max");
+            String filesizeMax = configurationManager.getProperty("filesize-max");
             size = Long.parseLong(filesizeMax);
         } catch (Exception ex) {
             size = 0;
@@ -56,22 +55,19 @@ public class DocumentManager {
         return size > 0 ? size : 5 * 1024 * 1024;
     }
 
-    public static List<String> GetEditedExts() {
-        ConfigurationManager configurationManager = new ConfigurationManager();
+    public List<String> GetEditedExts() {
         List<String> editedExts = configurationManager.getListDefaultProperty("files.docservice.edited-docs");
 
         return editedExts;
     }
 
-    public static List<String> GetFillFormExts() {
-        ConfigurationManager configurationManager = new ConfigurationManager();
+    public List<String> GetFillFormExts() {
         List<String> fillformExts = configurationManager.getListDefaultProperty("files.docservice.fill-docs");
 
         return fillformExts;
     }
 
     public String getDocType(String ext) {
-        ConfigurationManager configurationManager = new ConfigurationManager();
         List<String> wordFormats = configurationManager.getListDefaultProperty("files.docservice.type.word");
         List<String> cellFormats = configurationManager.getListDefaultProperty("files.docservice.type.cell");
         List<String> slideFormats = configurationManager.getListDefaultProperty("files.docservice.type.slide");
@@ -94,11 +90,9 @@ public class DocumentManager {
         return key;
     }
 
-    public static String CreateHash(String str) {
+    public String CreateHash(String str) {
         try {
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String secret = properties.getProperty("files.docservice.secret");
+            String secret = configurationManager.getProperty("files.docservice.secret");
 
             String payload = GetHashHex(str + secret) + "?" + str;
 
@@ -110,13 +104,11 @@ public class DocumentManager {
         return "";
     }
 
-    public static String ReadHash(String base64) {
+    public String ReadHash(String base64) {
         try {
             String str = new String(Base64.getDecoder().decode(base64), "UTF-8");
 
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String secret = properties.getProperty("files.docservice.secret");
+            String secret = configurationManager.getProperty("files.docservice.secret");
 
             String[] payloadParts = str.split("\\?");
 

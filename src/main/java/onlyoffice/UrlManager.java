@@ -48,14 +48,16 @@ public class UrlManager {
 
     private final PluginSettings pluginSettings;
     private final AttachmentUtil attachmentUtil;
+    private final DocumentManager documentManager;
     private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil,
+    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil, DocumentManager documentManager,
                       DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
+        this.documentManager = documentManager;
         this.demoManager = demoManager;
     }
 
@@ -80,7 +82,7 @@ public class UrlManager {
     }
 
     public String GetFileUri(Long attachmentId) throws Exception {
-        String hash = DocumentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("fileUrl " + callbackUrl);
@@ -89,7 +91,7 @@ public class UrlManager {
     }
 
     public String getCallbackUrl(Long attachmentId) throws Exception {
-        String hash = DocumentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("callbackUrl " + callbackUrl);

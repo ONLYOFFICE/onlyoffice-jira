@@ -71,11 +71,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final AttachmentUtil attachmentUtil;
     private final UrlManager urlManager;
     private final ParsingUtil parsingUtil;
+    private final DocumentManager documentManager;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
                                      JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil) {
+                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
+                                     DocumentManager documentManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -86,6 +88,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
         this.parsingUtil = parsingUtil;
+        this.documentManager = documentManager;
 
         userManager = ComponentAccessor.getUserManager();
     }
@@ -108,7 +111,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = DocumentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.ReadHash(vkey);
 
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
@@ -129,7 +132,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = DocumentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.ReadHash(vkey);
 
         String error = "";
         try {

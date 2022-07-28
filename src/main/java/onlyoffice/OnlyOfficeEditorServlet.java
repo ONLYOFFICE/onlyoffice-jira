@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +71,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final UrlManager urlManager;
     private final DocumentManager documentManager;
     private final AttachmentUtil attachmentUtil;
+    private final ConfigurationManager configurationManager;
     private final DemoManager demoManager;
 
     @Inject
@@ -79,7 +79,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
             AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
             WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory,
-            DemoManager demoManager) {
+            ConfigurationManager configurationManager, DemoManager demoManager) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -92,13 +92,12 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.localeManager = localeManager;
         this.webResourceUrlProvider = webResourceUrlProvider;
         this.webResourceAssemblerFactory = webResourceAssemblerFactory;
+        this.configurationManager = configurationManager;
         this.demoManager = demoManager;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
     private static final long serialVersionUID = 1L;
-
-    private Properties properties;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -113,9 +112,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         if (apiUrl == null || apiUrl.isEmpty()) {
             apiUrl = "";
         }
-
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        properties = configurationManager.GetProperties();
 
         String callbackUrl = "";
         String fileUrl = "";
@@ -242,7 +238,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                 }
             }
 
-            config.put("docserviceApiUrl", apiUrl + properties.getProperty("files.docservice.url.api"));
+            config.put("docserviceApiUrl", apiUrl + configurationManager.getProperty("files.docservice.url.api"));
             config.put("saveAsAsHtml", urlManager.getSaveAsObject(attachmentId, user).toString());
             config.put("attachmentId", attachmentId.toString());
             config.put("errorMessage", errorMessage);
