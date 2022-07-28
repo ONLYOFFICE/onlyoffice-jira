@@ -135,6 +135,12 @@ public class AttachmentUtil {
         return attachment.getFilename();
     }
 
+    public String getIssueKey(Long attachmentId) {
+        Attachment attachment = attachmentManager.getAttachment(attachmentId);
+        Issue issue = attachment.getIssue();
+        return issue.getKey();
+    }
+
     public String getCorrectAttachmentName (String fileName, Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 

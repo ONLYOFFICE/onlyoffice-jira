@@ -187,6 +187,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         JSONObject responseJson = new JSONObject();
         JSONObject documentObject = new JSONObject();
         JSONObject editorConfigObject = new JSONObject();
+        JSONObject customizationObject = new JSONObject();
+        JSONObject goBackObject = new JSONObject();
         JSONObject userObject = new JSONObject();
         JSONObject permObject = new JSONObject();
 
@@ -208,6 +210,9 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                     responseJson.put("editorConfig", editorConfigObject);
 
                     editorConfigObject.put("lang", localeManager.getLocaleFor(user).toLanguageTag());
+                    editorConfigObject.put("customization", customizationObject);
+                    customizationObject.put("goback", goBackObject);
+                    goBackObject.put("url", urlManager.getGobackUrl(attachmentId));
 
                     Boolean canEdit = (documentManager.GetEditedExts().contains(docExt) || documentManager.GetFillFormExts().contains(docExt)) && callbackUrl != null && !callbackUrl.isEmpty();
 

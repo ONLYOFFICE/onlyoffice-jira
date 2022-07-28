@@ -107,6 +107,12 @@ public class UrlManager {
         return url;
     }
 
+    public String getGobackUrl(Long attachmentId) {
+        String issueKey = attachmentUtil.getIssueKey(attachmentId);
+
+        return ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/" + issueKey;
+    }
+
     public JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user) throws JSONException {
         JSONObject saveAs = new JSONObject();
         saveAs.put("uri", getJiraBaseUrl() + APIServlet + "?type=save-as");
