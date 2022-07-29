@@ -1,6 +1,7 @@
 # Change Log
 
 ## Added
+- disable certificate verification
 - detecting mobile browser
 - go back from editor to manager
 
