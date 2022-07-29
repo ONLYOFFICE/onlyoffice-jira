@@ -1,6 +1,7 @@
 # Change Log
 
 ## Added
+- ability to create documents
 - detecting mobile browser
 - go back from editor to manager
 
