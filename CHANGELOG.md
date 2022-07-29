@@ -1,6 +1,7 @@
 # Change Log
 
 ## Added
+- ability to create documents
 - added connection to a demo document server
 - detecting mobile browser
 - go back from editor to manager
