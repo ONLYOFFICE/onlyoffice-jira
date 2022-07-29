@@ -48,6 +48,7 @@
                             "docInnerUrl": jq("#docInnerUrlField").attr("value"),
                             "confUrl": jq("#confUrlField").attr("value"),
                             "jwtSecret": jq("#jwtSecretField").attr("value"),
+                            "demoEnable": jq("#onlyofficeDemo").is(":checked")
                         };
 
                         jq.ajax({
@@ -127,8 +128,29 @@
                     jq("#onlyofficeConf").submit(function(e) {
                         submitBtn.attr("disabled", true);
                         e.preventDefault();
-                        testDocServiceApi();
+
+                        if (jq("#onlyofficeDemo").is(":checked") && !jq("#onlyofficeDemo").prop("disabled")) {
+                            updateConfig();
+                        } else {
+                            testDocServiceApi();
+                        }
                     });
+
+                    var demoToggle = function () {
+                        if (!jq("#onlyofficeDemo").prop("disabled")) {
+                            jq("#apiUrlField, #jwtSecretField, #docInnerUrlField, #verifyCertificate").prop("disabled", jq("#onlyofficeDemo").prop("checked"));
+                            if (jq("#onlyofficeDemo").prop("checked")) {
+                                jq(".view-control").css("pointer-events", "none");
+                                jq(".view-control").removeClass("view");
+                                jq("#jwtSecretField").attr("type", "password");
+                            } else {
+                                jq(".view-control").css("pointer-events", "");
+                            }
+                        }
+                    };
+
+                    jq("#onlyofficeDemo").click(demoToggle);
+                    demoToggle();
 
                     AJS.$(".onlyoffice-tooltip").tooltip();
                 });
@@ -146,6 +168,21 @@
             <div class="field-group">
                 <label for="jwtSecretField">$i18n.getText('onlyoffice.configuration.jwt-secret')</label>
                 <input type="text" id="jwtSecretField" value="${docserviceJwtSecret}" name="jwtSecretField" class="text">
+            </div>
+
+            <div class="field-group">
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="onlyofficeDemo" #if($demoEnable) checked="checked" #end
+                                                                                #if($demoTrialIsOver) disabled="disabled" #end/>
+                    <label for="onlyofficeDemo">$i18n.getText('onlyoffice.configuration.demo.connect')</label>
+
+                    <br/>
+                    #if(!$demoTrialIsOver)
+                        <div class="description">$i18n.getText('onlyoffice.configuration.demo.trial')</div>
+                    #else
+                        <div class="description">$i18n.getText('onlyoffice.configuration.demo.trial-is-over')</div>
+                    #end
+                </div>
             </div>
 
             <h3>$i18n.getText('onlyoffice.configuration.advanced-section')</h3>

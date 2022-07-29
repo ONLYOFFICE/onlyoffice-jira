@@ -62,20 +62,21 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     @JiraImport
     private final UserManager userManager;
     @JiraImport
-    private final PluginSettingsFactory pluginSettingsFactory;
-    @JiraImport
     private final TemplateRenderer templateRenderer;
+    private final PluginSettings pluginSettings;
 
     private final JwtManager jwtManager;
+    private final DemoManager demoManager;
 
     @Inject
     public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer) {
+            JwtManager jwtManager, TemplateRenderer templateRenderer, DemoManager demoManager) {
                 
         this.userManager = userManager;
-        this.pluginSettingsFactory = pluginSettingsFactory;
+        this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
+        this.demoManager = demoManager;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
@@ -90,11 +91,12 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             return;
         }
 
-        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
         String apiUrl = (String) pluginSettings.get("onlyoffice.apiUrl");
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
 		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
+        Boolean demoEnable = demoManager.isEnable();
+        Boolean demoTrialIsOver = demoManager.trialIsOver();
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
@@ -110,6 +112,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         defaults.put("docserviceInnerUrl", docInnerUrl);
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
+        defaults.put("demoEnable", demoEnable);
+        defaults.put("demoTrialIsOver", demoTrialIsOver);
         defaults.put("pathApiUrl", properties.getProperty("files.docservice.url.api"));
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
@@ -133,14 +137,33 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl;
 		String confUrl;
         String jwtSecret;
+        Boolean demoEnable;
+
         try {
             JSONObject jsonObj = new JSONObject(body);
 
-            apiUrl = AppendSlash(jsonObj.getString("apiUrl"));
-            docInnerUrl = AppendSlash(jsonObj.getString("docInnerUrl"));
+            demoEnable = jsonObj.getBoolean("demoEnable");
+            pluginSettings.put("onlyoffice.demo", demoEnable.toString());
+
+            if (demoEnable) {
+                demoManager.activate();
+            }
+
+            if (demoManager.isActive()) {
+                apiUrl = demoManager.getUrl();
+                docInnerUrl = demoManager.getUrl();
+            } else {
+                apiUrl = AppendSlash(jsonObj.getString("apiUrl"));
+                docInnerUrl = AppendSlash(jsonObj.getString("docInnerUrl"));
+                jwtSecret = jsonObj.getString("jwtSecret");
+
+                pluginSettings.put("onlyoffice.apiUrl", apiUrl);
+                pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
+                pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
+            }
+
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
-            
-            jwtSecret = jsonObj.getString("jwtSecret");
+            pluginSettings.put("onlyoffice.confUrl", confUrl);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -152,12 +175,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             response.getWriter().write("{\"success\": false, \"message\": \"jsonparse\"}");
             return;
         }
-
-        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        pluginSettings.put("onlyoffice.apiUrl", apiUrl);
-        pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
-		pluginSettings.put("onlyoffice.confUrl", confUrl);
-        pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
 
         log.debug("Checking docserv url");
         if (!CheckDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {

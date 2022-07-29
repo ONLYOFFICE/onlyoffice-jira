@@ -1,6 +1,7 @@
 # Change Log
 
 ## Added
+- added connection to a demo document server
 - detecting mobile browser
 - go back from editor to manager
 

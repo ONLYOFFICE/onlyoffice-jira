@@ -48,23 +48,31 @@ public class UrlManager {
 
     private final PluginSettings pluginSettings;
     private final AttachmentUtil attachmentUtil;
+    private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil) {
+    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil,
+                      DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
+        this.demoManager = demoManager;
     }
 
     public String getPublicDocEditorUrl() {
         String url = (String) pluginSettings.get("onlyoffice.apiUrl");
+
+        if (demoManager.isActive()) {
+            url = demoManager.getUrl();
+        }
+
         return (url == null || url.isEmpty()) ? "" : url;
     }
 
 
     public String getInnerDocEditorUrl() {
         String url = (String) pluginSettings.get("onlyoffice.docInnerUrl");
-        if (url == null || url.isEmpty()) {
+        if (url == null || url.isEmpty() || demoManager.isActive()) {
             return getPublicDocEditorUrl();
         } else {
             return url;
