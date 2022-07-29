@@ -21,16 +21,27 @@ package onlyoffice;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -41,10 +52,12 @@ public class ConfigurationManager {
     private static final String CONFIGURATION_PATH = "onlyoffice-config.properties";
 
     private final PluginSettings pluginSettings;
+    private final DemoManager demoManager;
 
     @Inject
-    public ConfigurationManager(PluginSettingsFactory pluginSettingsFactory) {
+    public ConfigurationManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
+        this.demoManager = demoManager;
     }
 
     public Properties getProperties() throws IOException {
@@ -70,6 +83,14 @@ public class ConfigurationManager {
         }
     }
 
+    public Boolean getBooleanPluginSetting(String key, Boolean defaultValue) {
+        String setting = (String) pluginSettings.get("onlyoffice." + key);
+        if (setting == null || setting.isEmpty()) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(setting);
+    }
+
     public List<String> getListDefaultProperty(String nameProperty) {
         try {
             Properties properties = getProperties();
@@ -84,6 +105,37 @@ public class ConfigurationManager {
             return null;
         }
 
+    }
+
+    public CloseableHttpClient getHttpClient() throws Exception {
+        Integer timeout = Integer.parseInt(getProperty("timeout")) * 1000;
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
+
+        CloseableHttpClient httpClient;
+
+        if (getBooleanPluginSetting("ignoreCertificate", false) && !demoManager.isActive()) {
+            SSLContextBuilder builder = new SSLContextBuilder();
+
+            builder.loadTrustMaterial(null, new TrustStrategy() {
+                @Override
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            });
+
+            SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            httpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory).setDefaultRequestConfig(config).build();
+        } else {
+            httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+        }
+
+        return httpClient;
     }
 
 }
