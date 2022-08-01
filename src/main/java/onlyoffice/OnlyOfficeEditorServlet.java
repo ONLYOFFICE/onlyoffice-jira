@@ -72,12 +72,14 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final UrlManager urlManager;
     private final DocumentManager documentManager;
     private final AttachmentUtil attachmentUtil;
+    private final DemoManager demoManager;
 
     @Inject
     public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
             I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
             AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
-            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory) {
+            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory,
+            DemoManager demoManager) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -90,6 +92,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.localeManager = localeManager;
         this.webResourceUrlProvider = webResourceUrlProvider;
         this.webResourceAssemblerFactory = webResourceAssemblerFactory;
+        this.demoManager = demoManager;
     }
 
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
@@ -258,6 +261,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         }
 
         defaults.putAll(config);
+        defaults.put("demo", demoManager.isActive());
 
         return defaults;
     }
