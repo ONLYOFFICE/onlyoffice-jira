@@ -48,6 +48,23 @@ div[class~="attachment-onlyoffice-button"] {
     background-image: url("conversion_icon.svg");
 }
 
+#onlyoffice-conversion-dialog .jira-dialog-content{
+    margin-bottom: 50px;
+}
+
+#onlyoffice-conversion-dialog form{
+    overflow: auto;
+    position: static;
+}
+
+#onlyoffice-conversion-dialog .form-footer {
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
 #onlyoffice-create-file-button span {
     background-image: url("сreate_icon.svg");
     padding-left: 24px;

@@ -1,0 +1,52 @@
+<h2 class="dialog-title">$i18n.getText('onlyoffice.connector.dialog.conversion.header.title')</h2>
+
+<div class="aui-group">
+    <div class="aui-item dialog-menu-group">
+        <ul class="dialog-menu">
+            <li>
+                <button class="dialog-menu-item selected">Conversion</button>
+            </li>
+       </ul>
+    </div>
+    <div class="aui-item dialog-pane">
+        <form class="aui" action="OnlyOfficeConversion.jspa" method="post">
+            <div class="form-body">
+                <input type="hidden" name="atl_token" value="${atl_token}" />
+                <input type="hidden" name="id" value="$action.id" />
+
+                #if ($action.hasAnyErrors())
+                <div class="form-message error">
+                    #foreach ($error in $action.getErrorMessages())
+                        <p>$textutils.htmlEncode(${error})</p>
+                    #end
+                    #foreach ($error in $action.errors)
+                        <p>$textutils.htmlEncode(${error})</p>
+                    #end
+                </div>
+                #end
+
+                <div class="field-group">
+                    <label for="fileName">$i18n.getText('onlyoffice.connector.dialog.conversion.field.name') <span class="aui-icon icon-required">required</span></label>
+                    <input class="text" type="text" id="onlyoffice-file-name" name="fileName" title="Text input" value="$action.getFileName()" required>
+                </div>
+
+                <div class="field-group">
+                    <label for="currentFileType">$i18n.getText('onlyoffice.connector.dialog.conversion.field.current-type')</label>
+                    <input class="text" type="text" id="onlyoffice-current-file-type" name="currentFileType" title="Text input" value="$action.getFileType()" disabled>
+                </div>
+
+                <div class="field-group">
+                    <label for="targetFileType">$i18n.getText('onlyoffice.connector.dialog.conversion.field.target-type')</label>
+                    <input class="text" type="text" id="onlyoffice-target-file-type" name="targetFileType" title="Text input" value="$action.getTargetFileType()" disabled>
+                </div>
+            </div>
+
+            <div class="buttons-container form-footer">
+                <div class="buttons">
+                    <input class="button" type="submit" value="$i18n.getText('onlyoffice.connector.dialog.conversion.button.convert')" />
+                    <a href="#" class="cancel">$i18n.getText('onlyoffice.connector.dialog.conversion.button.cancel')</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

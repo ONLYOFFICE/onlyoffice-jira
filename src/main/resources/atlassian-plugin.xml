@@ -27,8 +27,10 @@
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-create-file.js" location="/js/onlyoffice-create-file.js"/>
+    <resource type="download" name="onlyoffice-conversion.js" location="/js/onlyoffice-conversion.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
+    <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
     <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
 
     <context>jira.view.issue</context>
