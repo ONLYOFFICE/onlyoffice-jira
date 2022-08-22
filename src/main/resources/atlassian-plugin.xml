@@ -28,6 +28,7 @@
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-create-file.js" location="/js/onlyoffice-create-file.js"/>
     <resource type="download" name="onlyoffice-conversion.js" location="/js/onlyoffice-conversion.js"/>
+    <resource type="download" name="onlyoffice-format-manager.js" location="/js/onlyoffice-format-manager.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
     <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
@@ -78,6 +79,11 @@
   <servlet key="OnlyOfficeAPI" class="onlyoffice.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
     <description>ONLYOFFICE API Handler.</description>
     <url-pattern>/onlyoffice/api</url-pattern>
+  </servlet>
+
+  <servlet key="OnlyOfficeFormatsInfo" class="onlyoffice.OnlyOfficeFormatsInfoServlet" name="ONLYOFFICE Formats Information">
+    <description>ONLYOFFICE Formats Information.</description>
+    <url-pattern>/onlyoffice/formats/info</url-pattern>
   </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">

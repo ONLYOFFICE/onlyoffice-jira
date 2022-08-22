@@ -17,12 +17,6 @@
  */
 
 jQuery(function() {
-    var editExt = ["docx", "xlsx", "pptx", "docxf"];
-    var fillFormExt = ["oform"];
-    var viewExt = ["doc", "docm", "dot", "dotx", "dotm", "odt", "fodt", "ott", "rtf", "txt", "html", "htm", "mht", "pdf",
-                   "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
-                   "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
-
     function CreateOnlyofficeEditorButton(el) {
         var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
 
@@ -36,12 +30,12 @@ jQuery(function() {
         var titleButton;
 
 
-        if (editExt.indexOf(ext) != -1 && dropZone.length != 0) {
+        if (AJS.Onlyoffice.FormatManager.isEditable(ext) && dropZone.length != 0) {
             titleButton = AJS.I18n.getText("onlyoffice.connector.editlink");
-        } else if (fillFormExt.indexOf(ext) != -1 && dropZone.length != 0){
-            titleButton = link.title = AJS.I18n.getText("onlyoffice.connector.fillFormlink");;
-        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) {
-            titleButton = link.title = AJS.I18n.getText("onlyoffice.connector.viewlink");
+        } else if (AJS.Onlyoffice.FormatManager.isFillForm(ext) && dropZone.length != 0){
+            titleButton = AJS.I18n.getText("onlyoffice.connector.fillFormlink");;
+        } else if (AJS.Onlyoffice.FormatManager.isViewable(ext)) {
+            titleButton = AJS.I18n.getText("onlyoffice.connector.viewlink");
         }
 
         if (titleButton) {
