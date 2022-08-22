@@ -23,8 +23,6 @@ jQuery(function() {
                    "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
                    "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
 
-    var clear = function () { this.remove(); }
-
     function CreateOnlyofficeEditorButton(el) {
         var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
 
@@ -51,6 +49,22 @@ jQuery(function() {
         }
     }
 
+    function CreateOnlyofficeConversionButton(el) {
+        var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
+
+        var attachmentId = getAttachmentId(el);
+        var attachmentTitle = getAttachmentTitle(el);
+        var ext = attachmentTitle.toLowerCase().split(".").pop();
+
+        var nameButton = "onlyoffice-conversion";
+        var hrefButton = "/OnlyOfficeConversion!default.jspa?id=10000&attachmentId=" + attachmentId;
+        var iconButton = "icon-onlyoffice-conversion";
+        var titleButton = "Conversion in ONLYOFFICE";
+
+        CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
+
+    }
+
      function CreateOnlyofficeButton (targetElement, name, title, href, blank, classIcon) {
         if (jQuery(targetElement).find(".attachment-onlyoffice-button." + name).length != 0) return;
 
@@ -74,8 +88,7 @@ jQuery(function() {
         var link = document.createElement("a");
         link.title = title;
         link.href = href;
-        link.setAttribute("target", "_blank");
-
+        if (blank) { link.setAttribute("target", "_blank"); }
         var icon = document.createElement("span");
         icon.classList.add("icon-default", "aui-icon", "aui-icon-small", classIcon);
 
@@ -83,7 +96,6 @@ jQuery(function() {
 
         elementWrapper.classList.add("attachment-onlyoffice-button", name);
         elementWrapper.appendChild(link);
-        elementWrapper.onclick = clear;
 
         jQuery(target).after(elementWrapper);
     }
@@ -108,6 +120,7 @@ jQuery(function() {
     }
 
     function init(context) {
+        context.find("li.attachment-content.js-file-attachment").hover(CreateOnlyofficeConversionButton);
         context.find("li.attachment-content.js-file-attachment").hover(CreateOnlyofficeEditorButton);
     }
 
