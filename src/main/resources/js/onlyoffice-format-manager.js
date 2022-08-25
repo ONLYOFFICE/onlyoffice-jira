@@ -49,20 +49,14 @@ jQuery(function() {
             return false;
         },
         isConvertible: function (ext) {
-           for (i = 0; i < this.supportedFormats.length; i++) {
-               if (this.supportedFormats[i].name == ext) {
-                   if (
-                        this.supportedFormats[i].convertTo.includes("docx") ||
-                        this.supportedFormats[i].convertTo.includes("xlsx") ||
-                        this.supportedFormats[i].convertTo.includes("pptx")
-                   ) {
-                        return true;
-                   }
-               }
-           }
+            for (i = 0; i < this.supportedFormats.length; i++) {
+                if (this.supportedFormats[i].name == ext) {
+                    return this.supportedFormats[i].convertTo != null && this.supportedFormats[i].convertTo.length != 0;
+                }
+            }
 
-           return false;
-       }
+            return false;
+        }
     };
 
     jQuery.get("/plugins/servlet/onlyoffice/formats/info", function(data) {

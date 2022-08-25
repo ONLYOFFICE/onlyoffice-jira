@@ -53,9 +53,11 @@ jQuery(function() {
         var nameButton = "onlyoffice-conversion";
         var hrefButton = "/OnlyOfficeConversion!default.jspa?id=10000&attachmentId=" + attachmentId;
         var iconButton = "icon-onlyoffice-conversion";
-        var titleButton = "Conversion in ONLYOFFICE";
+        var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
 
-        CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
+        if (AJS.Onlyoffice.FormatManager.isConvertible(ext)) {
+            CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
+        }
 
     }
 
