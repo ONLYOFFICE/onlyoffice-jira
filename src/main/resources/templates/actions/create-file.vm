@@ -24,6 +24,7 @@
                 <option value="word">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.word')</option>
                 <option value="cell">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.cell')</option>
                 <option value="slide">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.slide')</option>
+                <option value="form">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.form')</option>
             </select>
         </div>
 

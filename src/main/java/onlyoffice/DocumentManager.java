@@ -95,6 +95,8 @@ public class DocumentManager {
                 return "xlsx";
             case "slide":
                 return "pptx";
+            case "form":
+                return "docxf";
             default:
                 return null;
         }
