@@ -106,37 +106,50 @@ jQuery(function () {
             success: function (response) {
                 if (response.error) {
                     var errorMessage;
+                    var servicePrefix = false;
 
                     switch (response.error) {
                         case -1:
                              errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.unknown");
+                             servicePrefix = true;
                              break;
                         case -2:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.timeout");
+                            servicePrefix = true;
                             break;
                         case -3:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.conversion");
+                            servicePrefix = true;
                             break;
                         case -4:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.download");
+                            servicePrefix = true;
                             break;
                         case -5:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.password");
+                            servicePrefix = true;
                             break;
                         case -6:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.database");
+                            servicePrefix = true;
                             break;
                         case -7:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.input");
+                            servicePrefix = true;
                             break;
                         case -8:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.token");
+                            servicePrefix = true;
                             break;
                         case -10:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.not-reached");
                             break;
                         default:
                             errorMessage = AJS.I18n.getText("onlyoffice.connector.error.Unknown");
+                    }
+
+                    if (servicePrefix) {
+                       errorMessage = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.message.error.service-prefix").replace("$", errorMessage);
                     }
 
                     onError(errorMessage);
