@@ -1,6 +1,8 @@
 # Change Log
 
 ## Added
+- download as
+- documents conversion
 - ability to create documents
 - disable certificate verification
 - added connection to a demo document server
