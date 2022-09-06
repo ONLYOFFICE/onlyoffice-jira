@@ -24,6 +24,9 @@
     <transformation extension="js">
       <transformer key="jsI18n"/>
     </transformation>
+    <transformation extension="soy">
+      <transformer key="soyTransformer"/>
+    </transformation>
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
     <resource type="download" name="onlyoffice-create-file.js" location="/js/onlyoffice-create-file.js"/>
@@ -33,6 +36,7 @@
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
     <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
     <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
+    <resource type="download" name="conversion.soy.js" location="/templates/actions/conversion.soy"/>
 
     <context>jira.view.issue</context>
     <context>gh-rapid-plan</context>
