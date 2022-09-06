@@ -135,6 +135,11 @@ public class AttachmentUtil {
         return attachment.getFilename();
     }
 
+    public String getFileExt(Long attachmentId) {
+        String fileName = getFileName(attachmentId);
+        return fileName.substring(fileName.lastIndexOf(".") + 1).trim().toLowerCase();
+    }
+
     public String getIssueKey(Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         Issue issue = attachment.getIssue();

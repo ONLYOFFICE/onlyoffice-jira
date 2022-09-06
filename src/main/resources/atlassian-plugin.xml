@@ -68,6 +68,14 @@
     </actions>
   </webwork1>
 
+  <webwork1 key="OnlyOfficeConversion" name="Conversion File Action" class="java.lang.Object">
+    <actions>
+      <action name="onlyoffice.action.OnlyOfficeConversion" alias="OnlyOfficeConversion">
+        <view name="input">/templates/actions/conversion.vm</view>
+      </action>
+    </actions>
+  </webwork1>
+
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
     <url-pattern>/onlyoffice/doceditor</url-pattern>
