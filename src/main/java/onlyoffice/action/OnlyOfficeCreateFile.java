@@ -88,7 +88,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
         String fileExt = documentManager.getDefaultExtByType(fileType);
 
         if (fileName == null || fileName.isEmpty() || fileExt == null) {
-            addErrorMessage(getText("onlyoffice.connector.dialog.create-file.error.unknown"));
+            addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
             return;
         }
     }
@@ -128,7 +128,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
             return returnCompleteWithInlineRedirect("/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            addErrorMessage(getText("onlyoffice.connector.dialog.create-file.error.unknown"));
+            addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
             return INPUT;
         } finally {
             if( demoFileStream != null ) {

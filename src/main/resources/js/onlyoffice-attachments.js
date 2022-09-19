@@ -17,67 +17,82 @@
  */
 
 jQuery(function() {
-    var editExt = ["docx", "xlsx", "pptx", "docxf"];
-    var fillFormExt = ["oform"];
-    var viewExt = ["doc", "docm", "dot", "dotx", "dotm", "odt", "fodt", "ott", "rtf", "txt", "html", "htm", "mht", "pdf",
-                   "djvu", "fb2", "epub", "xps", "xls", "xlsm", "xlt", "xltx", "xltm", "ods", "fods", "ots", "csv", "pps",
-                   "ppsx", "ppsm", "ppt",  "pptm", "pot", "potx", "potm", "odp", "fodp", "otp"];
-
-    var clear = function () { this.remove(); }
-
-    function checkEditButton(el) {
-        if (jQuery(el.currentTarget).find(".attachment-oo-edit").length != 0) return;
-
+    function CreateOnlyofficeEditorButton(el) {
         var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
 
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
-        if (editExt.indexOf(ext) != -1 && dropZone.length != 0) {
-            addEditButton(el, attachmentId, true, false);
-        } else if (fillFormExt.indexOf(ext) != -1 && dropZone.length != 0){
-            addEditButton(el, attachmentId, true, true);
-        } else if (viewExt.indexOf(ext) != -1 || editExt.indexOf(ext) != -1 || fillFormExt.indexOf(ext) != -1) {
-            addEditButton(el, attachmentId, false, false);
+
+        var nameButton = "onlyoffice-editor";
+        var hrefButton = "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + attachmentId;
+        var iconButton = "icon-onlyoffice-edit";
+        var titleButton;
+
+
+        if (AJS.Onlyoffice.FormatManager.isEditable(ext) && dropZone.length != 0) {
+            titleButton = AJS.I18n.getText("onlyoffice.connector.editlink");
+        } else if (AJS.Onlyoffice.FormatManager.isFillForm(ext) && dropZone.length != 0){
+            titleButton = AJS.I18n.getText("onlyoffice.connector.fillFormlink");;
+        } else if (AJS.Onlyoffice.FormatManager.isViewable(ext)) {
+            titleButton = AJS.I18n.getText("onlyoffice.connector.viewlink");
+        }
+
+        if (titleButton) {
+            CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, true, iconButton);
         }
     }
 
-    function addEditButton(el, attachmentId, edit, form) {
-        var link = document.createElement("a");
-        if (edit) {
-            if (form) {
-                link.title = AJS.I18n.getText("onlyoffice.connector.fillFormlink");
-            } else {
-                link.title = AJS.I18n.getText("onlyoffice.connector.editlink");
-            }
-        } else {
-            link.title = AJS.I18n.getText("onlyoffice.connector.viewlink");
-        }
-        link.setAttribute("target", "_blank");
-        link.href = "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + attachmentId;
-        var icon = document.createElement("span");
-        icon.classList.add("icon-default", "aui-icon", "aui-icon-small");
-        link.appendChild(icon);
+    function CreateOnlyofficeConversionButton(el) {
+        var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
 
-        var target = jQuery(el.currentTarget).find(".blender");
+        var attachmentId = getAttachmentId(el);
+        var attachmentTitle = getAttachmentTitle(el);
+        var ext = attachmentTitle.toLowerCase().split(".").pop();
+
+        var nameButton = "onlyoffice-conversion";
+        var hrefButton = "/OnlyOfficeConversion!default.jspa?id=10000&attachmentId=" + attachmentId;
+        var iconButton = "icon-onlyoffice-conversion";
+        var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
+
+        if (AJS.Onlyoffice.FormatManager.isConvertible(ext)) {
+            CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
+        }
+
+    }
+
+     function CreateOnlyofficeButton (targetElement, name, title, href, blank, classIcon) {
+        if (jQuery(targetElement).find(".attachment-onlyoffice-button." + name).length != 0) return;
+
+        var target = jQuery(targetElement).find(".blender");
         var elementWrapper;
 
         if (target.length != 0) {
             elementWrapper = document.createElement("div");
         } else {
-            target = jQuery(el.currentTarget).find(".attachment-title");
+            target = jQuery(targetElement).find(".attachment-title");
             elementWrapper = document.createElement("dd");
         }
 
-        var delButton = jQuery(el.currentTarget).find(".aui-iconfont-delete");
-        if (delButton.length != 0) {
-            elementWrapper.classList.add("margin-delete");
-            target.addClass("blender-edit");
+        var tabIndex = jQuery(targetElement).find("a").length - 2;
+
+        if (tabIndex > 0) {
+            elementWrapper.style.marginRight = 20 * tabIndex + "px";
+            target.addClass("blender-onlyoffice" + tabIndex);
         }
 
-        elementWrapper.classList.add("attachment-oo-edit");
+        var link = document.createElement("a");
+        link.title = title;
+        link.href = href;
+        if (blank) { link.setAttribute("target", "_blank"); }
+        var icon = document.createElement("span");
+        icon.classList.add("icon-default", "aui-icon", "aui-icon-small", classIcon);
+
+        link.appendChild(icon);
+
+        elementWrapper.classList.add("attachment-onlyoffice-button", name);
         elementWrapper.appendChild(link);
-        elementWrapper.onclick = clear;
+
         jQuery(target).after(elementWrapper);
     }
 
@@ -101,7 +116,8 @@ jQuery(function() {
     }
 
     function init(context) {
-        context.find("li.attachment-content.js-file-attachment").hover(checkEditButton);
+        context.find("li.attachment-content.js-file-attachment").hover(CreateOnlyofficeConversionButton);
+        context.find("li.attachment-content.js-file-attachment").hover(CreateOnlyofficeEditorButton);
     }
 
     JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function(e, context, reason) {

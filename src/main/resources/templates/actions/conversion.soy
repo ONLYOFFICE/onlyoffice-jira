@@ -1,0 +1,37 @@
+{namespace JIRA.Templates.Onlyoffice}
+
+/**
+* Renders loading state
+* @param actionType
+* @param fileName
+* @param currentFileType
+* @param targetFileType
+* @param targetFileTypeList
+*/
+{template .conversion}
+
+<input type="hidden" id="action-type" name="actionType" value="{$actionType}" />
+
+<div class="field-group">
+    <label for="file-name">{getText('onlyoffice.connector.dialog.conversion.field.name')}<span class="aui-icon icon-required">required</span></label>
+    <input class="text" type="text" id="file-name" name="fileName" title="Text input" value="{$fileName}" required>
+</div>
+
+<div class="field-group">
+    <label for="current-file-type">{getText('onlyoffice.connector.dialog.conversion.field.current-type')}</label>
+    <input class="text disabled" type="text" id="current-file-type" name="currentFileType" title="Text input" value="{$currentFileType}" disabled>
+</div>
+
+<div class="field-group">
+    <label for="target-file-type">{getText('onlyoffice.connector.dialog.conversion.field.target-type')}</label>
+    {if $actionType == 'conversion'}
+        <input class="text disabled" type="text" id="target-file-type" name="targetFileType" title="Text input" value="{$targetFileType}" disabled>
+    {else}
+        <select class="select" id="target-file-type" name="targetFileType">
+            {foreach $type in $targetFileTypeList}
+                <option value="{$type}">{$type}</option>
+            {/foreach}
+        </select>
+    {/if}
+</div>
+{/template}

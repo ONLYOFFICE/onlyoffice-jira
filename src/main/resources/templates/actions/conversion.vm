@@ -1,0 +1,64 @@
+<h2 class="dialog-title">$i18n.getText('onlyoffice.connector.dialog.conversion.header.title')</h2>
+
+<div class="aui-group">
+    <div class="aui-item dialog-menu-group">
+        <ul class="dialog-menu">
+            #if ($action.isConvertibleToDefault())
+                <li>
+                    <button id="item-conversion" class="dialog-menu-item selected">Conversion</button>
+                </li>
+            #end
+            <li>
+                <button id="item-download-as" class="dialog-menu-item #if (!$action.isConvertibleToDefault()) selected #end" >Download as</button>
+            </li>
+       </ul>
+    </div>
+    <div class="aui-item dialog-pane">
+        <form class="aui" action="OnlyOfficeConversion.jspa" method="post">
+            <div class="form-body">
+                <input type="hidden" id="atl-token" name="atl_token" value="${atl_token}" />
+                <input type="hidden" id="action-id" name="id" value="$action.id" />
+                <input type="hidden" id="attachment-id" name="attachmentId" value="${req.getParameter("attachmentId")}" />
+
+                <div class="aui-message-context">
+                    #if ($action.hasAnyErrors())
+                        #foreach ($error in $action.getErrorMessages())
+                            <div class="aui-message aui-message-error">$textutils.htmlEncode(${error})</div>
+                        #end
+                        #foreach ($error in $action.errors)
+                            <div class="aui-message aui-message-error">$textutils.htmlEncode(${error})</div>
+                        #end
+                     #end
+                </div>
+
+                <div id="form-data">
+                </div>
+            </div>
+
+            <div class="buttons-container form-footer">
+                <div class="buttons">
+                    #if ($action.isConvertibleToDefault())
+                        <input class="button" type="submit" value="$i18n.getText('onlyoffice.connector.dialog.conversion.button.conversion')" />
+                    #else
+                        <input class="button" type="submit" value="$i18n.getText('onlyoffice.connector.dialog.conversion.button.download-as')" />
+                    #end
+                    <a href="#" class="cancel">$i18n.getText('onlyoffice.connector.dialog.conversion.button.cancel')</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    AJS.Onlyoffice.Conversion = {
+        actionType: #if ($action.isConvertibleToDefault()) "conversion" #else "download-as" #end,
+        fileName: "$action.getFileName()",
+        currentFileType: "$action.getFileType()",
+        targetFileType: "$action.getTargetFileType()",
+        targetFileTypeList: []
+    }
+
+    #foreach ($type in $action.getTargetFileTypeList())
+        AJS.Onlyoffice.Conversion.targetFileTypeList.push("$type");
+    #end
+</script>
