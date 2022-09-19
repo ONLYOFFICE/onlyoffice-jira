@@ -23,6 +23,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-core</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
@@ -77,7 +83,7 @@
                         <!-- Add package to export here -->
                         <Export-Package>onlyoffice.api,</Export-Package>
                         <!-- Add package import here -->
-                        <Import-Package>org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
+                        <Import-Package>com.atlassian.jira.plugin.webfragment.conditions,org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
                         <!-- Ensure plugin is spring powered -->
                         <Spring-Context>*</Spring-Context>
                     </instructions>

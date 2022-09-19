@@ -26,8 +26,10 @@
     </transformation>
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
+    <resource type="download" name="onlyoffice-create-file.js" location="/js/onlyoffice-create-file.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
+    <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
 
     <context>jira.view.issue</context>
     <context>gh-rapid-plan</context>
@@ -40,6 +42,24 @@
     <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
+
+  <web-item key="onlyoffice-create-file-button" name="Create File Button" section="com.atlassian.jira.jira-view-issue-plugin:attachmentmodule/header" weight="10" application="jira">
+    <description>Button to create a file</description>
+    <label key="onlyoffice.connector.dialog.create-file.header.title" />
+    <link linkId="onlyoffice-create-file-button">/OnlyOfficeCreateFile!default.jspa?id=${issue.id}</link>
+    <styleClass>aui-button</styleClass>
+    <condition class="com.atlassian.jira.plugin.webfragment.conditions.HasIssuePermissionCondition">
+      <param name="permission" value="attach"/>
+    </condition>
+  </web-item>
+
+  <webwork1 key="OnlyOfficeCreateFile" name="Create File Action" class="java.lang.Object">
+    <actions>
+      <action name="onlyoffice.action.OnlyOfficeCreateFile" alias="OnlyOfficeCreateFile">
+        <view name="input">/templates/actions/create-file.vm</view>
+      </action>
+    </actions>
+  </webwork1>
 
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>

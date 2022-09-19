@@ -1,0 +1,45 @@
+<h2 class="dialog-title">$i18n.getText('onlyoffice.connector.dialog.create-file.header.title')</h2>
+
+<form class="aui" action="OnlyOfficeCreateFile.jspa" method="post">
+
+    <input type="hidden" name="atl_token" value="${atl_token}" />
+    <input type="hidden" name="id" value="$action.id" />
+
+    <div class="content-body">
+
+        #if ($action.hasAnyErrors())
+        <div class="form-message error">
+            #foreach ($error in $action.getErrorMessages())
+                <p>$textutils.htmlEncode(${error})</p>
+            #end
+            #foreach ($error in $action.errors)
+                <p>$textutils.htmlEncode(${error})</p>
+            #end
+        </div>
+        #end
+
+        <div class="field-group">
+            <label for="fileName">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type')</label>
+            <select class="select" id="onlyoffice-create-file-type" name="fileType">
+                <option value="word">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.word')</option>
+                <option value="cell">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.cell')</option>
+                <option value="slide">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.slide')</option>
+                <option value="form">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.form')</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="fileName">$i18n.getText('onlyoffice.connector.dialog.create-file.field.name') <span class="aui-icon icon-required">required</span></label>
+            <input class="text" type="text" id="onlyoffice-create-file-name" name="fileName" title="Text input" required>
+        </div>
+
+    </div>
+
+    <div class="buttons-container content-footer">
+        <div class="buttons">
+            <input class="button" type="submit" value="$i18n.getText('onlyoffice.connector.dialog.create-file.button.create')" />
+            <a href="#" class="cancel">$i18n.getText('onlyoffice.connector.dialog.create-file.button.cancel')</a>
+        </div>
+    </div>
+
+</form>
