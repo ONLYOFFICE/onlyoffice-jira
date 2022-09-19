@@ -2,6 +2,7 @@
 
 ## Added
 - ability to create documents
+- disable certificate verification
 - added connection to a demo document server
 - detecting mobile browser
 - go back from editor to manager
