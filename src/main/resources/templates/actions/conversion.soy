@@ -27,7 +27,7 @@
     {if $actionType == 'conversion'}
         <input class="text disabled" type="text" id="target-file-type" name="targetFileType" title="Text input" value="{$targetFileType}" disabled>
     {else}
-        <select class="text" id="target-file-type" name="targetFileType">
+        <select class="select" id="target-file-type" name="targetFileType">
             {foreach $type in $targetFileTypeList}
                 <option value="{$type}">{$type}</option>
             {/foreach}
