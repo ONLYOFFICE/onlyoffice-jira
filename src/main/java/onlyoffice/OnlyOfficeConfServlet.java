@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -41,7 +40,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -66,16 +64,18 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final PluginSettings pluginSettings;
 
     private final JwtManager jwtManager;
+    private final ConfigurationManager configurationManager;
     private final DemoManager demoManager;
 
     @Inject
     public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer, DemoManager demoManager) {
+            JwtManager jwtManager, TemplateRenderer templateRenderer, ConfigurationManager configurationManager, DemoManager demoManager) {
                 
         this.userManager = userManager;
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
+        this.configurationManager = configurationManager;
         this.demoManager = demoManager;
     }
 
@@ -95,15 +95,13 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
 		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
+        Boolean ignoreCertificate = configurationManager.getBooleanPluginSetting("ignoreCertificate", false);
         Boolean demoEnable = demoManager.isEnable();
         Boolean demoTrialIsOver = demoManager.trialIsOver();
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
 		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
-
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        Properties properties = configurationManager.GetProperties();
 
         response.setContentType("text/html;charset=UTF-8");
 
@@ -112,9 +110,10 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         defaults.put("docserviceInnerUrl", docInnerUrl);
 		defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
+        defaults.put("ignoreCertificate", ignoreCertificate);
         defaults.put("demoEnable", demoEnable);
         defaults.put("demoTrialIsOver", demoTrialIsOver);
-        defaults.put("pathApiUrl", properties.getProperty("files.docservice.url.api"));
+        defaults.put("pathApiUrl", configurationManager.getProperty("files.docservice.url.api"));
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -156,10 +155,12 @@ public class OnlyOfficeConfServlet extends HttpServlet {
                 apiUrl = AppendSlash(jsonObj.getString("apiUrl"));
                 docInnerUrl = AppendSlash(jsonObj.getString("docInnerUrl"));
                 jwtSecret = jsonObj.getString("jwtSecret");
+                Boolean ignoreCertificate = jsonObj.getBoolean("ignoreCertificate");
 
                 pluginSettings.put("onlyoffice.apiUrl", apiUrl);
                 pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
                 pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
+                pluginSettings.put("onlyoffice.ignoreCertificate", ignoreCertificate.toString());
             }
 
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
@@ -184,7 +185,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         try {
             log.debug("Checking docserv commandservice");
-            if (!CheckDocServCommandService((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl, pluginSettings)) {
+            if (!CheckDocServCommandService((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
                 response.getWriter().write("{\"success\": false, \"message\": \"docservcommand\"}");
                 return;
             }
@@ -211,14 +212,13 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     }
 
     private Boolean CheckDocServUrl(String url) {
-        try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+        try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             HttpGet request = new HttpGet(url + "healthcheck");
-            CloseableHttpResponse response = httpClient.execute(request);
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
 
-            String content = IOUtils.toString(response.getEntity().getContent(), "utf-8").trim();
-            if (content.equalsIgnoreCase("true"))
-                return true;
+                String content = IOUtils.toString(response.getEntity().getContent(), "utf-8").trim();
+                if (content.equalsIgnoreCase("true")) return true;
+            }
         } catch (Exception e) {
             log.debug("/healthcheck error: " + e.getMessage());
         }
@@ -226,10 +226,9 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         return false;
     }
 
-    private Boolean CheckDocServCommandService(String url, PluginSettings settings) throws SecurityException {
+    private Boolean CheckDocServCommandService(String url) throws SecurityException {
         Integer errorCode = -1;
-        try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+        try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();
             body.put("c", "version");
 
@@ -250,22 +249,23 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             request.setHeader("Accept", "application/json");
 
             log.debug("Sending POST to Docserver: " + body.toString());
-            CloseableHttpResponse response = httpClient.execute(request);
-            int status = response.getStatusLine().getStatusCode();
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                int status = response.getStatusLine().getStatusCode();
 
-            if (status != HttpStatus.SC_OK) {
-                return false;
-            } else {
-                String content = IOUtils.toString(response.getEntity().getContent(), "utf-8");
-                log.debug("/CommandService content: " + content);
-                JSONObject callBackJson = null;
-                callBackJson = new JSONObject(content);
-
-                if (callBackJson.isNull("error")) {
+                if (status != HttpStatus.SC_OK) {
                     return false;
-                }
+                } else {
+                    String content = IOUtils.toString(response.getEntity().getContent(), "utf-8");
+                    log.debug("/CommandService content: " + content);
+                    JSONObject callBackJson = null;
+                    callBackJson = new JSONObject(content);
 
-                errorCode = callBackJson.getInt("error");
+                    if (callBackJson.isNull("error")) {
+                        return false;
+                    }
+
+                    errorCode = callBackJson.getInt("error");
+                }
             }
         } catch (Exception e) {
             log.debug("/CommandService error: " + e.getMessage());
