@@ -1,5 +1,6 @@
 # Change Log
 
+## 2.0.0
 ## Added
 - download as
 - documents conversion
@@ -9,7 +10,6 @@
 - detecting mobile browser
 - go back from editor to manager
 
-##
 ## Changed
 - document server v6.0 and earlier is no longer supported
 
