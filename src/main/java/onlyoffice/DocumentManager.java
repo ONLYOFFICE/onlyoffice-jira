@@ -30,6 +30,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import onlyoffice.constants.Format;
+import onlyoffice.constants.Formats;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -59,26 +61,45 @@ public class DocumentManager {
         return size > 0 ? size : 5 * 1024 * 1024;
     }
 
-    public List<String> GetEditedExts() {
-        List<String> editedExts = configurationManager.getListDefaultProperty("files.docservice.edited-docs");
+    public boolean isEditable(String ext) {
+        List<Format> supportedFormats = Formats.getSupportedFormats();
+        boolean isEdit = false;
 
-        return editedExts;
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+                isEdit = format.isEdit();
+                break;
+            }
+        }
+
+        return isEdit;
     }
 
-    public List<String> GetFillFormExts() {
-        List<String> fillformExts = configurationManager.getListDefaultProperty("files.docservice.fill-docs");
+    public boolean isFillForm(String ext) {
+        List<Format> supportedFormats = Formats.getSupportedFormats();
+        boolean isFillForm = false;
 
-        return fillformExts;
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+                isFillForm = format.isFillForm();
+                break;
+            }
+        }
+
+        return isFillForm;
     }
 
     public String getDocType(String ext) {
-        List<String> wordFormats = configurationManager.getListDefaultProperty("files.docservice.type.word");
-        List<String> cellFormats = configurationManager.getListDefaultProperty("files.docservice.type.cell");
-        List<String> slideFormats = configurationManager.getListDefaultProperty("files.docservice.type.slide");
+        List<Format> supportedFormats = Formats.getSupportedFormats();
 
-        if (wordFormats.contains(ext)) return "word";
-        if (cellFormats.contains(ext)) return "cell";
-        if (slideFormats.contains(ext)) return "slide";
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+
+                String type = format.getType().name().toLowerCase().equals("form") ? "word" : format.getType().name().toLowerCase();
+
+                return type;
+            }
+        }
 
         return null;
     }

@@ -33,7 +33,7 @@ public class Formats {
         add(new Format("docm", Type.WORD, Arrays.asList("docx", "docxf", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("docx", Type.WORD, true, Arrays.asList("docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("docxf", Type.FORM, true, Arrays.asList("docx", "oform", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
-        add(new Format("oform", Type.WORD, false, true, Arrays.asList( "pdf")));
+        add(new Format("oform", Type.FORM, false, true, Arrays.asList( "pdf")));
         add(new Format("dot", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("dotm", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("dotx", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
@@ -87,6 +87,7 @@ public class Formats {
             jsonObject.put("name", format.name);
             jsonObject.put("type", format.type);
             jsonObject.put("edit", format.edit);
+            jsonObject.put("fillForm", format.fillForm);
             jsonObject.put("convertTo", new JSONArray(format.convertTo));
             array.put(jsonObject);
         }

@@ -213,7 +213,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                     customizationObject.put("goback", goBackObject);
                     goBackObject.put("url", urlManager.getGobackUrl(attachmentId));
 
-                    Boolean canEdit = (documentManager.GetEditedExts().contains(docExt) || documentManager.GetFillFormExts().contains(docExt)) && callbackUrl != null && !callbackUrl.isEmpty();
+                    Boolean canEdit = (documentManager.isEditable(docExt) || documentManager.isFillForm(docExt)) && callbackUrl != null && !callbackUrl.isEmpty();
 
                     if (canEdit) {
                         permObject.put("edit", true);
