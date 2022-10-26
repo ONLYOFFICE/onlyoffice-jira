@@ -51,7 +51,7 @@ jQuery(function() {
         var ext = attachmentTitle.toLowerCase().split(".").pop();
 
         var nameButton = "onlyoffice-conversion";
-        var hrefButton = "/OnlyOfficeConversion!default.jspa?id=10000&attachmentId=" + attachmentId;
+        var hrefButton = "/OnlyOfficeConversion!default.jspa?id=" + JIRA.Issue.getIssueId() + "&attachmentId=" + attachmentId;
         var iconButton = "icon-onlyoffice-conversion";
         var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
 
