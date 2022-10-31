@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,20 @@
 
 package onlyoffice;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import onlyoffice.constants.Format;
+import onlyoffice.constants.Formats;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,18 +41,18 @@ public class DocumentManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
 
     private final AttachmentUtil attachmentUtil;
+    private final ConfigurationManager configurationManager;
 
     @Inject
-    public DocumentManager(AttachmentUtil attachmentUtil) {
+    public DocumentManager(AttachmentUtil attachmentUtil, ConfigurationManager configurationManager) {
         this.attachmentUtil = attachmentUtil;
+        this.configurationManager = configurationManager;
     }
 
-    public static long GetMaxFileSize() {
+    public long GetMaxFileSize() {
         long size;
         try {
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String filesizeMax = properties.getProperty("filesize-max");
+            String filesizeMax = configurationManager.getProperty("filesize-max");
             size = Long.parseLong(filesizeMax);
         } catch (Exception ex) {
             size = 0;
@@ -56,31 +61,62 @@ public class DocumentManager {
         return size > 0 ? size : 5 * 1024 * 1024;
     }
 
-    public static List<String> GetEditedExts() {
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        List<String> editedExts = configurationManager.getListDefaultProperty("files.docservice.edited-docs");
+    public boolean isEditable(String ext) {
+        List<Format> supportedFormats = Formats.getSupportedFormats();
+        boolean isEdit = false;
 
-        return editedExts;
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+                isEdit = format.isEdit();
+                break;
+            }
+        }
+
+        return isEdit;
     }
 
-    public static List<String> GetFillFormExts() {
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        List<String> fillformExts = configurationManager.getListDefaultProperty("files.docservice.fill-docs");
+    public boolean isFillForm(String ext) {
+        List<Format> supportedFormats = Formats.getSupportedFormats();
+        boolean isFillForm = false;
 
-        return fillformExts;
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+                isFillForm = format.isFillForm();
+                break;
+            }
+        }
+
+        return isFillForm;
     }
 
     public String getDocType(String ext) {
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        List<String> wordFormats = configurationManager.getListDefaultProperty("files.docservice.type.word");
-        List<String> cellFormats = configurationManager.getListDefaultProperty("files.docservice.type.cell");
-        List<String> slideFormats = configurationManager.getListDefaultProperty("files.docservice.type.slide");
+        List<Format> supportedFormats = Formats.getSupportedFormats();
 
-        if (wordFormats.contains(ext)) return "text";
-        if (cellFormats.contains(ext)) return "spreadsheet";
-        if (slideFormats.contains(ext)) return "presentation";
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+
+                String type = format.getType().name().toLowerCase().equals("form") ? "word" : format.getType().name().toLowerCase();
+
+                return type;
+            }
+        }
 
         return null;
+    }
+
+    public String getDefaultExtByType(String type) {
+        switch (type) {
+            case "word":
+                return "docx";
+            case "cell":
+                return "xlsx";
+            case "slide":
+                return "pptx";
+            case "form":
+                return "docxf";
+            default:
+                return null;
+        }
     }
 
     public String getKeyOfFile(Long attachmentId) {
@@ -94,11 +130,9 @@ public class DocumentManager {
         return key;
     }
 
-    public static String CreateHash(String str) {
+    public String CreateHash(String str) {
         try {
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String secret = properties.getProperty("files.docservice.secret");
+            String secret = configurationManager.getProperty("files.docservice.secret");
 
             String payload = GetHashHex(str + secret) + "?" + str;
 
@@ -110,13 +144,11 @@ public class DocumentManager {
         return "";
     }
 
-    public static String ReadHash(String base64) {
+    public String ReadHash(String base64) {
         try {
             String str = new String(Base64.getDecoder().decode(base64), "UTF-8");
 
-            ConfigurationManager configurationManager = new ConfigurationManager();
-            Properties properties = configurationManager.GetProperties();
-            String secret = properties.getProperty("files.docservice.secret");
+            String secret = configurationManager.getProperty("files.docservice.secret");
 
             String[] payloadParts = str.split("\\?");
 
@@ -141,5 +173,16 @@ public class DocumentManager {
             log.error(ex);
         }
         return "";
+    }
+
+    public String getMimeType(String name) {
+        Path path = new File(name).toPath();
+        String mimeType = null;
+        try {
+            mimeType = Files.probeContentType(path);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return mimeType != null ? mimeType : "application/octet-stream";
     }
 }

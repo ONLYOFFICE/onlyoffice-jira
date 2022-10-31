@@ -6,10 +6,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ANSI" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2022
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -70,6 +72,12 @@
                 return;
             }
 
+            var docsVersion = DocsAPI.DocEditor.version().split(".");
+            if (docsVersion[0] < 6 || docsVersion[0] == 6 && docsVersion[1] == 0) {
+                alert("$i18n.getText('onlyoffice.editor.error.version')");
+                return;
+            }
+
             var json = '${jsonAsHtml}';
             var saveAs = JSON.parse('${saveAsAsHtml}');
 
@@ -77,6 +85,10 @@
                 var errorMessage = "${errorMessage}";
                 if (errorMessage) {
                     docEditor.showMessage(errorMessage);
+                }
+
+                if (${demo}) {
+                    docEditor.showMessage("$i18n.getText('onlyoffice.editor.message.demo')");
                 }
             };
 
@@ -124,7 +136,7 @@
             }
 
             if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                && docsVersion[0] < 7) {
                 alert("$i18n.getText('onlyoffice.editor.forms.error.version')");
                 return;
             }

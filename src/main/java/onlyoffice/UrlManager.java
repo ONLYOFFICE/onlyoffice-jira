@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,23 +48,33 @@ public class UrlManager {
 
     private final PluginSettings pluginSettings;
     private final AttachmentUtil attachmentUtil;
+    private final DocumentManager documentManager;
+    private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil) {
+    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil, DocumentManager documentManager,
+                      DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
+        this.documentManager = documentManager;
+        this.demoManager = demoManager;
     }
 
     public String getPublicDocEditorUrl() {
         String url = (String) pluginSettings.get("onlyoffice.apiUrl");
+
+        if (demoManager.isActive()) {
+            url = demoManager.getUrl();
+        }
+
         return (url == null || url.isEmpty()) ? "" : url;
     }
 
 
     public String getInnerDocEditorUrl() {
         String url = (String) pluginSettings.get("onlyoffice.docInnerUrl");
-        if (url == null || url.isEmpty()) {
+        if (url == null || url.isEmpty() || demoManager.isActive()) {
             return getPublicDocEditorUrl();
         } else {
             return url;
@@ -72,7 +82,7 @@ public class UrlManager {
     }
 
     public String GetFileUri(Long attachmentId) throws Exception {
-        String hash = DocumentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("fileUrl " + callbackUrl);
@@ -81,7 +91,7 @@ public class UrlManager {
     }
 
     public String getCallbackUrl(Long attachmentId) throws Exception {
-        String hash = DocumentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("callbackUrl " + callbackUrl);
@@ -105,6 +115,12 @@ public class UrlManager {
             url = url.replace(publicDocEditorUrl, innerDocEditorUrl);
         }
         return url;
+    }
+
+    public String getGobackUrl(Long attachmentId) {
+        String issueKey = attachmentUtil.getIssueKey(attachmentId);
+
+        return ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/" + issueKey;
     }
 
     public JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user) throws JSONException {

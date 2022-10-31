@@ -16,28 +16,11 @@
  *
  */
 
-package onlyoffice;
+jQuery(function () {
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+    new AJS.FormPopup({
+        id: "onlyoffice-create-file-dialog",
+        trigger: "#onlyoffice-create-file-button"
+    });
 
-import com.atlassian.jira.util.io.InputStreamConsumer;
-
-import org.apache.commons.io.IOUtils;
-
-public class DownloadFileStreamConsumer implements InputStreamConsumer<Object> {
-
-    private final OutputStream out;
-
-    public DownloadFileStreamConsumer(OutputStream out) {
-        this.out = out;
-    }
-
-    @Override
-    public Object withInputStream(InputStream in) throws IOException {
-        IOUtils.copy(in, out);
-        return null;
-    }
-    
-}
+});

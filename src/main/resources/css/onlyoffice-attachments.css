@@ -1,10 +1,10 @@
-dd[class~="attachment-oo-edit"] {
+dd[class~="attachment-onlyoffice-button"] {
     padding-left: 0px;
     text-align: center;
     width: 50px;
 }
 
-div[class~="attachment-oo-edit"] {
+div[class~="attachment-onlyoffice-button"] {
     left: auto;
     position: absolute;
     padding: 0;
@@ -12,18 +12,14 @@ div[class~="attachment-oo-edit"] {
     width: 20px;
 }
 
-.margin-delete{
-    margin-right: 20px!important;
-}
-
-.attachment-content:hover .attachment-oo-edit a,
+.attachment-content:hover .attachment-onlyoffice-button a,
 .attachment-content .attachment-oo-edit a:focus {
     width: auto;
     height: auto;
     clip: auto;
 }
 
-.attachment-content .attachment-oo-edit a {
+.attachment-content .attachment-onlyoffice-button a {
     border: 0;
     clip: rect(0 0 0 0);
     height: 1px;
@@ -34,12 +30,47 @@ div[class~="attachment-oo-edit"] {
     width: 1px;
 }
 
-.attachment-content .attachment-oo-edit a span {
-    background-size: contain;
+#attachment_thumbnails .attachment-content:hover .blender-onlyoffice1 {
+    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
+    width: 6em!important;
+}
+
+#attachment_thumbnails .attachment-content:hover .blender-onlyoffice2 {
+    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
+    width: 9em!important;
+}
+
+.icon-onlyoffice-edit {
     background-image: url("edit_icon.svg");
 }
 
-#attachment_thumbnails .attachment-content:hover .blender-edit {
-    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
-    width: 6em!important;
+.icon-onlyoffice-conversion {
+    background-image: url("conversion_icon.svg");
+}
+
+#onlyoffice-conversion-dialog .jira-dialog-content{
+    margin-bottom: 50px;
+}
+
+#onlyoffice-conversion-dialog form{
+    overflow: auto;
+    position: static;
+}
+
+#onlyoffice-conversion-dialog .form-footer {
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+#onlyoffice-create-file-button span {
+    background-image: url("сreate_icon.svg");
+    padding-left: 24px;
+    --aui-icon-size: 16px;
+    background-repeat: no-repeat;
+    background-position: left;
+    height: var(--aui-icon-size);
+    vertical-align: text-bottom;
 }

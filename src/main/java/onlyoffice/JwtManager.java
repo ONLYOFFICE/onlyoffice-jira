@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,19 +36,17 @@ import javax.inject.Named;
 @Named
 public class JwtManager {
 
-    @ComponentImport
-    private final PluginSettingsFactory pluginSettingsFactory;
-
     private final PluginSettings settings;
+    private final DemoManager demoManager;
 
     @Inject
-    public JwtManager(PluginSettingsFactory pluginSettingsFactory) {
-        this.pluginSettingsFactory = pluginSettingsFactory;
+    public JwtManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
         settings = pluginSettingsFactory.createGlobalSettings();
+        this.demoManager = demoManager;
     }
 
     public Boolean jwtEnabled() {
-        return settings.get("onlyoffice.jwtSecret") != null
+        return demoManager.isActive() || settings.get("onlyoffice.jwtSecret") != null
                 && !((String) settings.get("onlyoffice.jwtSecret")).isEmpty();
     }
 
@@ -88,6 +86,11 @@ public class JwtManager {
 
     public String getJwtHeader() {
         String header = (String) settings.get("onlyoffice.jwtHeader");
+
+        if (demoManager.isActive()) {
+            header = demoManager.getHeader();
+        }
+
         return header == null || header.isEmpty() ? "Authorization" : header;
     }
 
@@ -100,6 +103,10 @@ public class JwtManager {
 
     private Mac getHasher() throws Exception {
         String jwts = (String) settings.get("onlyoffice.jwtSecret");
+
+        if (demoManager.isActive()) {
+            jwts = demoManager.getSecret();
+        }
 
         Mac sha256 = Mac.getInstance("HmacSHA256");
         SecretKeySpec secret_key = new SecretKeySpec(jwts.getBytes("UTF-8"), "HmacSHA256");

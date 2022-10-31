@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,11 +135,24 @@ public class AttachmentUtil {
         return attachment.getFilename();
     }
 
+    public String getFileExt(Long attachmentId) {
+        String fileName = getFileName(attachmentId);
+        return fileName.substring(fileName.lastIndexOf(".") + 1).trim().toLowerCase();
+    }
+
+    public String getIssueKey(Long attachmentId) {
+        Attachment attachment = attachmentManager.getAttachment(attachmentId);
+        Issue issue = attachment.getIssue();
+        return issue.getKey();
+    }
+
     public String getCorrectAttachmentName (String fileName, Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 
         String basename = fileName.substring(0, fileName.lastIndexOf('.'));
         String ext = fileName.substring(fileName.lastIndexOf("."));
+
+        basename = basename.replaceAll("[*?:\"<>/|\\\\]","_");
 
         int count = 0;
         Boolean exist = true;

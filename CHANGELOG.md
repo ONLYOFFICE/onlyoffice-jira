@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.0.0
+## Added
+- download as
+- documents conversion
+- ability to create documents
+- disable certificate verification
+- added connection to a demo document server
+- detecting mobile browser
+- go back from editor to manager
+
+## Changed
+- document server v6.0 and earlier is no longer supported
+
 ## 1.1.0
 ## Added
 - support docxf and oform formats

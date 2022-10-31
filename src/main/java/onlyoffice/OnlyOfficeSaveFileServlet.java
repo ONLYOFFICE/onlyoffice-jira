@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,10 @@
 
 package onlyoffice;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,6 +29,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -71,11 +71,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final AttachmentUtil attachmentUtil;
     private final UrlManager urlManager;
     private final ParsingUtil parsingUtil;
+    private final DocumentManager documentManager;
+    private final ConfigurationManager configurationManager;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
                                      JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil) {
+                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
+                                     DocumentManager documentManager, ConfigurationManager configurationManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -86,6 +89,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
         this.parsingUtil = parsingUtil;
+        this.documentManager = documentManager;
+        this.configurationManager = configurationManager;
 
         userManager = ComponentAccessor.getUserManager();
     }
@@ -108,7 +113,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = DocumentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.ReadHash(vkey);
 
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
@@ -129,7 +134,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = DocumentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.ReadHash(vkey);
 
         String error = "";
         try {
@@ -156,7 +161,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             throw new IllegalArgumentException("attachmentId is empty");
         }
 
-        HttpURLConnection connection = null;
         Path tempFile = null;
 
         try {
@@ -221,17 +225,27 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
                 log.info("downloadUri = " + downloadUrl);
 
-                URL url = new URL(downloadUrl);
+                try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
+                    HttpGet httpGet = new HttpGet(downloadUrl);
 
-                connection = (HttpURLConnection) url.openConnection();
+                    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                        int statusCode = response.getStatusLine().getStatusCode();
+                        HttpEntity entity = response.getEntity();
 
-                InputStream stream = connection.getInputStream();
+                        if (statusCode == HttpStatus.SC_OK) {
+                            byte[] bytes = IOUtils.toByteArray(entity.getContent());
+                            InputStream inputStream = new ByteArrayInputStream(bytes);
 
-                tempFile = Files.createTempFile(null, null);
-                FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
+                            tempFile = Files.createTempFile(null, null);
+                            FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
 
-                attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), user);
-                attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
+                            attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), user);
+                            attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
+                        } else {
+                            throw new HttpException("Document Server returned code " + status);
+                        }
+                    }
+                }
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -242,10 +256,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
             throw ex;
         } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-
             if (tempFile != null && Files.exists(tempFile)) {
                 Files.delete(tempFile);
             }

@@ -24,10 +24,19 @@
     <transformation extension="js">
       <transformer key="jsI18n"/>
     </transformation>
+    <transformation extension="soy">
+      <transformer key="soyTransformer"/>
+    </transformation>
 
     <resource type="download" name="onlyoffice-attachments.js" location="/js/onlyoffice-attachments.js"/>
+    <resource type="download" name="onlyoffice-create-file.js" location="/js/onlyoffice-create-file.js"/>
+    <resource type="download" name="onlyoffice-conversion.js" location="/js/onlyoffice-conversion.js"/>
+    <resource type="download" name="onlyoffice-format-manager.js" location="/js/onlyoffice-format-manager.js"/>
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
+    <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
+    <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
+    <resource type="download" name="conversion.soy.js" location="/templates/actions/conversion.soy"/>
 
     <context>jira.view.issue</context>
     <context>gh-rapid-plan</context>
@@ -40,6 +49,32 @@
     <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
+
+  <web-item key="onlyoffice-create-file-button" name="Create File Button" section="com.atlassian.jira.jira-view-issue-plugin:attachmentmodule/header" weight="10" application="jira">
+    <description>Button to create a file</description>
+    <label key="onlyoffice.connector.dialog.create-file.header.title" />
+    <link linkId="onlyoffice-create-file-button">/OnlyOfficeCreateFile!default.jspa?id=${issue.id}</link>
+    <styleClass>aui-button</styleClass>
+    <condition class="com.atlassian.jira.plugin.webfragment.conditions.HasIssuePermissionCondition">
+      <param name="permission" value="attach"/>
+    </condition>
+  </web-item>
+
+  <webwork1 key="OnlyOfficeCreateFile" name="Create File Action" class="java.lang.Object">
+    <actions>
+      <action name="onlyoffice.action.OnlyOfficeCreateFile" alias="OnlyOfficeCreateFile">
+        <view name="input">/templates/actions/create-file.vm</view>
+      </action>
+    </actions>
+  </webwork1>
+
+  <webwork1 key="OnlyOfficeConversion" name="Conversion File Action" class="java.lang.Object">
+    <actions>
+      <action name="onlyoffice.action.OnlyOfficeConversion" alias="OnlyOfficeConversion">
+        <view name="input">/templates/actions/conversion.vm</view>
+      </action>
+    </actions>
+  </webwork1>
 
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
@@ -56,6 +91,11 @@
   <servlet key="OnlyOfficeAPI" class="onlyoffice.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
     <description>ONLYOFFICE API Handler.</description>
     <url-pattern>/onlyoffice/api</url-pattern>
+  </servlet>
+
+  <servlet key="OnlyOfficeFormatsInfo" class="onlyoffice.OnlyOfficeFormatsInfoServlet" name="ONLYOFFICE Formats Information">
+    <description>ONLYOFFICE Formats Information.</description>
+    <url-pattern>/onlyoffice/formats/info</url-pattern>
   </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,13 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -33,8 +40,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -49,14 +54,16 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private final AttachmentUtil attachmentUtil;
     private final ParsingUtil parsingUtil;
     private final UrlManager urlManager;
+    private final ConfigurationManager configurationManager;
 
     @Inject
     public OnlyOfficeAPIServlet(JiraAuthenticationContext jiraAuthenticationContext, AttachmentUtil attachmentUtil,
-                                ParsingUtil parsingUtil, UrlManager urlManager) {
+                                ParsingUtil parsingUtil, UrlManager urlManager, ConfigurationManager configurationManager) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.attachmentUtil = attachmentUtil;
         this.parsingUtil = parsingUtil;
         this.urlManager = urlManager;
+        this.configurationManager = configurationManager;
     }
 
     @Override
@@ -88,7 +95,6 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
 
         String body = parsingUtil.getBody(request.getInputStream());
 
-        HttpURLConnection connection = null;
         Path tempFile = null;
 
         try {
@@ -112,36 +118,35 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
 
             downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
 
-            URL url = new URL(downloadUrl);
+            try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
+                HttpGet httpGet = new HttpGet(downloadUrl);
 
-            connection = (HttpURLConnection) url.openConnection();
-            int size = connection.getContentLength();
-            log.info("size = " + size);
+                try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
+                    int status = httpResponse.getStatusLine().getStatusCode();
+                    HttpEntity entity = httpResponse.getEntity();
 
-            InputStream stream = connection.getInputStream();
+                    if (status == HttpStatus.SC_OK) {
+                        byte[] bytes = IOUtils.toByteArray(entity.getContent());
+                        InputStream inputStream = new ByteArrayInputStream(bytes);
 
-            tempFile = Files.createTempFile(null, null);
-            FileUtils.copyInputStreamToFile(stream, tempFile.toFile());
+                        log.info("size = " + bytes.length);
+                        tempFile = Files.createTempFile(null, null);
+                        FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
 
-            ChangeItemBean changeItemBean = attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
+                        ChangeItemBean changeItemBean = attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
 
-            response.setContentType("application/json");
-            PrintWriter writer = response.getWriter();
-            writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" + changeItemBean.getToString() + "\"}");
-
-        } catch (Exception ex) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            String error = ex.toString() + "\n" + sw.toString();
-            log.error(error);
-
-            throw new IOException(ex.getMessage(), ex);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
+                        response.setContentType("application/json");
+                        PrintWriter writer = response.getWriter();
+                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" + changeItemBean.getToString() + "\"}");
+                    } else {
+                        throw new HttpException("Document Server returned code " + status);
+                    }
+                }
             }
 
+        } catch (Exception e) {
+            throw new IOException(e.getMessage(), e);
+        } finally {
             if (tempFile != null && Files.exists(tempFile)) {
                 Files.delete(tempFile);
             }

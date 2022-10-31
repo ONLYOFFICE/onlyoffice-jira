@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,124 @@
 
 package onlyoffice;
 
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+@Named
 public class ConfigurationManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.ConfigurationManager");
+    private static final String CONFIGURATION_PATH = "onlyoffice-config.properties";
 
-    public Properties GetProperties() {
+    private final PluginSettings pluginSettings;
+    private final DemoManager demoManager;
+
+    @Inject
+    public ConfigurationManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
+        this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
+        this.demoManager = demoManager;
+    }
+
+    public Properties getProperties() throws IOException {
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CONFIGURATION_PATH);
+        if (inputStream != null) {
+            properties.load(inputStream);
+        }
+        return properties;
+    }
+
+    public String getProperty(String propertyName){
         try {
-            Properties properties = new Properties();
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("onlyoffice-config.properties");
-            if (inputStream != null) {
-                properties.load(inputStream);
-            }
-            return properties;
-        } catch (Exception e) {
-            log.error(e);
+            Properties properties = getProperties();
+            String property = properties.getProperty(propertyName);
+            return property;
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            log.error(e.toString() + "\n" + sw.toString());
             return null;
         }
     }
 
-    public List<String> getListDefaultProperty(String nameProperty) {
-        Properties properties = GetProperties();
-        String property = properties.getProperty(nameProperty);
-
-        return Arrays.asList(property.split("\\|"));
+    public Boolean getBooleanPluginSetting(String key, Boolean defaultValue) {
+        String setting = (String) pluginSettings.get("onlyoffice." + key);
+        if (setting == null || setting.isEmpty()) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(setting);
     }
+
+    public List<String> getListDefaultProperty(String nameProperty) {
+        try {
+            Properties properties = getProperties();
+            String property = properties.getProperty(nameProperty);
+
+            return Arrays.asList(property.split("\\|"));
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            log.error(e.toString() + "\n" + sw.toString());
+            return null;
+        }
+
+    }
+
+    public CloseableHttpClient getHttpClient() throws Exception {
+        Integer timeout = Integer.parseInt(getProperty("timeout")) * 1000;
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
+
+        CloseableHttpClient httpClient;
+
+        if (getBooleanPluginSetting("ignoreCertificate", false) && !demoManager.isActive()) {
+            SSLContextBuilder builder = new SSLContextBuilder();
+
+            builder.loadTrustMaterial(null, new TrustStrategy() {
+                @Override
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            });
+
+            SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            httpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory).setDefaultRequestConfig(config).build();
+        } else {
+            httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+        }
+
+        return httpClient;
+    }
+
 }
