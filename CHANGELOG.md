@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.0
+## Added
+- compatible with JIRA 9.*
+
 ## 2.0.0
 ## Added
 - download as

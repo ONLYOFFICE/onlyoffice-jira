@@ -22,6 +22,8 @@ import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.security.request.RequestMethod;
+import com.atlassian.jira.security.request.SupportedMethods;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.atlassian.plugin.PluginAccessor;
@@ -41,6 +43,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 @Scanned
+@SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
 {
     private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
