@@ -21,10 +21,12 @@ package onlyoffice.action;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.security.request.RequestMethod;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.atlassian.jira.security.request.SupportedMethods;
 import onlyoffice.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,6 +47,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 @Scanned
+@SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeConversion extends AbstractIssueSelectAction
 {
     private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
