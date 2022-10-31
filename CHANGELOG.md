@@ -9,6 +9,7 @@
 - added connection to a demo document server
 - detecting mobile browser
 - go back from editor to manager
+- compatible with JIRA 8.22.4
 
 ## Changed
 - document server v6.0 and earlier is no longer supported
