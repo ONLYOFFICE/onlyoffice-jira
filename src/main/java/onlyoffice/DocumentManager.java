@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,6 +48,23 @@ public class DocumentManager {
         this.configurationManager = configurationManager;
     }
 
+    private List<Format> enrichmentSupportedFormats(List<Format> supportedFormats) {
+        List<Format> extendSupportedFormats = new ArrayList<>();
+        Map<String, Boolean> customizableEditingTypes = configurationManager.getCustomizableEditingTypes();
+        for (Map.Entry<String, Boolean> customizableEditingType : customizableEditingTypes.entrySet()) {
+            if (customizableEditingType.getValue()) {
+                extendSupportedFormats = supportedFormats.stream()
+                        .peek(format -> {
+                            if (format.getName().equals(customizableEditingType.getKey())) {
+                                format.setEdit(true);
+                            }
+                        })
+                        .collect(Collectors.toList());
+            }
+        }
+        return extendSupportedFormats;
+    }
+
     public long GetMaxFileSize() {
         long size;
         try {
@@ -63,16 +79,13 @@ public class DocumentManager {
 
     public boolean isEditable(String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
-        boolean isEdit = false;
-
-        for (Format format : supportedFormats) {
+        List<Format> enrichmentSupportedFormats = this.enrichmentSupportedFormats(supportedFormats);
+        for (Format format : enrichmentSupportedFormats) {
             if (format.getName().equals(ext)) {
-                isEdit = format.isEdit();
-                break;
+                return format.isEdit();
             }
         }
-
-        return isEdit;
+        return false;
     }
 
     public boolean isFillForm(String ext) {

@@ -42,6 +42,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -98,6 +99,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         Boolean ignoreCertificate = configurationManager.getBooleanPluginSetting("ignoreCertificate", false);
         Boolean demoEnable = demoManager.isEnable();
         Boolean demoTrialIsOver = demoManager.trialIsOver();
+        Map<String, Boolean> defaultCustomizableEditingTypes = configurationManager.getCustomizableEditingTypes();
+
         if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
 		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
 		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
@@ -114,6 +117,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         defaults.put("demoEnable", demoEnable);
         defaults.put("demoTrialIsOver", demoTrialIsOver);
         defaults.put("pathApiUrl", configurationManager.getProperty("files.docservice.url.api"));
+        defaults.put("defaultCustomizableEditingTypes", defaultCustomizableEditingTypes);
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -164,7 +168,11 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             }
 
             confUrl = AppendSlash(jsonObj.getString("confUrl"));
+            JSONArray editingTypes = jsonObj.getJSONArray("editingTypes");
+
             pluginSettings.put("onlyoffice.confUrl", confUrl);
+            pluginSettings.put("onlyoffice.editingTypes", editingTypes.toString());
+
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

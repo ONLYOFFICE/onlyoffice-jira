@@ -42,9 +42,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Named
 public class ConfigurationManager {
@@ -138,4 +136,29 @@ public class ConfigurationManager {
         return httpClient;
     }
 
+    public List<String> getDefaultEditingTypes() {
+        String editableTypes = getProperty("docservice.type.edit");
+        return new ArrayList<>(Arrays.asList(editableTypes.split("\\|")));
+    }
+
+    public Map<String, Boolean> getCustomizableEditingTypes() {
+        Map<String, Boolean> customizableEditingTypes = new HashMap<>();
+        List<String> editingTypes = null;
+
+        String editingTypesString = (String) pluginSettings.get("onlyoffice.editingTypes");
+
+        if (editingTypesString != null && !editingTypesString.isEmpty()) {
+            editingTypes = Arrays.asList(editingTypesString.substring(1, editingTypesString.length() - 1).replace("\"", "").split(","));
+        } else {
+            editingTypes = Arrays.asList("csv", "txt");
+        }
+
+        List<String> availableTypes = Arrays.asList(getProperty("docservice.type.edit.customizable").split("\\|"));
+
+        for (String type : availableTypes) {
+            customizableEditingTypes.put(type, editingTypes.contains(type));
+        }
+
+        return customizableEditingTypes;
+    }
 }

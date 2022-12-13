@@ -22,6 +22,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,6 +54,8 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import javax.inject.Inject;
 
+import static webwork.action.ActionContext.getLocale;
+
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -73,12 +76,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final ParsingUtil parsingUtil;
     private final DocumentManager documentManager;
     private final ConfigurationManager configurationManager;
+    private final ConversionManager conversionManager;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
                                      JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
                                      TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
-                                     DocumentManager documentManager, ConfigurationManager configurationManager) {
+                                     DocumentManager documentManager, ConfigurationManager configurationManager, ConversionManager conversionManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -91,6 +95,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.parsingUtil = parsingUtil;
         this.documentManager = documentManager;
         this.configurationManager = configurationManager;
+        this.conversionManager = conversionManager;
 
         userManager = ComponentAccessor.getUserManager();
     }
@@ -224,6 +229,15 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 String downloadUrl = jsonObj.getString("url");
                 downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
                 log.info("downloadUri = " + downloadUrl);
+
+                List<String> defaultEditingTypes = configurationManager.getDefaultEditingTypes();
+
+                String attachmentExt = attachmentUtil.getFileExt(attachmentId);
+                if (!defaultEditingTypes.contains(attachmentExt)) {
+                    String extDownloadUrl = downloadUrl.substring(downloadUrl.lastIndexOf(".") + 1);
+                    JSONObject response = conversionManager.convert(attachmentId, extDownloadUrl, attachmentExt, user);
+                    downloadUrl = response.getString("fileUrl");
+                }
 
                 try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
                     HttpGet httpGet = new HttpGet(downloadUrl);
