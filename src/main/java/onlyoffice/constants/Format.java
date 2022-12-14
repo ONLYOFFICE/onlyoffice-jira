@@ -26,6 +26,7 @@ public class Format {
     public boolean edit;
     public boolean fillForm;
     public List<String> convertTo;
+    private boolean customizable;
 
     public Format(String name, Type type, List<String> convertTo) {
         this.name = name;
@@ -33,6 +34,16 @@ public class Format {
         this.edit = false;
         this.fillForm = false;
         this.convertTo = convertTo;
+        this.customizable = false;
+    }
+
+    public Format(String name, Type type, List<String> convertTo, boolean customizable) {
+        this.name = name;
+        this.type = type;
+        this.edit = false;
+        this.fillForm = false;
+        this.convertTo = convertTo;
+        this.customizable = customizable;
     }
 
     public Format(String name, Type type, boolean edit, List<String> convertTo) {
@@ -41,6 +52,7 @@ public class Format {
         this.edit = edit;
         this.fillForm = false;
         this.convertTo = convertTo;
+        this.customizable = false;
     }
 
     public Format(String name, Type type, boolean edit, boolean fillForm, List<String> convertTo) {
@@ -49,6 +61,7 @@ public class Format {
         this.edit = edit;
         this.fillForm = fillForm;
         this.convertTo = convertTo;
+        this.customizable = false;
     }
 
     public String getName() {
@@ -78,4 +91,8 @@ public class Format {
     public void setEdit(boolean edit) { this.edit = edit; }
 
     public void setFillForm(boolean fillForm) { this.fillForm = fillForm; }
+
+    public boolean isCustomizable() {
+        return customizable;
+    }
 }

@@ -21,6 +21,7 @@ package onlyoffice;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
+import onlyoffice.constants.Format;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -43,6 +44,8 @@ import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+
+import static onlyoffice.constants.Formats.getSupportedFormats;
 
 @Named
 public class ConfigurationManager {
@@ -148,10 +151,10 @@ public class ConfigurationManager {
             editingTypes = Arrays.asList("csv", "txt");
         }
 
-        List<String> availableTypes = Arrays.asList(getProperty("docservice.type.edit.customizable").split("\\|"));
-
-        for (String type : availableTypes) {
-            customizableEditingTypes.put(type, editingTypes.contains(type));
+        for (Format format : getSupportedFormats()) {
+            if (format.isCustomizable()) {
+                customizableEditingTypes.put(format.getName(), editingTypes.contains(format.getName()));
+            }
         }
 
         return customizableEditingTypes;

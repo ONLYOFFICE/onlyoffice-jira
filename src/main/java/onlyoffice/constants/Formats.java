@@ -42,18 +42,18 @@ public class Formats {
         add(new Format("fodt", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("html", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("mht", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
-        add(new Format("odt", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "ott", "pdf", "pdfa", "rtf", "txt")));
+        add(new Format("odt", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "ott", "pdf", "pdfa", "rtf", "txt"), true));
         add(new Format("ott", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("pdf", Type.WORD, new ArrayList<String>()));
-        add(new Format("rtf", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "txt")));
-        add(new Format("txt", Type.WORD, new ArrayList<String>()));
+        add(new Format("rtf", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "txt"), true));
+        add(new Format("txt", Type.WORD, new ArrayList<String>(), true));
         add(new Format("xps", Type.WORD, Arrays.asList("pdf", "pdfa")));
         add(new Format("oxps", Type.WORD, Arrays.asList("pdf", "pdfa")));
         add(new Format("xml", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
 
-        add(new Format("csv", Type.CELL, new ArrayList<String>()));
+        add(new Format("csv", Type.CELL, new ArrayList<String>(), true));
         add(new Format("fods", Type.CELL, Arrays.asList( "xlsx", "csv", "ods", "ots", "pdf", "pdfa", "xltx", "xlsm", "xltm")));
-        add(new Format("ods", Type.CELL, Arrays.asList("xlsx", "csv", "ots", "pdf", "pdfa", "xltx", "xlsm", "xltm")));
+        add(new Format("ods", Type.CELL, Arrays.asList("xlsx", "csv", "ots", "pdf", "pdfa", "xltx", "xlsm", "xltm"), true));
         add(new Format("ots", Type.CELL, Arrays.asList("xlsx", "csv", "ods", "pdf", "pdfa", "xltx", "xlsm", "xltm")));
         add(new Format("xls", Type.CELL, Arrays.asList("xlsx", "csv", "ods", "ots", "pdf", "pdfa", "xltx", "xlsm", "xltm")));
         add(new Format("xlsm", Type.CELL, Arrays.asList("xlsx", "csv", "ods", "ots", "pdf", "pdfa", "xltx", "xltm")));
@@ -63,7 +63,7 @@ public class Formats {
         add(new Format("xltx", Type.CELL, Arrays.asList("xlsx", "csv", "ods", "ots", "pdf", "pdfa", "xlsm", "xltm")));
 
         add(new Format("fodp", Type.SLIDE, Arrays.asList("pptx", "odp", "otp", "pdf", "pdfa", "potx", "pptm", "potm")));
-        add(new Format("odp", Type.SLIDE, Arrays.asList("pptx", "otp", "pdf", "pdfa", "potx", "pptm", "potm")));
+        add(new Format("odp", Type.SLIDE, Arrays.asList("pptx", "otp", "pdf", "pdfa", "potx", "pptm", "potm"), true));
         add(new Format("otp", Type.SLIDE, Arrays.asList("pptx", "odp", "pdf", "pdfa", "potx", "pptm", "potm")));
         add(new Format("pot", Type.SLIDE, Arrays.asList("pptx", "odp", "otp", "pdf", "pdfa", "potx", "pptm", "potm")));
         add(new Format("potm", Type.SLIDE, Arrays.asList("pptx", "odp", "otp", "pdf", "pdfa", "potx", "pptm")));
