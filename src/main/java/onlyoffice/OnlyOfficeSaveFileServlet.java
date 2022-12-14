@@ -231,7 +231,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 log.info("downloadUri = " + downloadUrl);
 
                 String attachmentExt = attachmentUtil.getFileExt(attachmentId);
-                String extDownloadUrl = downloadUrl.substring(downloadUrl.lastIndexOf(".") + 1);
+                String extDownloadUrl = jsonObj.getString("filetype");
 
                 if (!extDownloadUrl.contains(attachmentExt)) {
                     JSONObject response = conversionManager.convert(attachmentId, downloadUrl, attachmentExt, user);
