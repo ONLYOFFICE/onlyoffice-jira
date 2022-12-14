@@ -233,9 +233,10 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 List<String> defaultEditingTypes = configurationManager.getDefaultEditingTypes();
 
                 String attachmentExt = attachmentUtil.getFileExt(attachmentId);
-                if (!defaultEditingTypes.contains(attachmentExt)) {
-                    String extDownloadUrl = downloadUrl.substring(downloadUrl.lastIndexOf(".") + 1);
-                    JSONObject response = conversionManager.convert(attachmentId, extDownloadUrl, attachmentExt, user);
+                String extDownloadUrl = downloadUrl.substring(downloadUrl.lastIndexOf(".") + 1);
+
+                if (!defaultEditingTypes.contains(attachmentExt) && !extDownloadUrl.equals(attachmentExt)) {
+                    JSONObject response = conversionManager.convert(attachmentId, downloadUrl, attachmentExt, user);
                     downloadUrl = response.getString("fileUrl");
                 }
 

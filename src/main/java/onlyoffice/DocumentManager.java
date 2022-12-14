@@ -88,6 +88,16 @@ public class DocumentManager {
         return false;
     }
 
+    public String getDefaultExtForEditableFormats(String ext) {
+        List<Format> supportedFormats = Formats.getSupportedFormats();
+        for (Format format : supportedFormats) {
+            if (format.getName().equals(ext)) {
+                return this.getDefaultExtByType(format.getType().name().toLowerCase());
+            }
+        }
+        return ext;
+    }
+
     public boolean isFillForm(String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
         boolean isFillForm = false;

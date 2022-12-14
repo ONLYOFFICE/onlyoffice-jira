@@ -99,10 +99,10 @@ public class ConversionManager {
         return null;
     }
 
-    public JSONObject convert(Long attachmentId, String ext, String convertToExt, ApplicationUser user) throws Exception {
-        String url = urlManager.GetFileUri(attachmentId);
+    public JSONObject convert(Long attachmentId, String downloadUrl, String ext, ApplicationUser user) throws Exception {
         String region = localeManager.getLocaleFor(user).toLanguageTag();
-        return this.convert(attachmentId, null, ext, convertToExt, url, region, true);
+        String defaultExt = this.documentManager.getDefaultExtForEditableFormats(ext);
+        return this.convert(attachmentId, null, defaultExt, ext, downloadUrl, region, false);
     }
 
     public JSONObject convert(Long attachmentId, String title, String currentExt, String convertToExt, String url, String region, boolean async) throws Exception {
