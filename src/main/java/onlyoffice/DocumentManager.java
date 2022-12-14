@@ -48,7 +48,7 @@ public class DocumentManager {
         this.configurationManager = configurationManager;
     }
 
-    private List<Format> enrichmentSupportedFormats(List<Format> supportedFormats) {
+    public List<Format> enrichmentSupportedFormats(List<Format> supportedFormats) {
         List<Format> extendSupportedFormats = new ArrayList<>();
         Map<String, Boolean> customizableEditingTypes = configurationManager.getCustomizableEditingTypes();
         for (Map.Entry<String, Boolean> customizableEditingType : customizableEditingTypes.entrySet()) {

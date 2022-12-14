@@ -93,4 +93,18 @@ public class Formats {
         }
         return array;
     }
+
+    public static JSONArray getFormatsAsJson(List<Format> formatList) throws JSONException {
+        JSONArray array = new JSONArray();
+        for (Format format : formatList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", format.name);
+            jsonObject.put("type", format.type);
+            jsonObject.put("edit", format.edit);
+            jsonObject.put("fillForm", format.fillForm);
+            jsonObject.put("convertTo", new JSONArray(format.convertTo));
+            array.put(jsonObject);
+        }
+        return array;
+    }
 }
