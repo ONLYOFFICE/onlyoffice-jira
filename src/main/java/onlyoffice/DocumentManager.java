@@ -52,15 +52,13 @@ public class DocumentManager {
         List<Format> extendSupportedFormats = new ArrayList<>();
         Map<String, Boolean> customizableEditingTypes = configurationManager.getCustomizableEditingTypes();
         for (Map.Entry<String, Boolean> customizableEditingType : customizableEditingTypes.entrySet()) {
-            if (customizableEditingType.getValue()) {
-                extendSupportedFormats = supportedFormats.stream()
-                        .peek(format -> {
-                            if (format.getName().equals(customizableEditingType.getKey())) {
-                                format.setEdit(true);
-                            }
-                        })
-                        .collect(Collectors.toList());
-            }
+            extendSupportedFormats = supportedFormats.stream()
+                    .peek(format -> {
+                        if (format.getName().equals(customizableEditingType.getKey())) {
+                            format.setEdit(customizableEditingType.getValue());
+                        }
+                    })
+                    .collect(Collectors.toList());
         }
         return extendSupportedFormats;
     }
