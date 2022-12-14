@@ -136,11 +136,6 @@ public class ConfigurationManager {
         return httpClient;
     }
 
-    public List<String> getDefaultEditingTypes() {
-        String editableTypes = getProperty("docservice.type.edit");
-        return new ArrayList<>(Arrays.asList(editableTypes.split("\\|")));
-    }
-
     public Map<String, Boolean> getCustomizableEditingTypes() {
         Map<String, Boolean> customizableEditingTypes = new HashMap<>();
         List<String> editingTypes = null;
