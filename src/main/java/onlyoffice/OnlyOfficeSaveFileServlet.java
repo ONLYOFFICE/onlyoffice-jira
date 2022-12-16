@@ -22,7 +22,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,8 +52,6 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import javax.inject.Inject;
-
-import static webwork.action.ActionContext.getLocale;
 
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
