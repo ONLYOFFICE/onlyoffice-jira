@@ -18,29 +18,40 @@
 
 package onlyoffice;
 
+import onlyoffice.constants.Format;
 import onlyoffice.constants.Formats;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeFormatsInfoServlet");
+    private final DocumentManager documentManager;
+
+    @Inject
+    public OnlyOfficeFormatsInfoServlet(DocumentManager documentManager) {
+        this.documentManager = documentManager;
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            JSONArray supportedFormats = Formats.getSupportedFormatsAsJson();
+            List<Format> supportedFormats = Formats.getSupportedFormats();
+            List<Format> enrichmentFormats = documentManager.enrichmentSupportedFormats(supportedFormats);
+            JSONArray enrichmentFormatsJson = Formats.getFormatsAsJson(enrichmentFormats);
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
-            writer.write(supportedFormats.toString());
+            writer.write(enrichmentFormatsJson.toString());
         } catch (JSONException e) {
             throw new IOException(e.getMessage(), e);
         }

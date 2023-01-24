@@ -18,10 +18,11 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.config.LocaleManager;
+import com.atlassian.jira.user.ApplicationUser;
 import onlyoffice.constants.Format;
 import onlyoffice.constants.Formats;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -46,15 +47,17 @@ public class ConversionManager {
     private final JwtManager jwtManager;
     private final ConfigurationManager configurationManager;
     private final DocumentManager documentManager;
+    private final LocaleManager localeManager;
 
     @Inject
     public ConversionManager(UrlManager urlManager, JwtManager jwtManager,
-                              ConfigurationManager configurationManager,
-                              DocumentManager documentManager) {
+                             ConfigurationManager configurationManager,
+                             DocumentManager documentManager, LocaleManager localeManager) {
         this.urlManager = urlManager;
         this.jwtManager = jwtManager;
         this.configurationManager = configurationManager;
         this.documentManager = documentManager;
+        this.localeManager = localeManager;
     }
 
     public String getTargetExt(String ext) {
@@ -94,6 +97,12 @@ public class ConversionManager {
         }
 
         return null;
+    }
+
+    public JSONObject convert(Long attachmentId, String downloadUrl, String ext, ApplicationUser user) throws Exception {
+        String region = localeManager.getLocaleFor(user).toLanguageTag();
+        String defaultExt = this.documentManager.getDefaultExtForEditableFormats(ext);
+        return this.convert(attachmentId, null, defaultExt, ext, downloadUrl, region, false);
     }
 
     public JSONObject convert(Long attachmentId, String title, String currentExt, String convertToExt, String url, String region, boolean async) throws Exception {

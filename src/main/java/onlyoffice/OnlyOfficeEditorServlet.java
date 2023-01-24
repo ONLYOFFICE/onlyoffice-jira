@@ -180,7 +180,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         Map<String, String> config = new HashMap<String, String>();
 
         String docTitle = fileName.trim();
-        String docExt = docTitle.substring(docTitle.lastIndexOf(".") + 1).trim().toLowerCase();
+        String docExt = attachmentUtil.getFileExt(attachmentId);
         String documentType = documentManager.getDocType(docExt);
 
         JSONObject responseJson = new JSONObject();

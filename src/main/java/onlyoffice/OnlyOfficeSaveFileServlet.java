@@ -73,12 +73,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final ParsingUtil parsingUtil;
     private final DocumentManager documentManager;
     private final ConfigurationManager configurationManager;
+    private final ConversionManager conversionManager;
 
     @Inject
     public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
                                      JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
                                      TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
-                                     DocumentManager documentManager, ConfigurationManager configurationManager) {
+                                     DocumentManager documentManager, ConfigurationManager configurationManager, ConversionManager conversionManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -91,6 +92,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         this.parsingUtil = parsingUtil;
         this.documentManager = documentManager;
         this.configurationManager = configurationManager;
+        this.conversionManager = conversionManager;
 
         userManager = ComponentAccessor.getUserManager();
     }
@@ -224,6 +226,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 String downloadUrl = jsonObj.getString("url");
                 downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
                 log.info("downloadUri = " + downloadUrl);
+
+                String attachmentExt = attachmentUtil.getFileExt(attachmentId);
+                String extDownloadUrl = jsonObj.getString("filetype");
+
+                if (!extDownloadUrl.equals(attachmentExt)) {
+                    JSONObject response = conversionManager.convert(attachmentId, downloadUrl, attachmentExt, user);
+                    downloadUrl = response.getString("fileUrl");
+                }
 
                 try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
                     HttpGet httpGet = new HttpGet(downloadUrl);

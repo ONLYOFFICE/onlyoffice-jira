@@ -21,6 +21,7 @@ package onlyoffice;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
+import onlyoffice.constants.Format;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -42,9 +43,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+
+import static onlyoffice.constants.Formats.getSupportedFormats;
 
 @Named
 public class ConfigurationManager {
@@ -138,4 +139,24 @@ public class ConfigurationManager {
         return httpClient;
     }
 
+    public Map<String, Boolean> getCustomizableEditingTypes() {
+        Map<String, Boolean> customizableEditingTypes = new HashMap<>();
+        List<String> editingTypes = null;
+
+        String editingTypesString = (String) pluginSettings.get("onlyoffice.editingTypes");
+
+        if (editingTypesString != null && !editingTypesString.isEmpty()) {
+            editingTypes = Arrays.asList(editingTypesString.substring(1, editingTypesString.length() - 1).replace("\"", "").split(","));
+        } else {
+            editingTypes = Arrays.asList("csv", "txt");
+        }
+
+        for (Format format : getSupportedFormats()) {
+            if (format.isCustomizable()) {
+                customizableEditingTypes.put(format.getName(), editingTypes.contains(format.getName()));
+            }
+        }
+
+        return customizableEditingTypes;
+    }
 }
