@@ -50,6 +50,10 @@
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
 
+  <web-resource key="onlyoffice-jira-app-resources-configure" name="Web Resources container for the configuration page">
+    <resource type="download" name="configure.css" location="css/configure.css"/>
+  </web-resource>
+
   <web-item key="onlyoffice-create-file-button" name="Create File Button" section="com.atlassian.jira.jira-view-issue-plugin:attachmentmodule/header" weight="10" application="jira">
     <description>Button to create a file</description>
     <label key="onlyoffice.connector.dialog.create-file.header.title" />
