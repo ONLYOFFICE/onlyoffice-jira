@@ -1,5 +1,9 @@
 # Change Log
 
+## 
+## Added
+- opening for editing not OOXML
+
 ## 2.0.0
 ## Added
 - download as
