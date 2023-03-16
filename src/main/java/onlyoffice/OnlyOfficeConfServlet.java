@@ -206,8 +206,10 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     }
 
     private String AppendSlash(final String str) {
-        if (str == null || str.isEmpty() || str.endsWith("/"))
+        if (str == null || str.isEmpty() || str.endsWith("/")) {
             return str;
+        }
+
         return str + "/";
     }
 
@@ -225,7 +227,9 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             try (CloseableHttpResponse response = httpClient.execute(request)) {
 
                 String content = IOUtils.toString(response.getEntity().getContent(), "utf-8").trim();
-                if (content.equalsIgnoreCase("true")) return true;
+                if (content.equalsIgnoreCase("true")) {
+                    return true;
+                }
             }
         } catch (Exception e) {
             log.debug("/healthcheck error: " + e.getMessage());

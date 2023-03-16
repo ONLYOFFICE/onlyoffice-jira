@@ -67,16 +67,24 @@ public class ConversionManager {
             if (format.getName().equals(ext)) {
                 switch(format.getType()) {
                     case FORM:
-                        if (format.getConvertTo().contains("oform")) return "oform";
+                        if (format.getConvertTo().contains("oform")) {
+                            return "oform";
+                        }
                         break;
                     case WORD:
-                        if (format.getConvertTo().contains("docx")) return "docx";
+                        if (format.getConvertTo().contains("docx")) {
+                            return "docx";
+                        }
                         break;
                     case CELL:
-                        if (format.getConvertTo().contains("xlsx")) return "xlsx";
+                        if (format.getConvertTo().contains("xlsx")) {
+                            return "xlsx";
+                        }
                         break;
                     case SLIDE:
-                        if (format.getConvertTo().contains("pptx")) return "pptx";
+                        if (format.getConvertTo().contains("pptx")) {
+                            return "pptx";
+                        }
                         break;
                     default:
                         break;
