@@ -57,10 +57,10 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     private final UrlManager urlManager;
     private final ConfigurationManager configurationManager;
 
-    protected String attachmentId;
-    protected String fileName;
-    protected String targetFileType;
-    protected String actionType;
+    private String attachmentId;
+    private String fileName;
+    private String targetFileType;
+    private String actionType;
 
     @Inject
     public OnlyOfficeConversion(final JiraAuthenticationContext jiraAuthenticationContext,

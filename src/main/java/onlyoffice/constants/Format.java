@@ -21,11 +21,11 @@ package onlyoffice.constants;
 import java.util.List;
 
 public class Format {
-    public String name;
-    public Type type;
-    public boolean edit;
-    public boolean fillForm;
-    public List<String> convertTo;
+    private String name;
+    private Type type;
+    private boolean edit;
+    private boolean fillForm;
+    private List<String> convertTo;
     private boolean customizable;
 
     public Format(final String name, final Type type, final List<String> convertTo) {
