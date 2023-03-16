@@ -29,7 +29,6 @@ import java.util.Base64.Encoder;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Mac;
 
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import javax.inject.Inject;
 import javax.inject.Named;
 
