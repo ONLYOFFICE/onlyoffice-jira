@@ -222,8 +222,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     }
 
     private String getBody(final InputStream stream) {
-        try(Scanner scanner = new Scanner(stream)) {
-            try(Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
+        try (Scanner scanner = new Scanner(stream)) {
+            try (Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
                 return scanner.hasNext() ? scanner.next() : "";
             }
         }

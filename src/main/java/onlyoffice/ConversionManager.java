@@ -65,7 +65,7 @@ public class ConversionManager {
 
         for (Format format : supportedFormats) {
             if (format.getName().equals(ext)) {
-                switch(format.getType()) {
+                switch (format.getType()) {
                     case FORM:
                         if (format.getConvertTo().contains("oform")) {
                             return "oform";

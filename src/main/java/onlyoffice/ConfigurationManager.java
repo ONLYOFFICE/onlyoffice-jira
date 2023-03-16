@@ -70,7 +70,7 @@ public class ConfigurationManager {
         return properties;
     }
 
-    public String getProperty(final String propertyName){
+    public String getProperty(final String propertyName) {
         try {
             Properties properties = getProperties();
             String property = properties.getProperty(propertyName);

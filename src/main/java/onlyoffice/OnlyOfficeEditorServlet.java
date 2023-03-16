@@ -104,8 +104,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         if (!jiraAuthenticationContext.isLoggedInUser()) {
-            String currentURL= request.getRequestURI() + "?" + request.getQueryString();
-            String query ="?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
+            String currentURL = request.getRequestURI() + "?" + request.getQueryString();
+            String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
             response.sendRedirect("/login.jsp" + query);
             return;
         }
@@ -247,7 +247,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             config.put("errorMessage", errorMessageLocal);
             config.put("docTitle", docTitle);
             config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-app:editor-page-resources",
-                    documentType +".ico", UrlMode.ABSOLUTE));
+                    documentType + ".ico", UrlMode.ABSOLUTE));
 
             // AsHtml at the end disables automatic html encoding
             config.put("jsonAsHtml", responseJson.toString());
