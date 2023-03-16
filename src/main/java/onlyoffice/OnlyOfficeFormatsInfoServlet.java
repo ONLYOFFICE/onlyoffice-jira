@@ -39,12 +39,12 @@ public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private final DocumentManager documentManager;
 
     @Inject
-    public OnlyOfficeFormatsInfoServlet(DocumentManager documentManager) {
+    public OnlyOfficeFormatsInfoServlet(final DocumentManager documentManager) {
         this.documentManager = documentManager;
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try {
             List<Format> supportedFormats = Formats.getSupportedFormats();
             List<Format> enrichmentFormats = documentManager.enrichmentSupportedFormats(supportedFormats);

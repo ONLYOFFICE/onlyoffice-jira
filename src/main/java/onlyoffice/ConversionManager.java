@@ -50,9 +50,9 @@ public class ConversionManager {
     private final LocaleManager localeManager;
 
     @Inject
-    public ConversionManager(UrlManager urlManager, JwtManager jwtManager,
-                             ConfigurationManager configurationManager,
-                             DocumentManager documentManager, LocaleManager localeManager) {
+    public ConversionManager(final UrlManager urlManager, final JwtManager jwtManager,
+                             final ConfigurationManager configurationManager,
+                             final DocumentManager documentManager, final LocaleManager localeManager) {
         this.urlManager = urlManager;
         this.jwtManager = jwtManager;
         this.configurationManager = configurationManager;
@@ -60,7 +60,7 @@ public class ConversionManager {
         this.localeManager = localeManager;
     }
 
-    public String getTargetExt(String ext) {
+    public String getTargetExt(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
 
         for (Format format : supportedFormats) {
@@ -87,7 +87,7 @@ public class ConversionManager {
         return null;
     }
 
-    public List<String> getTargetExtList(String ext) {
+    public List<String> getTargetExtList(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
 
         for (Format format : supportedFormats) {
@@ -99,13 +99,13 @@ public class ConversionManager {
         return null;
     }
 
-    public JSONObject convert(Long attachmentId, String downloadUrl, String ext, ApplicationUser user) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String downloadUrl, final String ext, final ApplicationUser user) throws Exception {
         String region = localeManager.getLocaleFor(user).toLanguageTag();
         String defaultExt = this.documentManager.getDefaultExtForEditableFormats(ext);
         return this.convert(attachmentId, null, defaultExt, ext, downloadUrl, region, false);
     }
 
-    public JSONObject convert(Long attachmentId, String title, String currentExt, String convertToExt, String url, String region, boolean async) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String title, final String currentExt, final String convertToExt, final String url, final String region, final boolean async) throws Exception {
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();
             body.put("async", async);

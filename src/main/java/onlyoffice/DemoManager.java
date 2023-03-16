@@ -42,7 +42,7 @@ public class DemoManager {
 
 
     @Inject
-    public DemoManager(PluginSettingsFactory pluginSettingsFactory) {
+    public DemoManager(final PluginSettingsFactory pluginSettingsFactory) {
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
     }
 

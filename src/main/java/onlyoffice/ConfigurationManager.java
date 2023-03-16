@@ -56,7 +56,7 @@ public class ConfigurationManager {
     private final DemoManager demoManager;
 
     @Inject
-    public ConfigurationManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
+    public ConfigurationManager(final PluginSettingsFactory pluginSettingsFactory, final DemoManager demoManager) {
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.demoManager = demoManager;
     }
@@ -70,7 +70,7 @@ public class ConfigurationManager {
         return properties;
     }
 
-    public String getProperty(String propertyName){
+    public String getProperty(final String propertyName){
         try {
             Properties properties = getProperties();
             String property = properties.getProperty(propertyName);
@@ -84,7 +84,7 @@ public class ConfigurationManager {
         }
     }
 
-    public Boolean getBooleanPluginSetting(String key, Boolean defaultValue) {
+    public Boolean getBooleanPluginSetting(final String key, final Boolean defaultValue) {
         String setting = (String) pluginSettings.get("onlyoffice." + key);
         if (setting == null || setting.isEmpty()) {
             return defaultValue;
@@ -92,7 +92,7 @@ public class ConfigurationManager {
         return Boolean.parseBoolean(setting);
     }
 
-    public List<String> getListDefaultProperty(String nameProperty) {
+    public List<String> getListDefaultProperty(final String nameProperty) {
         try {
             Properties properties = getProperties();
             String property = properties.getProperty(nameProperty);
@@ -119,14 +119,14 @@ public class ConfigurationManager {
 
             builder.loadTrustMaterial(null, new TrustStrategy() {
                 @Override
-                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
                     return true;
                 }
             });
 
             SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(final String hostname, final SSLSession session) {
                     return true;
                 }
             });

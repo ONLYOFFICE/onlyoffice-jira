@@ -94,7 +94,7 @@ public class Formats {
         return array;
     }
 
-    public static JSONArray getFormatsAsJson(List<Format> formatList) throws JSONException {
+    public static JSONArray getFormatsAsJson(final List<Format> formatList) throws JSONException {
         JSONArray array = new JSONArray();
         for (Format format : formatList) {
             JSONObject jsonObject = new JSONObject();

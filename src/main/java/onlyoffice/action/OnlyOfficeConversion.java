@@ -202,19 +202,19 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         return "none";
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
-    public void setAttachmentId(String attachmentId) {
+    public void setAttachmentId(final String attachmentId) {
         this.attachmentId = attachmentId;
     }
 
-    public void setTargetFileType(String targetFileType) {
+    public void setTargetFileType(final String targetFileType) {
         this.targetFileType = targetFileType;
     }
 
-    public void setActionType(String actionType) {
+    public void setActionType(final String actionType) {
         this.actionType = actionType;
     }
 

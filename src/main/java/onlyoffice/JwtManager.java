@@ -40,7 +40,7 @@ public class JwtManager {
     private final DemoManager demoManager;
 
     @Inject
-    public JwtManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
+    public JwtManager(final PluginSettingsFactory pluginSettingsFactory, final DemoManager demoManager) {
         settings = pluginSettingsFactory.createGlobalSettings();
         this.demoManager = demoManager;
     }
@@ -50,7 +50,7 @@ public class JwtManager {
                 && !((String) settings.get("onlyoffice.jwtSecret")).isEmpty();
     }
 
-    public String createToken(JSONObject payload) throws Exception {
+    public String createToken(final JSONObject payload) throws Exception {
         JSONObject header = new JSONObject();
         header.put("alg", "HS256");
         header.put("typ", "JWT");
@@ -64,7 +64,7 @@ public class JwtManager {
         return encHeader + "." + encPayload + "." + hash;
     }
 
-    public Boolean verify(String token) {
+    public Boolean verify(final String token) {
         if (!jwtEnabled())
             return false;
 
@@ -94,7 +94,7 @@ public class JwtManager {
         return header == null || header.isEmpty() ? "Authorization" : header;
     }
 
-    private String calculateHash(String header, String payload) throws Exception {
+    private String calculateHash(final String header, final String payload) throws Exception {
         Mac hasher;
         hasher = getHasher();
         return Base64.getUrlEncoder().encodeToString(hasher.doFinal((header + "." + payload).getBytes("UTF-8")))

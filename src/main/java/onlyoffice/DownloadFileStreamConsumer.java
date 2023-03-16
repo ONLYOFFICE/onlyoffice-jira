@@ -30,12 +30,12 @@ public class DownloadFileStreamConsumer implements InputStreamConsumer<Object> {
 
     private final OutputStream out;
 
-    public DownloadFileStreamConsumer(OutputStream out) {
+    public DownloadFileStreamConsumer(final OutputStream out) {
         this.out = out;
     }
 
     @Override
-    public Object withInputStream(InputStream in) throws IOException {
+    public Object withInputStream(final InputStream in) throws IOException {
         IOUtils.copy(in, out);
         return null;
     }

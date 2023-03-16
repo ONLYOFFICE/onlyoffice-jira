@@ -52,8 +52,8 @@ public class UrlManager {
     private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil, DocumentManager documentManager,
-                      DemoManager demoManager) {
+    public UrlManager(final PluginSettingsFactory pluginSettingsFactory, final AttachmentUtil attachmentUtil, final DocumentManager documentManager,
+                      final DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
@@ -81,7 +81,7 @@ public class UrlManager {
         }
     }
 
-    public String GetFileUri(Long attachmentId) throws Exception {
+    public String GetFileUri(final Long attachmentId) throws Exception {
         String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
@@ -90,7 +90,7 @@ public class UrlManager {
         return callbackUrl;
     }
 
-    public String getCallbackUrl(Long attachmentId) throws Exception {
+    public String getCallbackUrl(final Long attachmentId) throws Exception {
         String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
@@ -108,22 +108,22 @@ public class UrlManager {
         }
     }
 
-    public String replaceDocEditorURLToInternal(String url) {
+    public String replaceDocEditorURLToInternal(final String url) {
         String innerDocEditorUrl = getInnerDocEditorUrl();
         String publicDocEditorUrl = getPublicDocEditorUrl();
         if (!publicDocEditorUrl.equals(innerDocEditorUrl)) {
-            url = url.replace(publicDocEditorUrl, innerDocEditorUrl);
+            return url.replace(publicDocEditorUrl, innerDocEditorUrl);
         }
         return url;
     }
 
-    public String getGobackUrl(Long attachmentId) {
+    public String getGobackUrl(final Long attachmentId) {
         String issueKey = attachmentUtil.getIssueKey(attachmentId);
 
         return ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/" + issueKey;
     }
 
-    public JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user) throws JSONException {
+    public JSONObject getSaveAsObject(final Long attachmentId, final ApplicationUser user) throws JSONException {
         JSONObject saveAs = new JSONObject();
         saveAs.put("uri", getJiraBaseUrl() + APIServlet + "?type=save-as");
         saveAs.put("available", attachmentUtil.checkAccess(attachmentId, user, true));

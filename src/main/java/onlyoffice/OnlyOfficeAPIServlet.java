@@ -57,8 +57,9 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private final ConfigurationManager configurationManager;
 
     @Inject
-    public OnlyOfficeAPIServlet(JiraAuthenticationContext jiraAuthenticationContext, AttachmentUtil attachmentUtil,
-                                ParsingUtil parsingUtil, UrlManager urlManager, ConfigurationManager configurationManager) {
+    public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext, final AttachmentUtil attachmentUtil,
+                                final ParsingUtil parsingUtil, final UrlManager urlManager,
+                                final ConfigurationManager configurationManager) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.attachmentUtil = attachmentUtil;
         this.parsingUtil = parsingUtil;
@@ -67,7 +68,7 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         String type = request.getParameter("type");
         if (type != null) {
             switch (type.toLowerCase())
@@ -85,7 +86,7 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
         }
     }
 
-    private void saveAs (HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void saveAs (final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
         if (user == null) {

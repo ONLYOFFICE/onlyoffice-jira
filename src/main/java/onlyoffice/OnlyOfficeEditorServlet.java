@@ -75,11 +75,13 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final DemoManager demoManager;
 
     @Inject
-    public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
-            I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
-            AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
-            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory,
-            ConfigurationManager configurationManager, DemoManager demoManager) {
+    public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
+                                   final  I18nResolver i18n, final UrlManager urlManager, final JwtManager jwtManager,
+                                   final DocumentManager documentManager, final AttachmentUtil attachmentUtil,
+                                   final TemplateRenderer templateRenderer, final LocaleManager localeManager,
+                                   final WebResourceUrlProvider webResourceUrlProvider,
+                                   final WebResourceAssemblerFactory webResourceAssemblerFactory,
+                                   final ConfigurationManager configurationManager, final DemoManager demoManager) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -100,7 +102,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         if (!jiraAuthenticationContext.isLoggedInUser()) {
             String currentURL= request.getRequestURI() + "?" + request.getQueryString();
             String query ="?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
@@ -173,8 +175,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         templateRenderer.render("templates/editor.vm", defaults, response.getWriter());
     }
 
-    private Map<String, Object> getTemplateConfig(Long attachmentId, String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
-            ApplicationUser user, String errorMessage, String type) throws UnsupportedEncodingException {
+    private Map<String, Object> getTemplateConfig(final Long attachmentId, final String apiUrl, final String callbackUrl, final String fileUrl, final String key, final String fileName,
+                                                  final ApplicationUser user, final String errorMessage, final String type) throws UnsupportedEncodingException {
 
         Map<String, Object> defaults = new HashMap<String, Object>();
         Map<String, String> config = new HashMap<String, String>();
@@ -182,6 +184,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String docTitle = fileName.trim();
         String docExt = attachmentUtil.getFileExt(attachmentId);
         String documentType = documentManager.getDocType(docExt);
+        String errorMessageLocal = errorMessage;
 
         JSONObject responseJson = new JSONObject();
         JSONObject documentObject = new JSONObject();
@@ -195,7 +198,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             responseJson.put("type", type);
             responseJson.put("width", "100%");
             responseJson.put("height", "100%");
-            if (errorMessage == null || errorMessage.isEmpty()) {
+            if (errorMessageLocal == null || errorMessageLocal.isEmpty()) {
                 if (documentType != null) {
                     responseJson.put("documentType", documentType);
 
@@ -234,14 +237,14 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                         responseJson.put("token", jwtManager.createToken(responseJson));
                     }
                 } else {
-                    errorMessage = i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + " (." + docExt + ")";
+                    errorMessageLocal = i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + " (." + docExt + ")";
                 }
             }
 
             config.put("docserviceApiUrl", apiUrl + configurationManager.getProperty("files.docservice.url.api"));
             config.put("saveAsAsHtml", urlManager.getSaveAsObject(attachmentId, user).toString());
             config.put("attachmentId", attachmentId.toString());
-            config.put("errorMessage", errorMessage);
+            config.put("errorMessage", errorMessageLocal);
             config.put("docTitle", docTitle);
             config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-app:editor-page-resources",
                     documentType +".ico", UrlMode.ABSOLUTE));

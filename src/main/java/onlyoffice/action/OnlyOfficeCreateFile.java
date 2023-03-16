@@ -57,7 +57,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
     private String fileName;
 
     @Inject
-    public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext, PluginAccessor pluginAccessor,
+    public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext, final PluginAccessor pluginAccessor,
                                 final DocumentManager documentManager, final AttachmentUtil attachmentUtil) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.pluginAccessor = pluginAccessor;
@@ -142,11 +142,11 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
     }
 
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 }

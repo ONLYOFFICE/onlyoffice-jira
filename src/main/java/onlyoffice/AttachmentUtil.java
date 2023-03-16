@@ -60,7 +60,7 @@ public class AttachmentUtil {
     private final OfBizDelegator ofBizDelegator;
 
     @Inject
-    public AttachmentUtil(AttachmentManager attachmentManager, PermissionManager permissionManager) {
+    public AttachmentUtil(final AttachmentManager attachmentManager, final PermissionManager permissionManager) {
 
         this.attachmentManager = attachmentManager;
         this.permissionManager = permissionManager;
@@ -68,11 +68,11 @@ public class AttachmentUtil {
         ofBizDelegator = ComponentAccessor.getOfBizDelegator();
     }
 
-    public boolean checkAccess(Long attachmentId, ApplicationUser user, boolean forEdit) {
+    public boolean checkAccess(final Long attachmentId, final ApplicationUser user, final boolean forEdit) {
         return checkAccess(attachmentManager.getAttachment(attachmentId), user, forEdit);
     }
 
-    public boolean checkAccess(Attachment attachment, ApplicationUser user, boolean forEdit) {
+    public boolean checkAccess(final Attachment attachment, final ApplicationUser user, final boolean forEdit) {
         if (user == null) {
             return false;
         }
@@ -86,7 +86,7 @@ public class AttachmentUtil {
         }
     }
 
-    public void saveAttachment(Long attachmentId, File file, ApplicationUser user)
+    public void saveAttachment(final Long attachmentId, final File file, final ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
@@ -99,7 +99,7 @@ public class AttachmentUtil {
         attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
-    public ChangeItemBean saveAttachment(Long attachmentId, File file, String ext, ApplicationUser user)
+    public ChangeItemBean saveAttachment(final Long attachmentId, final File file, final String ext, final ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
@@ -115,38 +115,38 @@ public class AttachmentUtil {
         return attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
-    public void getAttachmentData(DownloadFileStreamConsumer consumer, Long attachmentId) throws IOException {
+    public void getAttachmentData(final DownloadFileStreamConsumer consumer, final Long attachmentId) throws IOException {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         attachmentManager.streamAttachmentContent(attachment, consumer);
     }
 
-    public Long getFilesize(Long attachmentId) {
+    public Long getFilesize(final Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         return attachment.getFilesize();
     }
 
-    public String getMediaType(Long attachmentId) {
+    public String getMediaType(final Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         return attachment.getMimetype();
     }
 
-    public String getFileName(Long attachmentId) {
+    public String getFileName(final Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         return attachment.getFilename();
     }
 
-    public String getFileExt(Long attachmentId) {
+    public String getFileExt(final Long attachmentId) {
         String fileName = getFileName(attachmentId);
         return fileName.substring(fileName.lastIndexOf(".") + 1).trim().toLowerCase();
     }
 
-    public String getIssueKey(Long attachmentId) {
+    public String getIssueKey(final Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         Issue issue = attachment.getIssue();
         return issue.getKey();
     }
 
-    public String getCorrectAttachmentName (String fileName, Issue issue) {
+    public String getCorrectAttachmentName (final String fileName, final Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 
         String basename = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -157,22 +157,24 @@ public class AttachmentUtil {
         int count = 0;
         Boolean exist = true;
 
+        String result = fileName;
+
         while (exist) {
             exist = false;
             for (Attachment attachment : attachments) {
                 if (attachment.getFilename().equals(fileName)) {
                     count++;
-                    fileName = basename + "-" + count + ext;
+                    result = basename + "-" + count + ext;
                     exist = true;
                     break;
                 }
             }
         }
 
-        return fileName;
+        return result;
     }
 
-    public String getProperty(Long attachmentId, String key) {
+    public String getProperty(final Long attachmentId, final String key) {
         String property = null;
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         PropertySet properties = attachment.getProperties();
@@ -183,7 +185,7 @@ public class AttachmentUtil {
         return property;
     }
 
-    public void setProperty (Long attachmentId, String key, String value) {
+    public void setProperty (final Long attachmentId, final String key, final String value) {
         FieldMap fieldMap = FieldMap.build(
                 "entityId", attachmentId,
                 "propertyKey", key,
@@ -206,7 +208,7 @@ public class AttachmentUtil {
         ofBizDelegator.storeAll(Collections.singletonList(propertyValue));
     }
 
-    public void removeProperty (Long attachmentId, String key) {
+    public void removeProperty (final Long attachmentId, final String key) {
         FieldMap fieldMap = FieldMap.build(
                 "entityId", attachmentId,
                 "propertyKey", key

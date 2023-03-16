@@ -76,10 +76,10 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final ConversionManager conversionManager;
 
     @Inject
-    public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
-                                     JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
-                                     DocumentManager documentManager, ConfigurationManager configurationManager, ConversionManager conversionManager) {
+    public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory,
+                                     final JiraAuthenticationContext jiraAuthenticationContext, final JwtManager jwtManager, final AttachmentUtil attachmentUtil,
+                                     final TemplateRenderer templateRenderer, final UrlManager urlManager, final ParsingUtil parsingUtil,
+                                     final DocumentManager documentManager, final ConfigurationManager configurationManager, final ConversionManager conversionManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -98,7 +98,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         if (jwtManager.jwtEnabled()) {
             String jwth = jwtManager.getJwtHeader();
             String header = (String) request.getHeader(jwth);
@@ -131,7 +131,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain; charset=utf-8");
 
         String vkey = request.getParameter("vkey");
@@ -156,7 +156,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         log.info("error = " + error);
     }
 
-    private void processData(String attachmentIdString, HttpServletRequest request) throws Exception {
+    private void processData(final String attachmentIdString, final HttpServletRequest request) throws Exception {
         log.info("attachmentId = " + attachmentIdString);
         InputStream requestStream = request.getInputStream();
         if (attachmentIdString.isEmpty()) {

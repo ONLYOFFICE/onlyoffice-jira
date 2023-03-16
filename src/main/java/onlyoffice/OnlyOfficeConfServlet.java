@@ -69,9 +69,9 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final DemoManager demoManager;
 
     @Inject
-    public OnlyOfficeConfServlet(UserManager userManager, PluginSettingsFactory pluginSettingsFactory,
-            JwtManager jwtManager, TemplateRenderer templateRenderer, ConfigurationManager configurationManager, DemoManager demoManager) {
-                
+    public OnlyOfficeConfServlet(final UserManager userManager, final PluginSettingsFactory pluginSettingsFactory,
+                                 final JwtManager jwtManager, final TemplateRenderer templateRenderer,
+                                 final ConfigurationManager configurationManager, final DemoManager demoManager) {
         this.userManager = userManager;
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
@@ -84,7 +84,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         UserProfile user = userManager.getRemoteUser(request);
         if (user == null || !userManager.isSystemAdmin(user.getUserKey())) {
             String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
@@ -123,7 +123,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         UserKey userKey = userManager.getRemoteUser(request).getUserKey();
         if (userKey == null || !userManager.isSystemAdmin(userKey)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -205,13 +205,13 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         response.getWriter().write("{\"success\": true}");
     }
 
-    private String AppendSlash(String str) {
+    private String AppendSlash(final String str) {
         if (str == null || str.isEmpty() || str.endsWith("/"))
             return str;
         return str + "/";
     }
 
-    private String getBody(InputStream stream) {
+    private String getBody(final InputStream stream) {
         try(Scanner scanner = new Scanner(stream)) {
             try(Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
                 return scanner.hasNext() ? scanner.next() : "";
@@ -219,7 +219,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         }
     }
 
-    private Boolean CheckDocServUrl(String url) {
+    private Boolean CheckDocServUrl(final String url) {
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             HttpGet request = new HttpGet(url + "healthcheck");
             try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -234,7 +234,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         return false;
     }
 
-    private Boolean CheckDocServCommandService(String url) throws SecurityException {
+    private Boolean CheckDocServCommandService(final String url) throws SecurityException {
         Integer errorCode = -1;
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();
@@ -289,7 +289,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         }
     }
 
-    private String getBoolAsAttribute(String value) {
+    private String getBoolAsAttribute(final String value) {
         return value.equals("true") ? "checked=\"\"" : "";
     }
 }

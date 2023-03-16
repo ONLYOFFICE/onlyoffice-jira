@@ -24,7 +24,7 @@ import java.util.Scanner;
 
 @Named
 public class ParsingUtil {
-    public String getBody(InputStream stream) {
+    public String getBody(final InputStream stream) {
         Scanner scanner = null;
         Scanner scannerUseDelimiter = null;
         try {
