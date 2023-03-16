@@ -68,11 +68,17 @@ public class Format {
         return name;
     }
 
-    public Type getType() { return type; }
+    public Type getType() {
+        return type;
+    }
 
-    public boolean isEdit() { return edit; }
+    public boolean isEdit() {
+        return edit;
+    }
 
-    public boolean isFillForm() { return fillForm; }
+    public boolean isFillForm() {
+        return fillForm;
+    }
 
     public List<String> getConvertTo() {
         return convertTo;
@@ -82,15 +88,21 @@ public class Format {
         this.name = name;
     }
 
-    public void setType(final Type type) { this.type = type; }
+    public void setType(final Type type) {
+        this.type = type;
+    }
 
     public void setConvertTo(final List<String> convertTo) {
         this.convertTo = convertTo;
     }
 
-    public void setEdit(final boolean edit) { this.edit = edit; }
+    public void setEdit(final boolean edit) {
+        this.edit = edit;
+    }
 
-    public void setFillForm(final boolean fillForm) { this.fillForm = fillForm; }
+    public void setFillForm(final boolean fillForm) {
+        this.fillForm = fillForm;
+    }
 
     public boolean isCustomizable() {
         return customizable;

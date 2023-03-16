@@ -45,8 +45,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 @Scanned
-public class OnlyOfficeConversion extends AbstractIssueSelectAction
-{
+public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
 
     @JiraImport
@@ -231,9 +230,13 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         return attachmentUtil.getFileExt(attachmentId);
     }
 
-    public String getTargetFileType() { return conversionManager.getTargetExt(getFileType()); }
+    public String getTargetFileType() {
+        return conversionManager.getTargetExt(getFileType());
+    }
 
-    public List<String> getTargetFileTypeList() { return conversionManager.getTargetExtList(getFileType()); }
+    public List<String> getTargetFileTypeList() {
+        return conversionManager.getTargetExtList(getFileType());
+    }
 
     public boolean isConvertibleToDefault() {
         Long attachmentId = Long.parseLong(this.attachmentId);

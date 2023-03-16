@@ -101,10 +101,18 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         Boolean demoTrialIsOver = demoManager.trialIsOver();
         Map<String, Boolean> defaultCustomizableEditingTypes = configurationManager.getCustomizableEditingTypes();
 
-        if (apiUrl == null || apiUrl.isEmpty()) { apiUrl = ""; }
-		if (docInnerUrl == null || docInnerUrl.isEmpty()) { docInnerUrl = ""; }
-		if (confUrl == null || confUrl.isEmpty()) { confUrl = ""; }
-		if (jwtSecret == null || jwtSecret.isEmpty()) { jwtSecret = ""; }
+        if (apiUrl == null || apiUrl.isEmpty()) {
+            apiUrl = "";
+        }
+        if (docInnerUrl == null || docInnerUrl.isEmpty()) {
+            docInnerUrl = "";
+        }
+        if (confUrl == null || confUrl.isEmpty()) {
+            confUrl = "";
+        }
+        if (jwtSecret == null || jwtSecret.isEmpty()) {
+            jwtSecret = "";
+        }
 
         response.setContentType("text/html;charset=UTF-8");
 

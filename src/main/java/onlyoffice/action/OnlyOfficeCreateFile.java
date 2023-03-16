@@ -41,8 +41,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 @Scanned
-public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
-{
+public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
     private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
 
     @JiraImport
