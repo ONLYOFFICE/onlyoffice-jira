@@ -106,7 +106,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         if (!jiraAuthenticationContext.isLoggedInUser()) {
             String currentURL= request.getRequestURI() + "?" + request.getQueryString();
             String query ="?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
-            response.sendRedirect ("/login.jsp" + query);
+            response.sendRedirect("/login.jsp" + query);
             return;
         }
 

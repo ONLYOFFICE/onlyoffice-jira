@@ -146,7 +146,7 @@ public class AttachmentUtil {
         return issue.getKey();
     }
 
-    public String getCorrectAttachmentName (final String fileName, final Issue issue) {
+    public String getCorrectAttachmentName(final String fileName, final Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 
         String basename = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -185,7 +185,7 @@ public class AttachmentUtil {
         return property;
     }
 
-    public void setProperty (final Long attachmentId, final String key, final String value) {
+    public void setProperty(final Long attachmentId, final String key, final String value) {
         FieldMap fieldMap = FieldMap.build(
                 "entityId", attachmentId,
                 "propertyKey", key,
@@ -208,7 +208,7 @@ public class AttachmentUtil {
         ofBizDelegator.storeAll(Collections.singletonList(propertyValue));
     }
 
-    public void removeProperty (final Long attachmentId, final String key) {
+    public void removeProperty(final Long attachmentId, final String key) {
         FieldMap fieldMap = FieldMap.build(
                 "entityId", attachmentId,
                 "propertyKey", key

@@ -86,7 +86,7 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
         }
     }
 
-    private void saveAs (final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+    private void saveAs(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
         if (user == null) {
