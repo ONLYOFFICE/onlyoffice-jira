@@ -128,9 +128,9 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
             }
 
             if (
-                conversionManager.getTargetExtList(ext) == null ||
-                conversionManager.getTargetExtList(ext).isEmpty() ||
-                !conversionManager.getTargetExtList(ext).contains(targetFileType)
+                conversionManager.getTargetExtList(ext) == null
+                || conversionManager.getTargetExtList(ext).isEmpty()
+                || !conversionManager.getTargetExtList(ext).contains(targetFileType)
             ) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
                 response.setStatus(415);
