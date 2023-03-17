@@ -151,7 +151,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
         Long attachmentId = Long.parseLong(this.attachmentId);
         String ext = attachmentUtil.getFileExt(attachmentId);
         String targetExt = conversionManager.getTargetExt(ext);
-        String url = urlManager.GetFileUri(attachmentId);
+        String url = urlManager.getFileUri(attachmentId);
         String lang = getLocale().toLanguageTag();
 
         if (actionType.equals("download-as") && !this.targetFileType.isEmpty()) {

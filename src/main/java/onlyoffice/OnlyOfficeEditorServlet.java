@@ -147,7 +147,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
                 fileName = attachmentUtil.getFileName(attachmentId);
 
-                fileUrl = urlManager.GetFileUri(attachmentId);
+                fileUrl = urlManager.getFileUri(attachmentId);
 
                 if (attachmentUtil.checkAccess(attachmentId, user, true)) {
                     callbackUrl = urlManager.getCallbackUrl(attachmentId);

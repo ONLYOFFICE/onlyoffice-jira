@@ -38,7 +38,7 @@ public class UrlManager {
     private final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
     private final String callbackServlet = "plugins/servlet/onlyoffice/save";
-    private final String APIServlet = "plugins/servlet/onlyoffice/api";
+    private final String apiServlet = "plugins/servlet/onlyoffice/api";
 
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
@@ -79,7 +79,7 @@ public class UrlManager {
         }
     }
 
-    public String GetFileUri(final Long attachmentId) throws Exception {
+    public String getFileUri(final Long attachmentId) throws Exception {
         String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
@@ -123,7 +123,7 @@ public class UrlManager {
 
     public JSONObject getSaveAsObject(final Long attachmentId, final ApplicationUser user) throws JSONException {
         JSONObject saveAs = new JSONObject();
-        saveAs.put("uri", getJiraBaseUrl() + APIServlet + "?type=save-as");
+        saveAs.put("uri", getJiraBaseUrl() + apiServlet + "?type=save-as");
         saveAs.put("available", attachmentUtil.checkAccess(attachmentId, user, true));
 
         return saveAs;
