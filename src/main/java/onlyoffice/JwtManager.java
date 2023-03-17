@@ -112,8 +112,8 @@ public class JwtManager {
         }
 
         Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secret_key = new SecretKeySpec(jwts.getBytes("UTF-8"), "HmacSHA256");
-        sha256.init(secret_key);
+        SecretKeySpec secretKey = new SecretKeySpec(jwts.getBytes("UTF-8"), "HmacSHA256");
+        sha256.init(secretKey);
 
         return sha256;
     }
