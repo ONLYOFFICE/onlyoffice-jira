@@ -112,7 +112,7 @@ public class ConfigurationManager {
 
     public CloseableHttpClient getHttpClient() throws Exception {
         Integer timeout = (int) TimeUnit.SECONDS.toMillis(Long.parseLong(getProperty("timeout")));
-        ;
+
         RequestConfig config = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
 
         CloseableHttpClient httpClient;
