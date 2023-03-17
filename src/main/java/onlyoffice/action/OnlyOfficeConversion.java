@@ -81,7 +81,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         return INPUT;
@@ -96,25 +96,25 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
 
         if (!attachmentUtil.checkAccess(attachmentId, getLoggedInUser(), false)) {
             addErrorMessage(getText("onlyoffice.connector.dialog.conversion.message.error.permission"));
-            response.setStatus(403);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         if (fileName == null || fileName.isEmpty()) {
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-            response.setStatus(400);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 
         if (actionType.equals("conversion")) {
             if (!attachmentUtil.checkAccess(attachmentId, getLoggedInUser(), true)) {
                 addErrorMessage(getText("onlyoffice.connector.dialog.conversion.message.error.permission"));
-                response.setStatus(403);
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 
             if (conversionManager.getTargetExt(ext) == null) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(415);
+                response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
                 return;
             }
         }
@@ -122,7 +122,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
         if (actionType.equals("download-as")) {
             if (targetFileType == null || targetFileType.isEmpty()) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(400);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
@@ -132,7 +132,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
                 || !conversionManager.getTargetExtList(ext).contains(targetFileType)
             ) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(415);
+                response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
                 return;
             }
         }
@@ -181,7 +181,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
                         convertResult.put("fileName", fileName);
                     } else {
                         log.error("Conversion service returned code " + status + ". URL: " + fileUrl);
-                        convertResult.put("error", -10);
+                        convertResult.put("error", conversionManager.STATUS_NOT_OK);
                     }
                 }
             } catch (Exception e) {
@@ -197,7 +197,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         writer.write(convertResult.toString());
-        response.setStatus(200);
+        response.setStatus(HttpServletResponse.SC_OK);
         return "none";
     }
 

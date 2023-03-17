@@ -163,7 +163,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             ex.printStackTrace(pw);
             String error = ex.toString() + "\n" + sw.toString();
             log.error(error);
-            response.sendError(404, error);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, error);
         }
 
         response.setContentType("text/html;charset=UTF-8");

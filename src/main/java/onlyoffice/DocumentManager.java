@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 @Named
 public class DocumentManager {
     private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
-
+    private final static int DEFAULT_MAX_FILE_SIZE = 5242880;
     private final AttachmentUtil attachmentUtil;
     private final ConfigurationManager configurationManager;
 
@@ -72,7 +72,7 @@ public class DocumentManager {
             size = 0;
         }
 
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : DEFAULT_MAX_FILE_SIZE;
     }
 
     public boolean isEditable(final String ext) {

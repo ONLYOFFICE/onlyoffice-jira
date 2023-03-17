@@ -44,6 +44,7 @@ import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static onlyoffice.constants.Formats.getSupportedFormats;
 
@@ -109,7 +110,7 @@ public class ConfigurationManager {
     }
 
     public CloseableHttpClient getHttpClient() throws Exception {
-        Integer timeout = Integer.parseInt(getProperty("timeout")) * 1000;
+        Integer timeout = (int) TimeUnit.SECONDS.toMillis(Long.parseLong(getProperty("timeout")));;
         RequestConfig config = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
 
         CloseableHttpClient httpClient;

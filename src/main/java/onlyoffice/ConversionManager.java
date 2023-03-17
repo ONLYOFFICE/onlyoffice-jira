@@ -43,6 +43,7 @@ import java.util.List;
 public class ConversionManager {
     private final Logger log = LogManager.getLogger("onlyoffice.convert.ConvertManager");
 
+    public static final int STATUS_NOT_OK = -10;
     private final UrlManager urlManager;
     private final JwtManager jwtManager;
     private final ConfigurationManager configurationManager;
@@ -151,7 +152,7 @@ public class ConversionManager {
 
                 if (status != HttpStatus.SC_OK) {
                     log.error("Conversion service returned code " + status + ". URL: " + conversionServiceUrl);
-                    callBackJson.put("error", -10);
+                    callBackJson.put("error", STATUS_NOT_OK);
                 } else {
                     InputStream is = response.getEntity().getContent();
                     String content = IOUtils.toString(is, String.valueOf(StandardCharsets.UTF_8));

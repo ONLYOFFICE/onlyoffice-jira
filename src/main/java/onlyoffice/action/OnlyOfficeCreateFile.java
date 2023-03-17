@@ -70,7 +70,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         return INPUT;
@@ -98,7 +98,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         InputStream demoFileStream = null;
