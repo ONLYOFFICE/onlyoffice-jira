@@ -19,14 +19,11 @@
 package onlyoffice;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -67,13 +64,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final int STATUS_FORCE_SAVE = 6;
     private static final int STATUS_CORRUPTED_FORCE_SAVE = 7;
 
-    @JiraImport
-    private final PluginSettingsFactory pluginSettingsFactory;
-    @JiraImport
-    private final JiraAuthenticationContext jiraAuthenticationContext;
-    @JiraImport
-    private final TemplateRenderer templateRenderer;
-
     private final UserManager userManager;
     private final JwtManager jwtManager;
     private final PluginSettings settings;
@@ -85,22 +75,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final ConversionManager conversionManager;
 
     @Inject
-    public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory,
-                                     final JiraAuthenticationContext jiraAuthenticationContext,
-                                     final JwtManager jwtManager, final AttachmentUtil attachmentUtil,
-                                     final TemplateRenderer templateRenderer, final UrlManager urlManager,
-                                     final ParsingUtil parsingUtil,
-                                     final DocumentManager documentManager,
+    public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory, final JwtManager jwtManager,
+                                     final AttachmentUtil attachmentUtil, final UrlManager urlManager,
+                                     final ParsingUtil parsingUtil, final DocumentManager documentManager,
                                      final ConfigurationManager configurationManager,
                                      final ConversionManager conversionManager) {
-
-        this.pluginSettingsFactory = pluginSettingsFactory;
-        this.jiraAuthenticationContext = jiraAuthenticationContext;
-
         settings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
         this.attachmentUtil = attachmentUtil;
-        this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
         this.parsingUtil = parsingUtil;
         this.documentManager = documentManager;
