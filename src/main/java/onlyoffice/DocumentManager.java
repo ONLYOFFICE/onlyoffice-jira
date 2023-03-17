@@ -66,7 +66,7 @@ public class DocumentManager {
         return extendSupportedFormats;
     }
 
-    public long GetMaxFileSize() {
+    public long getMaxFileSize() {
         long size;
         try {
             String filesizeMax = configurationManager.getProperty("filesize-max");
@@ -155,7 +155,7 @@ public class DocumentManager {
         return key;
     }
 
-    public String CreateHash(final String str) {
+    public String createHash(final String str) {
         try {
             String secret = configurationManager.getProperty("files.docservice.secret");
 
@@ -169,7 +169,7 @@ public class DocumentManager {
         return "";
     }
 
-    public String ReadHash(final String base64) {
+    public String readHash(final String base64) {
         try {
             String str = new String(Base64.getDecoder().decode(base64), "UTF-8");
 

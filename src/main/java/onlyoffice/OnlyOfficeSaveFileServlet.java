@@ -131,7 +131,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.readHash(vkey);
 
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
@@ -153,7 +153,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.readHash(vkey);
 
         String error = "";
         try {

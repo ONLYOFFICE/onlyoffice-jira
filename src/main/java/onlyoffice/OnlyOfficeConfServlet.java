@@ -164,8 +164,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
                 apiUrl = demoManager.getUrl();
                 docInnerUrl = demoManager.getUrl();
             } else {
-                apiUrl = AppendSlash(jsonObj.getString("apiUrl"));
-                docInnerUrl = AppendSlash(jsonObj.getString("docInnerUrl"));
+                apiUrl = appendSlash(jsonObj.getString("apiUrl"));
+                docInnerUrl = appendSlash(jsonObj.getString("docInnerUrl"));
                 jwtSecret = jsonObj.getString("jwtSecret");
                 Boolean ignoreCertificate = jsonObj.getBoolean("ignoreCertificate");
 
@@ -175,7 +175,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
                 pluginSettings.put("onlyoffice.ignoreCertificate", ignoreCertificate.toString());
             }
 
-            confUrl = AppendSlash(jsonObj.getString("confUrl"));
+            confUrl = appendSlash(jsonObj.getString("confUrl"));
             JSONArray editingTypes = jsonObj.getJSONArray("editingTypes");
 
             pluginSettings.put("onlyoffice.confUrl", confUrl);
@@ -194,14 +194,14 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         }
 
         log.debug("Checking docserv url");
-        if (!CheckDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
+        if (!checkDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
             response.getWriter().write("{\"success\": false, \"message\": \"docservunreachable\"}");
             return;
         }
 
         try {
             log.debug("Checking docserv commandservice");
-            if (!CheckDocServCommandService((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
+            if (!checkDocServCommandService((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
                 response.getWriter().write("{\"success\": false, \"message\": \"docservcommand\"}");
                 return;
             }
@@ -213,7 +213,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         response.getWriter().write("{\"success\": true}");
     }
 
-    private String AppendSlash(final String str) {
+    private String appendSlash(final String str) {
         if (str == null || str.isEmpty() || str.endsWith("/")) {
             return str;
         }
@@ -229,7 +229,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         }
     }
 
-    private Boolean CheckDocServUrl(final String url) {
+    private Boolean checkDocServUrl(final String url) {
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             HttpGet request = new HttpGet(url + "healthcheck");
             try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -246,7 +246,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         return false;
     }
 
-    private Boolean CheckDocServCommandService(final String url) throws SecurityException {
+    private Boolean checkDocServCommandService(final String url) throws SecurityException {
         Integer errorCode = -1;
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();

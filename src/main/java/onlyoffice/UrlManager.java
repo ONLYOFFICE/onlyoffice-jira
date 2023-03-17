@@ -80,7 +80,7 @@ public class UrlManager {
     }
 
     public String getFileUri(final Long attachmentId) throws Exception {
-        String hash = documentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.createHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("fileUrl " + callbackUrl);
@@ -89,7 +89,7 @@ public class UrlManager {
     }
 
     public String getCallbackUrl(final Long attachmentId) throws Exception {
-        String hash = documentManager.CreateHash(Long.toString(attachmentId));
+        String hash = documentManager.createHash(Long.toString(attachmentId));
 
         String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("callbackUrl " + callbackUrl);
