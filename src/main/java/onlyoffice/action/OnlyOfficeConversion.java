@@ -162,8 +162,8 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
                 conversionManager.convert(attachmentId, this.fileName + "." + targetExt, ext, targetExt, url, lang,
                         true);
 
-        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert") &&
-                actionType.equals("conversion")) {
+        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert")
+                && actionType.equals("conversion")) {
             String fileName =
                     attachmentUtil.getCorrectAttachmentName(this.fileName + "." + targetExt, getIssueObject());
             String mimeType = documentManager.getMimeType(fileName);

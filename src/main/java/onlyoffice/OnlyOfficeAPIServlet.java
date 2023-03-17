@@ -143,8 +143,8 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
 
                         response.setContentType("application/json");
                         PrintWriter writer = response.getWriter();
-                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" +
-                                changeItemBean.getToString() + "\"}");
+                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\""
+                                + changeItemBean.getToString() + "\"}");
                     } else {
                         throw new HttpException("Document Server returned code " + status);
                     }

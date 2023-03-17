@@ -119,8 +119,8 @@ public class DocumentManager {
         for (Format format : supportedFormats) {
             if (format.getName().equals(ext)) {
 
-                String type = format.getType().name().toLowerCase().equals("form") ? "word" :
-                        format.getType().name().toLowerCase();
+                String type = format.getType().name().toLowerCase().equals("form") ? "word"
+                        : format.getType().name().toLowerCase();
 
                 return type;
             }

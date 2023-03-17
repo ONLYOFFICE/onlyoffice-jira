@@ -130,8 +130,8 @@ public class ConversionManager {
             body.put("region", region);
 
             StringEntity requestEntity = new StringEntity(body.toString(), ContentType.APPLICATION_JSON);
-            String conversionServiceUrl = urlManager.getInnerDocEditorUrl() +
-                    configurationManager.getProperties().getProperty("files.docservice.url.convert");
+            String conversionServiceUrl = urlManager.getInnerDocEditorUrl()
+                    + configurationManager.getProperties().getProperty("files.docservice.url.convert");
 
             HttpPost request = new HttpPost(conversionServiceUrl);
 

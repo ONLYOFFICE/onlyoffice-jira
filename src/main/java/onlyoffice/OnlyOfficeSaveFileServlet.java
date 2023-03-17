@@ -117,8 +117,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             String jwth = jwtManager.getJwtHeader();
             String header = (String) request.getHeader(jwth);
             String authorizationPrefix = "Bearer ";
-            String token = (header != null && header.startsWith(authorizationPrefix)) ?
-                    header.substring(authorizationPrefix.length()) : header;
+            String token = (header != null && header.startsWith(authorizationPrefix))
+                    ? header.substring(authorizationPrefix.length()) : header;
 
             if (token == null || token == "") {
                 throw new SecurityException("Expected JWT");
@@ -201,8 +201,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                     String jwth = jwtManager.getJwtHeader();
                     String header = (String) request.getHeader(jwth);
                     String authorizationPrefix = "Bearer ";
-                    token = (header != null && header.startsWith(authorizationPrefix)) ?
-                            header.substring(authorizationPrefix.length()) : header;
+                    token = (header != null && header.startsWith(authorizationPrefix))
+                            ? header.substring(authorizationPrefix.length()) : header;
                     inBody = false;
                 }
 
