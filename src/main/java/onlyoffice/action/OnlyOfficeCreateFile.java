@@ -42,7 +42,7 @@ import java.nio.file.Files;
 
 @Scanned
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
-    private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
+    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;

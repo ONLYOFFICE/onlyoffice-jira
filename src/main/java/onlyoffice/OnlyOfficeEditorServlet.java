@@ -98,7 +98,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.demoManager = demoManager;
     }
 
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
     private static final long serialVersionUID = 1L;
 
     @Override

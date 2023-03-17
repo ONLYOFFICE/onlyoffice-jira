@@ -46,7 +46,7 @@ import java.util.List;
 
 @Scanned
 public class OnlyOfficeConversion extends AbstractIssueSelectAction {
-    private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
+    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;

@@ -50,7 +50,7 @@ import static onlyoffice.constants.Formats.getSupportedFormats;
 
 @Named
 public class ConfigurationManager {
-    private static final Logger log = LogManager.getLogger("onlyoffice.ConfigurationManager");
+    private final Logger log = LogManager.getLogger("onlyoffice.ConfigurationManager");
     private static final String CONFIGURATION_PATH = "onlyoffice-config.properties";
 
     private final PluginSettings pluginSettings;

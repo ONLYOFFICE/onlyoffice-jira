@@ -56,7 +56,7 @@ import javax.inject.Inject;
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
+    private  final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
     private static final int STATUS_EDITING = 1;
     private static final int STATUS_MUST_SAVE = 2;

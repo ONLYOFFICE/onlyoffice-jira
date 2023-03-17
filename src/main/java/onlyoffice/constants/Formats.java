@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Formats {
-    public static final List<Format> formats = new ArrayList<Format>() {{
+    public static final List<Format> FORMATS_LIST = new ArrayList<Format>() {{
         add(new Format("djvu", Type.WORD, new ArrayList<String>()));
         add(new Format("doc", Type.WORD, Arrays.asList("docx", "docxf", "docm", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
         add(new Format("docm", Type.WORD, Arrays.asList("docx", "docxf", "dotx", "dotm", "epub", "fb2", "html", "odt", "ott", "pdf", "pdfa", "rtf", "txt")));
@@ -77,12 +77,12 @@ public class Formats {
     }};
 
     public static List<Format> getSupportedFormats() {
-        return formats;
+        return FORMATS_LIST;
     }
 
     public static JSONArray getSupportedFormatsAsJson() throws JSONException {
         JSONArray array = new JSONArray();
-        for (Format format : formats) {
+        for (Format format : FORMATS_LIST) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("name", format.name);
             jsonObject.put("type", format.type);

@@ -50,7 +50,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 
 @Named
 public class AttachmentUtil {
-    private static final Logger log = LogManager.getLogger("onlyoffice.AttachmentUtil");
+    private final Logger log = LogManager.getLogger("onlyoffice.AttachmentUtil");
     private static final int TYPE_STRING = 5;
     @ComponentImport
     private final AttachmentManager attachmentManager;

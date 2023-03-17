@@ -38,9 +38,9 @@ import javax.inject.Named;
 
 @Named
 public class UrlManager {
-    private static final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
+    private final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
-    private static final String callbackServler = "plugins/servlet/onlyoffice/save";
+    private final String callbackServlet = "plugins/servlet/onlyoffice/save";
     private final String APIServlet = "plugins/servlet/onlyoffice/api";
 
     @ComponentImport
@@ -84,7 +84,7 @@ public class UrlManager {
     public String GetFileUri(final Long attachmentId) throws Exception {
         String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
-        String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
+        String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("fileUrl " + callbackUrl);
 
         return callbackUrl;
@@ -93,7 +93,7 @@ public class UrlManager {
     public String getCallbackUrl(final Long attachmentId) throws Exception {
         String hash = documentManager.CreateHash(Long.toString(attachmentId));
 
-        String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
+        String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("callbackUrl " + callbackUrl);
 
         return callbackUrl;

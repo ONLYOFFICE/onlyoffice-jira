@@ -80,7 +80,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         this.demoManager = demoManager;
     }
 
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
     private static final long serialVersionUID = 1L;
     private final static int ERROR_INVALID_TOKEN = 6;
 

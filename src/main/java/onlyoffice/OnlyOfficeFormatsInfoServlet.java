@@ -35,7 +35,7 @@ import java.util.List;
 
 public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeFormatsInfoServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeFormatsInfoServlet");
     private final DocumentManager documentManager;
 
     @Inject

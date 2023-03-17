@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 
 @Named
 public class DocumentManager {
-    private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
+    private final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
     private final static int DEFAULT_MAX_FILE_SIZE = 5242880;
     private final AttachmentUtil attachmentUtil;
     private final ConfigurationManager configurationManager;
@@ -155,7 +155,7 @@ public class DocumentManager {
         try {
             String secret = configurationManager.getProperty("files.docservice.secret");
 
-            String payload = GetHashHex(str + secret) + "?" + str;
+            String payload = getHashHex(str + secret) + "?" + str;
 
             String base64 = Base64.getEncoder().encodeToString(payload.getBytes("UTF-8"));
             return base64;
@@ -173,7 +173,7 @@ public class DocumentManager {
 
             String[] payloadParts = str.split("\\?");
 
-            String payload = GetHashHex(payloadParts[1] + secret);
+            String payload = getHashHex(payloadParts[1] + secret);
             if (payload.equals(payloadParts[0])) {
                 return payloadParts[1];
             }
@@ -183,7 +183,7 @@ public class DocumentManager {
         return "";
     }
 
-    private static String GetHashHex(final String str) {
+    private String getHashHex(final String str) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(str.getBytes());
