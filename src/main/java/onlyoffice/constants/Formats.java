@@ -84,11 +84,11 @@ public class Formats {
         JSONArray array = new JSONArray();
         for (Format format : FORMATS_LIST) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", format.name);
-            jsonObject.put("type", format.type);
-            jsonObject.put("edit", format.edit);
-            jsonObject.put("fillForm", format.fillForm);
-            jsonObject.put("convertTo", new JSONArray(format.convertTo));
+            jsonObject.put("name", format.getName());
+            jsonObject.put("type", format.getType());
+            jsonObject.put("edit", format.isEdit());
+            jsonObject.put("fillForm", format.isFillForm());
+            jsonObject.put("convertTo", new JSONArray(format.getConvertTo()));
             array.put(jsonObject);
         }
         return array;
@@ -98,11 +98,11 @@ public class Formats {
         JSONArray array = new JSONArray();
         for (Format format : formatList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", format.name);
-            jsonObject.put("type", format.type);
-            jsonObject.put("edit", format.edit);
-            jsonObject.put("fillForm", format.fillForm);
-            jsonObject.put("convertTo", new JSONArray(format.convertTo));
+            jsonObject.put("name", format.getName());
+            jsonObject.put("type", format.getType());
+            jsonObject.put("edit", format.isEdit());
+            jsonObject.put("fillForm", format.isFillForm());
+            jsonObject.put("convertTo", new JSONArray(format.getConvertTo()));
             array.put(jsonObject);
         }
         return array;
