@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Formats {
+public final class Formats {
+    private Formats() { }
     public static final List<Format> FORMATS_LIST = new ArrayList<Format>() {{
         add(new Format("djvu", Type.WORD, new ArrayList<String>()));
         add(new Format("doc", Type.WORD,
