@@ -295,7 +295,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         if (errorCode == ERROR_INVALID_TOKEN) {
             throw new SecurityException();
         } else {
-            return errorCode != 0;
+            return errorCode == 0;
         }
     }
 
