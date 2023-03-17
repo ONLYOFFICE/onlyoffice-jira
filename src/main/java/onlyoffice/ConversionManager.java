@@ -108,13 +108,16 @@ public class ConversionManager {
         return null;
     }
 
-    public JSONObject convert(final Long attachmentId, final String downloadUrl, final String ext, final ApplicationUser user) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String downloadUrl, final String ext,
+                              final ApplicationUser user) throws Exception {
         String region = localeManager.getLocaleFor(user).toLanguageTag();
         String defaultExt = this.documentManager.getDefaultExtForEditableFormats(ext);
         return this.convert(attachmentId, null, defaultExt, ext, downloadUrl, region, false);
     }
 
-    public JSONObject convert(final Long attachmentId, final String title, final String currentExt, final String convertToExt, final String url, final String region, final boolean async) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String title, final String currentExt,
+                              final String convertToExt, final String url, final String region, final boolean async)
+            throws Exception {
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();
             body.put("async", async);
@@ -127,7 +130,8 @@ public class ConversionManager {
             body.put("region", region);
 
             StringEntity requestEntity = new StringEntity(body.toString(), ContentType.APPLICATION_JSON);
-            String conversionServiceUrl = urlManager.getInnerDocEditorUrl() + configurationManager.getProperties().getProperty("files.docservice.url.convert");
+            String conversionServiceUrl = urlManager.getInnerDocEditorUrl() +
+                    configurationManager.getProperties().getProperty("files.docservice.url.convert");
 
             HttpPost request = new HttpPost(conversionServiceUrl);
 

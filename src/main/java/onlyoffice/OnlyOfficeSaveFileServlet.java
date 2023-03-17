@@ -18,16 +18,15 @@
 
 package onlyoffice;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Base64;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -38,25 +37,28 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.json.JSONArray;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.util.UserManager;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private  final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
     private static final int STATUS_EDITING = 1;
     private static final int STATUS_MUST_SAVE = 2;
@@ -84,9 +86,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
     @Inject
     public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory,
-                                     final JiraAuthenticationContext jiraAuthenticationContext, final JwtManager jwtManager, final AttachmentUtil attachmentUtil,
-                                     final TemplateRenderer templateRenderer, final UrlManager urlManager, final ParsingUtil parsingUtil,
-                                     final DocumentManager documentManager, final ConfigurationManager configurationManager, final ConversionManager conversionManager) {
+                                     final JiraAuthenticationContext jiraAuthenticationContext,
+                                     final JwtManager jwtManager, final AttachmentUtil attachmentUtil,
+                                     final TemplateRenderer templateRenderer, final UrlManager urlManager,
+                                     final ParsingUtil parsingUtil,
+                                     final DocumentManager documentManager,
+                                     final ConfigurationManager configurationManager,
+                                     final ConversionManager conversionManager) {
 
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -105,12 +111,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         if (jwtManager.jwtEnabled()) {
             String jwth = jwtManager.getJwtHeader();
             String header = (String) request.getHeader(jwth);
             String authorizationPrefix = "Bearer ";
-            String token = (header != null && header.startsWith(authorizationPrefix)) ? header.substring(authorizationPrefix.length()) : header;
+            String token = (header != null && header.startsWith(authorizationPrefix)) ?
+                    header.substring(authorizationPrefix.length()) : header;
 
             if (token == null || token == "") {
                 throw new SecurityException("Expected JWT");
@@ -139,7 +147,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         response.setContentType("text/plain; charset=utf-8");
 
         String vkey = request.getParameter("vkey");
@@ -192,7 +201,8 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                     String jwth = jwtManager.getJwtHeader();
                     String header = (String) request.getHeader(jwth);
                     String authorizationPrefix = "Bearer ";
-                    token = (header != null && header.startsWith(authorizationPrefix)) ? header.substring(authorizationPrefix.length()) : header;
+                    token = (header != null && header.startsWith(authorizationPrefix)) ?
+                            header.substring(authorizationPrefix.length()) : header;
                     inBody = false;
                 }
 

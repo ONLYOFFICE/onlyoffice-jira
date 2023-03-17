@@ -13,40 +13,35 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package onlyoffice;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import com.atlassian.jira.issue.history.ChangeItemBean;
-import com.atlassian.jira.ofbiz.FieldMap;
-import com.atlassian.jira.ofbiz.OfBizDelegator;
-import com.opensymphony.module.propertyset.PropertySet;
-import org.ofbiz.core.entity.GenericValue;
-
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.attachment.Attachment;
+import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
+import com.atlassian.jira.issue.history.ChangeItemBean;
+import com.atlassian.jira.ofbiz.FieldMap;
+import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.opensymphony.module.propertyset.PropertySet;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.ofbiz.core.entity.GenericValue;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Named
 public class AttachmentUtil {
@@ -80,7 +75,7 @@ public class AttachmentUtil {
         Issue issue = attachment.getIssue();
         if (forEdit) {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
-                && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
+                    && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
         }
@@ -99,7 +94,8 @@ public class AttachmentUtil {
         attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
-    public ChangeItemBean saveAttachment(final Long attachmentId, final File file, final String ext, final ApplicationUser user)
+    public ChangeItemBean saveAttachment(final Long attachmentId, final File file, final String ext,
+                                         final ApplicationUser user)
             throws IllegalArgumentException, AttachmentException {
 
         Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
@@ -115,7 +111,8 @@ public class AttachmentUtil {
         return attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
-    public void getAttachmentData(final DownloadFileStreamConsumer consumer, final Long attachmentId) throws IOException {
+    public void getAttachmentData(final DownloadFileStreamConsumer consumer, final Long attachmentId)
+            throws IOException {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         attachmentManager.streamAttachmentContent(attachment, consumer);
     }
@@ -152,7 +149,7 @@ public class AttachmentUtil {
         String basename = fileName.substring(0, fileName.lastIndexOf('.'));
         String ext = fileName.substring(fileName.lastIndexOf("."));
 
-        basename = basename.replaceAll("[*?:\"<>/|\\\\]","_");
+        basename = basename.replaceAll("[*?:\"<>/|\\\\]", "_");
 
         int count = 0;
         Boolean exist = true;
@@ -203,7 +200,8 @@ public class AttachmentUtil {
             property = ofBizDelegator.createValue("OSPropertyEntry", fieldMap);
         }
 
-        GenericValue propertyValue = ofBizDelegator.makeValue("OSPropertyString", FieldMap.build("id", property.getLong("id"), "value", value));
+        GenericValue propertyValue = ofBizDelegator.makeValue("OSPropertyString",
+                FieldMap.build("id", property.getLong("id"), "value", value));
 
         ofBizDelegator.storeAll(Collections.singletonList(propertyValue));
     }

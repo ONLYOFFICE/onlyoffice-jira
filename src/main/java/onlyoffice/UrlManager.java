@@ -19,22 +19,19 @@
 
 package onlyoffice;
 
-import com.atlassian.jira.user.ApplicationUser;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.atlassian.jira.component.ComponentAccessor;
-
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.net.URLEncoder;
 
 @Named
 public class UrlManager {
@@ -52,7 +49,8 @@ public class UrlManager {
     private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(final PluginSettingsFactory pluginSettingsFactory, final AttachmentUtil attachmentUtil, final DocumentManager documentManager,
+    public UrlManager(final PluginSettingsFactory pluginSettingsFactory, final AttachmentUtil attachmentUtil,
+                      final DocumentManager documentManager,
                       final DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();

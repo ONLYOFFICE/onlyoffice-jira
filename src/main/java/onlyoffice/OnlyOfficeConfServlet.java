@@ -18,20 +18,15 @@
 
 package onlyoffice;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.user.UserKey;
+import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
+import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -45,16 +40,18 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.user.UserKey;
-import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 @Scanned
 public class OnlyOfficeConfServlet extends HttpServlet {
@@ -85,7 +82,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final static int ERROR_INVALID_TOKEN = 6;
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         UserProfile user = userManager.getRemoteUser(request);
         if (user == null || !userManager.isSystemAdmin(user.getUserKey())) {
             String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
@@ -95,7 +93,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         String apiUrl = (String) pluginSettings.get("onlyoffice.apiUrl");
         String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
-		String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
+        String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
         String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
         Boolean ignoreCertificate = configurationManager.getBooleanPluginSetting("ignoreCertificate", false);
         Boolean demoEnable = demoManager.isEnable();
@@ -120,7 +118,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         Map<String, Object> defaults = new HashMap<String, Object>();
         defaults.put("docserviceApiUrl", apiUrl);
         defaults.put("docserviceInnerUrl", docInnerUrl);
-		defaults.put("docserviceConfUrl", confUrl);
+        defaults.put("docserviceConfUrl", confUrl);
         defaults.put("docserviceJwtSecret", jwtSecret);
         defaults.put("ignoreCertificate", ignoreCertificate);
         defaults.put("demoEnable", demoEnable);
@@ -132,7 +130,8 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         UserKey userKey = userManager.getRemoteUser(request).getUserKey();
         if (userKey == null || !userManager.isSystemAdmin(userKey)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -147,7 +146,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         String apiUrl;
         String docInnerUrl;
-		String confUrl;
+        String confUrl;
         String jwtSecret;
         Boolean demoEnable;
 
@@ -295,7 +294,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         if (errorCode == ERROR_INVALID_TOKEN) {
             throw new SecurityException();
-        } else  {
+        } else {
             return errorCode != 0;
         }
     }

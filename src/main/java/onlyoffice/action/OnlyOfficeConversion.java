@@ -25,7 +25,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import onlyoffice.*;
+import onlyoffice.AttachmentUtil;
+import onlyoffice.ConfigurationManager;
+import onlyoffice.ConversionManager;
+import onlyoffice.DocumentManager;
+import onlyoffice.UrlManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -40,7 +44,11 @@ import webwork.action.ServletActionContext;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -127,9 +135,9 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
             }
 
             if (
-                conversionManager.getTargetExtList(ext) == null
-                || conversionManager.getTargetExtList(ext).isEmpty()
-                || !conversionManager.getTargetExtList(ext).contains(targetFileType)
+                    conversionManager.getTargetExtList(ext) == null
+                            || conversionManager.getTargetExtList(ext).isEmpty()
+                            || !conversionManager.getTargetExtList(ext).contains(targetFileType)
             ) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
                 response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
@@ -150,10 +158,14 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
             targetExt = this.targetFileType;
         }
 
-        JSONObject convertResult = conversionManager.convert(attachmentId, this.fileName + "." + targetExt, ext, targetExt, url, lang, true);
+        JSONObject convertResult =
+                conversionManager.convert(attachmentId, this.fileName + "." + targetExt, ext, targetExt, url, lang,
+                        true);
 
-        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert") && actionType.equals("conversion")) {
-            String fileName = attachmentUtil.getCorrectAttachmentName(this.fileName + "." + targetExt, getIssueObject());
+        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert") &&
+                actionType.equals("conversion")) {
+            String fileName =
+                    attachmentUtil.getCorrectAttachmentName(this.fileName + "." + targetExt, getIssueObject());
             String mimeType = documentManager.getMimeType(fileName);
             String fileUrl = convertResult.getString("fileUrl");
             File tempFile = Files.createTempFile(null, null).toFile();
@@ -172,12 +184,14 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
 
                         FileUtils.copyInputStreamToFile(inputStream, tempFile);
 
-                        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(tempFile,
-                                fileName, mimeType, getLoggedInUser(), getIssueObject()).build();
+                        CreateAttachmentParamsBean createAttachmentParamsBean =
+                                new CreateAttachmentParamsBean.Builder(tempFile,
+                                        fileName, mimeType, getLoggedInUser(), getIssueObject()).build();
 
                         ChangeItemBean changeItemBean = attachmentManager.createAttachment(createAttachmentParamsBean);
 
-                        convertResult.put("fileUrl", "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
+                        convertResult.put("fileUrl",
+                                "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
                         convertResult.put("fileName", fileName);
                     } else {
                         log.error("Conversion service returned code " + status + ". URL: " + fileUrl);

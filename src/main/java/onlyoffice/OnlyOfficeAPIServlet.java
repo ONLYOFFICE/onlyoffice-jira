@@ -39,7 +39,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -57,7 +60,8 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private final ConfigurationManager configurationManager;
 
     @Inject
-    public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext, final AttachmentUtil attachmentUtil,
+    public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext,
+                                final AttachmentUtil attachmentUtil,
                                 final ParsingUtil parsingUtil, final UrlManager urlManager,
                                 final ConfigurationManager configurationManager) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -68,7 +72,8 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         String type = request.getParameter("type");
         if (type != null) {
             switch (type.toLowerCase()) {
@@ -133,11 +138,13 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
                         tempFile = Files.createTempFile(null, null);
                         FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
 
-                        ChangeItemBean changeItemBean = attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
+                        ChangeItemBean changeItemBean =
+                                attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
 
                         response.setContentType("application/json");
                         PrintWriter writer = response.getWriter();
-                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" + changeItemBean.getToString() + "\"}");
+                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" +
+                                changeItemBean.getToString() + "\"}");
                     } else {
                         throw new HttpException("Document Server returned code " + status);
                     }

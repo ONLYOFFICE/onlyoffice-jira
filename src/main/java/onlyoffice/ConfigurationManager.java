@@ -13,14 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package onlyoffice;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-
 import onlyoffice.constants.Format;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -36,14 +34,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static onlyoffice.constants.Formats.getSupportedFormats;
@@ -110,7 +111,8 @@ public class ConfigurationManager {
     }
 
     public CloseableHttpClient getHttpClient() throws Exception {
-        Integer timeout = (int) TimeUnit.SECONDS.toMillis(Long.parseLong(getProperty("timeout")));;
+        Integer timeout = (int) TimeUnit.SECONDS.toMillis(Long.parseLong(getProperty("timeout")));
+        ;
         RequestConfig config = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
 
         CloseableHttpClient httpClient;
@@ -120,19 +122,23 @@ public class ConfigurationManager {
 
             builder.loadTrustMaterial(null, new TrustStrategy() {
                 @Override
-                public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+                public boolean isTrusted(final X509Certificate[] chain, final String authType)
+                        throws CertificateException {
                     return true;
                 }
             });
 
-            SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
-                @Override
-                public boolean verify(final String hostname, final SSLSession session) {
-                    return true;
-                }
-            });
+            SSLConnectionSocketFactory sslConnectionSocketFactory =
+                    new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
+                        @Override
+                        public boolean verify(final String hostname, final SSLSession session) {
+                            return true;
+                        }
+                    });
 
-            httpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory).setDefaultRequestConfig(config).build();
+            httpClient =
+                    HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory).setDefaultRequestConfig(config)
+                            .build();
         } else {
             httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
         }
@@ -147,7 +153,8 @@ public class ConfigurationManager {
         String editingTypesString = (String) pluginSettings.get("onlyoffice.editingTypes");
 
         if (editingTypesString != null && !editingTypesString.isEmpty()) {
-            editingTypes = Arrays.asList(editingTypesString.substring(1, editingTypesString.length() - 1).replace("\"", "").split(","));
+            editingTypes = Arrays.asList(
+                    editingTypesString.substring(1, editingTypesString.length() - 1).replace("\"", "").split(","));
         } else {
             editingTypes = Arrays.asList("csv", "txt");
         }

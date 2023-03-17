@@ -18,13 +18,12 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.util.io.InputStreamConsumer;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.atlassian.jira.util.io.InputStreamConsumer;
-
-import org.apache.commons.io.IOUtils;
 
 public class DownloadFileStreamConsumer implements InputStreamConsumer<Object> {
 
@@ -39,5 +38,5 @@ public class DownloadFileStreamConsumer implements InputStreamConsumer<Object> {
         IOUtils.copy(in, out);
         return null;
     }
-    
+
 }

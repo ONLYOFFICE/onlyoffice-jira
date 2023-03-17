@@ -13,24 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package onlyoffice;
 
-import org.json.JSONObject;
-
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.json.JSONObject;
 
-import java.util.Base64;
-import java.util.Base64.Encoder;
-
-import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Mac;
-
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 
 @Named
 public class JwtManager {

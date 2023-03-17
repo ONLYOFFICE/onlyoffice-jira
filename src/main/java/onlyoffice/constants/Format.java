@@ -1,5 +1,4 @@
 /**
- *
  * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +54,8 @@ public class Format {
         this.customizable = false;
     }
 
-    public Format(final String name, final Type type, final boolean edit, final boolean fillForm, final List<String> convertTo) {
+    public Format(final String name, final Type type, final boolean edit, final boolean fillForm,
+                  final List<String> convertTo) {
         this.name = name;
         this.type = type;
         this.edit = edit;
