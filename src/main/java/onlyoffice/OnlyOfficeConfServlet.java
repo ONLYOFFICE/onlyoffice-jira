@@ -79,7 +79,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
     private static final long serialVersionUID = 1L;
-    private final static int ERROR_INVALID_TOKEN = 6;
+    private static final int ERROR_INVALID_TOKEN = 6;
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)

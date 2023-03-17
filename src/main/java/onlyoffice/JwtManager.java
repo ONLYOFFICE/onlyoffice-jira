@@ -31,7 +31,7 @@ import java.util.Base64.Encoder;
 @Named
 public class JwtManager {
 
-    private final static int NUMBER_PARTS_TOKEN = 3;
+    private static final int NUMBER_PARTS_TOKEN = 3;
 
     private final PluginSettings settings;
     private final DemoManager demoManager;

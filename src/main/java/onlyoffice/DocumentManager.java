@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Named
 public class DocumentManager {
     private final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
-    private final static int DEFAULT_MAX_FILE_SIZE = 5242880;
+    private static final int DEFAULT_MAX_FILE_SIZE = 5242880;
     private final AttachmentUtil attachmentUtil;
     private final ConfigurationManager configurationManager;
 
