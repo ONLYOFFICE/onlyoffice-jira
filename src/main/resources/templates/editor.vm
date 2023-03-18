@@ -59,6 +59,7 @@
 <body>
     <div class="form">
         <div id="iframeEditor"></div>
+        <span style="display:none;" id="editorConfig" aria-hidden="true">$jsonAsHtml</span>
     </div>
 
     <script type="text/javascript" src="${docserviceApiUrl}"></script>
@@ -78,7 +79,6 @@
                 return;
             }
 
-            var json = '${jsonAsHtml}';
             var saveAs = JSON.parse('${saveAsAsHtml}');
 
             var onAppReady = function () {
@@ -131,9 +131,7 @@
                 config.events.onRequestSaveAs = onRequestSaveAs;
             }
 
-            if (json) {
-                Object.assign(config, JSON.parse(json));
-            }
+            Object.assign(config, JSON.parse(document.getElementById("editorConfig").innerHTML || "{}"));
 
             if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
                 && docsVersion[0] < 7) {
