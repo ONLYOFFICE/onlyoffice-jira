@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,12 @@
 
 package onlyoffice;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Base64;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -38,32 +34,35 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.json.JSONArray;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.util.UserManager;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
-    @JiraImport
-    private final PluginSettingsFactory pluginSettingsFactory;
-    @JiraImport
-    private final JiraAuthenticationContext jiraAuthenticationContext;
-    @JiraImport
-    private final TemplateRenderer templateRenderer;
+    private static final int STATUS_EDITING = 1;
+    private static final int STATUS_MUST_SAVE = 2;
+    private static final int STATUS_CORRUPTED = 3;
+    private static final int STATUS_CLOSED = 4;
+    private static final int STATUS_FORCE_SAVE = 6;
+    private static final int STATUS_CORRUPTED_FORCE_SAVE = 7;
 
     private final UserManager userManager;
     private final JwtManager jwtManager;
@@ -73,34 +72,35 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final ParsingUtil parsingUtil;
     private final DocumentManager documentManager;
     private final ConfigurationManager configurationManager;
+    private final ConversionManager conversionManager;
 
     @Inject
-    public OnlyOfficeSaveFileServlet(PluginSettingsFactory pluginSettingsFactory,
-                                     JiraAuthenticationContext jiraAuthenticationContext, JwtManager jwtManager, AttachmentUtil attachmentUtil,
-                                     TemplateRenderer templateRenderer, UrlManager urlManager, ParsingUtil parsingUtil,
-                                     DocumentManager documentManager, ConfigurationManager configurationManager) {
-
-        this.pluginSettingsFactory = pluginSettingsFactory;
-        this.jiraAuthenticationContext = jiraAuthenticationContext;
-
+    public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory, final JwtManager jwtManager,
+                                     final AttachmentUtil attachmentUtil, final UrlManager urlManager,
+                                     final ParsingUtil parsingUtil, final DocumentManager documentManager,
+                                     final ConfigurationManager configurationManager,
+                                     final ConversionManager conversionManager) {
         settings = pluginSettingsFactory.createGlobalSettings();
         this.jwtManager = jwtManager;
         this.attachmentUtil = attachmentUtil;
-        this.templateRenderer = templateRenderer;
         this.urlManager = urlManager;
         this.parsingUtil = parsingUtil;
         this.documentManager = documentManager;
         this.configurationManager = configurationManager;
+        this.conversionManager = conversionManager;
 
         userManager = ComponentAccessor.getUserManager();
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         if (jwtManager.jwtEnabled()) {
             String jwth = jwtManager.getJwtHeader();
             String header = (String) request.getHeader(jwth);
-            String token = (header != null && header.startsWith("Bearer ")) ? header.substring(7) : header;
+            String authorizationPrefix = "Bearer ";
+            String token = (header != null && header.startsWith(authorizationPrefix))
+                    ? header.substring(authorizationPrefix.length()) : header;
 
             if (token == null || token == "") {
                 throw new SecurityException("Expected JWT");
@@ -113,7 +113,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.readHash(vkey);
 
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
@@ -129,12 +129,13 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         response.setContentType("text/plain; charset=utf-8");
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.ReadHash(vkey);
+        String attachmentIdString = documentManager.readHash(vkey);
 
         String error = "";
         try {
@@ -147,14 +148,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         if (error.isEmpty()) {
             writer.write("{\"error\":0}");
         } else {
-            response.setStatus(500);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             writer.write("{\"error\":1,\"message\":\"" + error + "\"}");
         }
 
         log.info("error = " + error);
     }
 
-    private void processData(String attachmentIdString, HttpServletRequest request) throws Exception {
+    private void processData(final String attachmentIdString, final HttpServletRequest request) throws Exception {
         log.info("attachmentId = " + attachmentIdString);
         InputStream requestStream = request.getInputStream();
         if (attachmentIdString.isEmpty()) {
@@ -181,7 +182,9 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 if (token == null || token == "") {
                     String jwth = jwtManager.getJwtHeader();
                     String header = (String) request.getHeader(jwth);
-                    token = (header != null && header.startsWith("Bearer ")) ? header.substring(7) : header;
+                    String authorizationPrefix = "Bearer ";
+                    token = (header != null && header.startsWith(authorizationPrefix))
+                            ? header.substring(authorizationPrefix.length()) : header;
                     inBody = false;
                 }
 
@@ -207,7 +210,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             log.info("status = " + status);
 
             // MustSave, Corrupted
-            if (status == 2 || status == 3) {
+            if (status == STATUS_MUST_SAVE || status == STATUS_CORRUPTED) {
                 ApplicationUser user = null;
                 JSONArray users = jsonObj.getJSONArray("users");
                 if (users.length() > 0) {
@@ -224,6 +227,14 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 String downloadUrl = jsonObj.getString("url");
                 downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
                 log.info("downloadUri = " + downloadUrl);
+
+                String attachmentExt = attachmentUtil.getFileExt(attachmentId);
+                String extDownloadUrl = jsonObj.getString("filetype");
+
+                if (!extDownloadUrl.equals(attachmentExt)) {
+                    JSONObject response = conversionManager.convert(attachmentId, downloadUrl, attachmentExt, user);
+                    downloadUrl = response.getString("fileUrl");
+                }
 
                 try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
                     HttpGet httpGet = new HttpGet(downloadUrl);

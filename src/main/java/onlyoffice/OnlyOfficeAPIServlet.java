@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class OnlyOfficeAPIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeAPIServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeAPIServlet");
 
 
     @JiraImport
@@ -57,8 +60,10 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private final ConfigurationManager configurationManager;
 
     @Inject
-    public OnlyOfficeAPIServlet(JiraAuthenticationContext jiraAuthenticationContext, AttachmentUtil attachmentUtil,
-                                ParsingUtil parsingUtil, UrlManager urlManager, ConfigurationManager configurationManager) {
+    public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext,
+                                final AttachmentUtil attachmentUtil,
+                                final ParsingUtil parsingUtil, final UrlManager urlManager,
+                                final ConfigurationManager configurationManager) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.attachmentUtil = attachmentUtil;
         this.parsingUtil = parsingUtil;
@@ -67,11 +72,11 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         String type = request.getParameter("type");
         if (type != null) {
-            switch (type.toLowerCase())
-            {
+            switch (type.toLowerCase()) {
                 case "save-as":
                     saveAs(request, response);
                     break;
@@ -85,7 +90,7 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
         }
     }
 
-    private void saveAs (HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void saveAs(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
         if (user == null) {
@@ -133,11 +138,13 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
                         tempFile = Files.createTempFile(null, null);
                         FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
 
-                        ChangeItemBean changeItemBean = attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
+                        ChangeItemBean changeItemBean =
+                                attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
 
                         response.setContentType("application/json");
                         PrintWriter writer = response.getWriter();
-                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\"" + changeItemBean.getToString() + "\"}");
+                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\""
+                                + changeItemBean.getToString() + "\"}");
                     } else {
                         throw new HttpException("Document Server returned code " + status);
                     }

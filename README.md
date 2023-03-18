@@ -46,7 +46,9 @@ Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the
 ```
 http://documentserver/
 ```
-Enter the **Secret key** to enable JWT protection of your documents from unauthorized access (further information can be found [here](https://api.onlyoffice.com/editors/signature/)).
+Starting from version 7.2, JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. 
+Specify your own **Secret key** on the Jira administration page. 
+In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/editors/signature/), specify the same secret key and enable the validation.
 
 Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Document Server using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Document Server address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Document Server. 
 

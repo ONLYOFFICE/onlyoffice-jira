@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@ import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.jira.security.request.SupportedMethods;
-import onlyoffice.*;
+import onlyoffice.AttachmentUtil;
+import onlyoffice.ConfigurationManager;
+import onlyoffice.ConversionManager;
+import onlyoffice.DocumentManager;
+import onlyoffice.UrlManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -42,15 +46,18 @@ import webwork.action.ServletActionContext;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.List;
 
 @Scanned
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
-public class OnlyOfficeConversion extends AbstractIssueSelectAction
-{
-    private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
+public class OnlyOfficeConversion extends AbstractIssueSelectAction {
+    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
@@ -61,10 +68,10 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
     private final UrlManager urlManager;
     private final ConfigurationManager configurationManager;
 
-    protected String attachmentId;
-    protected String fileName;
-    protected String targetFileType;
-    protected String actionType;
+    private String attachmentId;
+    private String fileName;
+    private String targetFileType;
+    private String actionType;
 
     @Inject
     public OnlyOfficeConversion(final JiraAuthenticationContext jiraAuthenticationContext,
@@ -85,7 +92,7 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         return INPUT;
@@ -100,25 +107,25 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
 
         if (!attachmentUtil.checkAccess(attachmentId, getLoggedInUser(), false)) {
             addErrorMessage(getText("onlyoffice.connector.dialog.conversion.message.error.permission"));
-            response.setStatus(403);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         if (fileName == null || fileName.isEmpty()) {
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-            response.setStatus(400);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 
         if (actionType.equals("conversion")) {
             if (!attachmentUtil.checkAccess(attachmentId, getLoggedInUser(), true)) {
                 addErrorMessage(getText("onlyoffice.connector.dialog.conversion.message.error.permission"));
-                response.setStatus(403);
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 
             if (conversionManager.getTargetExt(ext) == null) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(415);
+                response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
                 return;
             }
         }
@@ -126,17 +133,17 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         if (actionType.equals("download-as")) {
             if (targetFileType == null || targetFileType.isEmpty()) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(400);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
             if (
-                conversionManager.getTargetExtList(ext) == null ||
-                conversionManager.getTargetExtList(ext).isEmpty() ||
-                !conversionManager.getTargetExtList(ext).contains(targetFileType)
+                    conversionManager.getTargetExtList(ext) == null
+                            || conversionManager.getTargetExtList(ext).isEmpty()
+                            || !conversionManager.getTargetExtList(ext).contains(targetFileType)
             ) {
                 addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
-                response.setStatus(415);
+                response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
                 return;
             }
         }
@@ -147,17 +154,21 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         Long attachmentId = Long.parseLong(this.attachmentId);
         String ext = attachmentUtil.getFileExt(attachmentId);
         String targetExt = conversionManager.getTargetExt(ext);
-        String url = urlManager.GetFileUri(attachmentId);
+        String url = urlManager.getFileUri(attachmentId);
         String lang = getLocale().toLanguageTag();
 
         if (actionType.equals("download-as") && !this.targetFileType.isEmpty()) {
             targetExt = this.targetFileType;
         }
 
-        JSONObject convertResult = conversionManager.convert(attachmentId, this.fileName + "." + targetExt, ext, targetExt, url, lang, true);
+        JSONObject convertResult =
+                conversionManager.convert(attachmentId, this.fileName + "." + targetExt, ext, targetExt, url, lang,
+                        true);
 
-        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert") && actionType.equals("conversion")) {
-            String fileName = attachmentUtil.getCorrectAttachmentName(this.fileName + "." + targetExt, getIssueObject());
+        if (convertResult.has("endConvert") && convertResult.getBoolean("endConvert")
+                && actionType.equals("conversion")) {
+            String fileName =
+                    attachmentUtil.getCorrectAttachmentName(this.fileName + "." + targetExt, getIssueObject());
             String mimeType = documentManager.getMimeType(fileName);
             String fileUrl = convertResult.getString("fileUrl");
             File tempFile = Files.createTempFile(null, null).toFile();
@@ -176,16 +187,18 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
 
                         FileUtils.copyInputStreamToFile(inputStream, tempFile);
 
-                        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(tempFile,
+                        CreateAttachmentParamsBean createAttachmentParamsBean =
+                                new CreateAttachmentParamsBean.Builder(tempFile,
                                 fileName, mimeType, getLoggedInUser(), getIssueObject()).build();
 
                         ChangeItemBean changeItemBean = attachmentManager.createAttachment(createAttachmentParamsBean);
 
-                        convertResult.put("fileUrl", "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
+                        convertResult.put("fileUrl",
+                                "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
                         convertResult.put("fileName", fileName);
                     } else {
                         log.error("Conversion service returned code " + status + ". URL: " + fileUrl);
-                        convertResult.put("error", -10);
+                        convertResult.put("error", conversionManager.STATUS_NOT_OK);
                     }
                 }
             } catch (Exception e) {
@@ -201,23 +214,23 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         writer.write(convertResult.toString());
-        response.setStatus(200);
+        response.setStatus(HttpServletResponse.SC_OK);
         return "none";
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
-    public void setAttachmentId(String attachmentId) {
+    public void setAttachmentId(final String attachmentId) {
         this.attachmentId = attachmentId;
     }
 
-    public void setTargetFileType(String targetFileType) {
+    public void setTargetFileType(final String targetFileType) {
         this.targetFileType = targetFileType;
     }
 
-    public void setActionType(String actionType) {
+    public void setActionType(final String actionType) {
         this.actionType = actionType;
     }
 
@@ -234,9 +247,13 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction
         return attachmentUtil.getFileExt(attachmentId);
     }
 
-    public String getTargetFileType() { return conversionManager.getTargetExt(getFileType()); }
+    public String getTargetFileType() {
+        return conversionManager.getTargetExt(getFileType());
+    }
 
-    public List<String> getTargetFileTypeList() { return conversionManager.getTargetExtList(getFileType()); }
+    public List<String> getTargetFileTypeList() {
+        return conversionManager.getTargetExtList(getFileType());
+    }
 
     public boolean isConvertibleToDefault() {
         Long attachmentId = Long.parseLong(this.attachmentId);

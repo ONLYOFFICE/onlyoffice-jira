@@ -1,5 +1,9 @@
 # Change Log
 
+## 
+## Added
+- opening for editing not OOXML
+
 ## 2.1.0
 ## Added
 - compatible with JIRA 9.*

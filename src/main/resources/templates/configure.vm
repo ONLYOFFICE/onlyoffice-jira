@@ -1,10 +1,11 @@
+$webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-jira-app-resources-configure")
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
 
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2022
+        * (c) Copyright Ascensio System SIA 2023
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -43,13 +44,19 @@
                     };
 
                     function updateConfig() {
+                        var editingTypes = new Array();
+                        jq(".editing-types").each(function () {
+                            if ($(this).is(":checked")) editingTypes.push($(this).attr("id"));
+                        });
+
                         var data = {
                             "apiUrl": jq("#apiUrlField").attr("value"),
                             "docInnerUrl": jq("#docInnerUrlField").attr("value"),
                             "confUrl": jq("#confUrlField").attr("value"),
                             "jwtSecret": jq("#jwtSecretField").attr("value"),
                             "ignoreCertificate": jq("#ignoreCertificate").is(":checked"),
-                            "demoEnable": jq("#onlyofficeDemo").is(":checked")
+                            "demoEnable": jq("#onlyofficeDemo").is(":checked"),
+                            "editingTypes": editingTypes
                         };
 
                         jq.ajax({
@@ -198,6 +205,19 @@
             <div class="field-group">
                 <label for="docInnerUrlField">$i18n.getText('onlyoffice.configuration.doc-url-inner')</label>
                 <input type="text" id="docInnerUrlField" value="${docserviceInnerUrl}" name="docInnerUrlField" class="text onlyoffice-tooltip" title="$i18n.getText('onlyoffice.configuration.doc-url-inner-tooltip')">
+            </div>
+
+            <h3>$i18n.getText('onlyoffice.configuration.section.common')</h3>
+
+            <div class="field-group">
+                <label>$i18n.getText('onlyoffice.configuration.editing-types.label')</label>
+                #foreach($type in $defaultCustomizableEditingTypes.keySet())
+                    <div class="checkbox inline">
+                        <input type="checkbox" class="checkbox editing-types" id="${type}" #if($defaultCustomizableEditingTypes.get($type)) checked="checked" #end />
+                        <label for="${type}">${type}</label>
+                    </div>
+                #end
+                <div class="description">$i18n.getText('onlyoffice.configuration.editing-types.description')</div>
             </div>
 
             <div class="field-group">
