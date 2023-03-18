@@ -1,5 +1,4 @@
 /**
- *
  * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +20,14 @@ package onlyoffice.constants;
 import java.util.List;
 
 public class Format {
-    public String name;
-    public Type type;
-    public boolean edit;
-    public boolean fillForm;
-    public List<String> convertTo;
+    private String name;
+    private Type type;
+    private boolean edit;
+    private boolean fillForm;
+    private List<String> convertTo;
     private boolean customizable;
 
-    public Format(String name, Type type, List<String> convertTo) {
+    public Format(final String name, final Type type, final List<String> convertTo) {
         this.name = name;
         this.type = type;
         this.edit = false;
@@ -37,7 +36,7 @@ public class Format {
         this.customizable = false;
     }
 
-    public Format(String name, Type type, List<String> convertTo, boolean customizable) {
+    public Format(final String name, final Type type, final List<String> convertTo, final boolean customizable) {
         this.name = name;
         this.type = type;
         this.edit = false;
@@ -46,7 +45,7 @@ public class Format {
         this.customizable = customizable;
     }
 
-    public Format(String name, Type type, boolean edit, List<String> convertTo) {
+    public Format(final String name, final Type type, final boolean edit, final List<String> convertTo) {
         this.name = name;
         this.type = type;
         this.edit = edit;
@@ -55,7 +54,8 @@ public class Format {
         this.customizable = false;
     }
 
-    public Format(String name, Type type, boolean edit, boolean fillForm, List<String> convertTo) {
+    public Format(final String name, final Type type, final boolean edit, final boolean fillForm,
+                  final List<String> convertTo) {
         this.name = name;
         this.type = type;
         this.edit = edit;
@@ -68,29 +68,41 @@ public class Format {
         return name;
     }
 
-    public Type getType() { return type; }
+    public Type getType() {
+        return type;
+    }
 
-    public boolean isEdit() { return edit; }
+    public boolean isEdit() {
+        return edit;
+    }
 
-    public boolean isFillForm() { return fillForm; }
+    public boolean isFillForm() {
+        return fillForm;
+    }
 
     public List<String> getConvertTo() {
         return convertTo;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setType(Type type) { this.type = type; }
+    public void setType(final Type type) {
+        this.type = type;
+    }
 
-    public void setConvertTo(List<String> convertTo) {
+    public void setConvertTo(final List<String> convertTo) {
         this.convertTo = convertTo;
     }
 
-    public void setEdit(boolean edit) { this.edit = edit; }
+    public void setEdit(final boolean edit) {
+        this.edit = edit;
+    }
 
-    public void setFillForm(boolean fillForm) { this.fillForm = fillForm; }
+    public void setFillForm(final boolean fillForm) {
+        this.fillForm = fillForm;
+    }
 
     public boolean isCustomizable() {
         return customizable;

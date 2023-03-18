@@ -18,39 +18,36 @@
 
 package onlyoffice;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.atlassian.plugin.webresource.WebResourceUrlProvider;
+import com.atlassian.jira.config.LocaleManager;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.plugin.webresource.UrlMode;
+import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.webresource.api.assembler.WebResourceAssembler;
 import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.atlassian.jira.config.LocaleManager;
-import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Scanned
 public class OnlyOfficeEditorServlet extends HttpServlet {
@@ -75,11 +72,13 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final DemoManager demoManager;
 
     @Inject
-    public OnlyOfficeEditorServlet(JiraAuthenticationContext jiraAuthenticationContext,
-            I18nResolver i18n, UrlManager urlManager, JwtManager jwtManager, DocumentManager documentManager,
-            AttachmentUtil attachmentUtil, TemplateRenderer templateRenderer, LocaleManager localeManager,
-            WebResourceUrlProvider webResourceUrlProvider, WebResourceAssemblerFactory webResourceAssemblerFactory,
-            ConfigurationManager configurationManager, DemoManager demoManager) {
+    public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
+                                   final I18nResolver i18n, final UrlManager urlManager, final JwtManager jwtManager,
+                                   final DocumentManager documentManager, final AttachmentUtil attachmentUtil,
+                                   final TemplateRenderer templateRenderer, final LocaleManager localeManager,
+                                   final WebResourceUrlProvider webResourceUrlProvider,
+                                   final WebResourceAssemblerFactory webResourceAssemblerFactory,
+                                   final ConfigurationManager configurationManager, final DemoManager demoManager) {
 
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.i18n = i18n;
@@ -96,15 +95,16 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.demoManager = demoManager;
     }
 
-    private static final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
+    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         if (!jiraAuthenticationContext.isLoggedInUser()) {
-            String currentURL= request.getRequestURI() + "?" + request.getQueryString();
-            String query ="?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
-            response.sendRedirect ("/login.jsp" + query);
+            String currentURL = request.getRequestURI() + "?" + request.getQueryString();
+            String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
+            response.sendRedirect("/login.jsp" + query);
             return;
         }
 
@@ -120,7 +120,9 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String errorMessage = "";
         ApplicationUser user = null;
         String userAgent = request.getHeader("User-Agent").toLowerCase();
-        String regex = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge|maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)|plucker|pocket|psp|symbian|treo|up.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i";
+        String regex = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)"
+                + "|iris|kindle|lge|maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)|plucker|pocket|psp"
+                + "|symbian|treo|up.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i";
         String type = "desktop";
 
         Pattern pattern = Pattern.compile(regex);
@@ -146,7 +148,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
                 fileName = attachmentUtil.getFileName(attachmentId);
 
-                fileUrl = urlManager.GetFileUri(attachmentId);
+                fileUrl = urlManager.getFileUri(attachmentId);
 
                 if (attachmentUtil.checkAccess(attachmentId, user, true)) {
                     callbackUrl = urlManager.getCallbackUrl(attachmentId);
@@ -161,20 +163,26 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             ex.printStackTrace(pw);
             String error = ex.toString() + "\n" + sw.toString();
             log.error(error);
-            response.sendError(404, error);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, error);
         }
 
         response.setContentType("text/html;charset=UTF-8");
 
-        Map<String, Object> defaults = getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage, type);
-        WebResourceAssembler webResourceAssembler = webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
+        Map<String, Object> defaults =
+                getTemplateConfig(attachmentId, apiUrl, callbackUrl, fileUrl, key, fileName, user, errorMessage, type);
+        WebResourceAssembler webResourceAssembler =
+                webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
         webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
-        webResourceAssembler.assembled().drainIncludedResources().writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
+        webResourceAssembler.assembled().drainIncludedResources()
+                .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
         templateRenderer.render("templates/editor.vm", defaults, response.getWriter());
     }
 
-    private Map<String, Object> getTemplateConfig(Long attachmentId, String apiUrl, String callbackUrl, String fileUrl, String key, String fileName,
-            ApplicationUser user, String errorMessage, String type) throws UnsupportedEncodingException {
+    private Map<String, Object> getTemplateConfig(final Long attachmentId, final String apiUrl,
+                                                  final String callbackUrl, final String fileUrl, final String key,
+                                                  final String fileName,
+                                                  final ApplicationUser user, final String errorMessage,
+                                                  final String type) throws UnsupportedEncodingException {
 
         Map<String, Object> defaults = new HashMap<String, Object>();
         Map<String, String> config = new HashMap<String, String>();
@@ -182,6 +190,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String docTitle = fileName.trim();
         String docExt = attachmentUtil.getFileExt(attachmentId);
         String documentType = documentManager.getDocType(docExt);
+        String errorMessageLocal = errorMessage;
 
         JSONObject responseJson = new JSONObject();
         JSONObject documentObject = new JSONObject();
@@ -195,7 +204,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             responseJson.put("type", type);
             responseJson.put("width", "100%");
             responseJson.put("height", "100%");
-            if (errorMessage == null || errorMessage.isEmpty()) {
+            if (errorMessageLocal == null || errorMessageLocal.isEmpty()) {
                 if (documentType != null) {
                     responseJson.put("documentType", documentType);
 
@@ -213,7 +222,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                     customizationObject.put("goback", goBackObject);
                     goBackObject.put("url", urlManager.getGobackUrl(attachmentId));
 
-                    Boolean canEdit = (documentManager.isEditable(docExt) || documentManager.isFillForm(docExt)) && callbackUrl != null && !callbackUrl.isEmpty();
+                    Boolean canEdit = (documentManager.isEditable(docExt) || documentManager.isFillForm(docExt))
+                            && callbackUrl != null && !callbackUrl.isEmpty();
 
                     if (canEdit) {
                         permObject.put("edit", true);
@@ -234,17 +244,19 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                         responseJson.put("token", jwtManager.createToken(responseJson));
                     }
                 } else {
-                    errorMessage = i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + " (." + docExt + ")";
+                    errorMessageLocal =
+                            i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + " (." + docExt + ")";
                 }
             }
 
             config.put("docserviceApiUrl", apiUrl + configurationManager.getProperty("files.docservice.url.api"));
             config.put("saveAsAsHtml", urlManager.getSaveAsObject(attachmentId, user).toString());
             config.put("attachmentId", attachmentId.toString());
-            config.put("errorMessage", errorMessage);
+            config.put("errorMessage", errorMessageLocal);
             config.put("docTitle", docTitle);
-            config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl("onlyoffice.onlyoffice-jira-app:editor-page-resources",
-                    documentType +".ico", UrlMode.ABSOLUTE));
+            config.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl(
+                    "onlyoffice.onlyoffice-jira-app:editor-page-resources",
+                    documentType + ".ico", UrlMode.ABSOLUTE));
 
             // AsHtml at the end disables automatic html encoding
             config.put("jsonAsHtml", responseJson.toString());

@@ -18,37 +18,40 @@
 
 package onlyoffice;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import onlyoffice.constants.Format;
 import onlyoffice.constants.Formats;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Named
 public class DocumentManager {
-    private static final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
-
+    private final Logger log = LogManager.getLogger("onlyoffice.DocumentManager");
+    private static final int DEFAULT_MAX_FILE_SIZE = 5242880;
     private final AttachmentUtil attachmentUtil;
     private final ConfigurationManager configurationManager;
 
     @Inject
-    public DocumentManager(AttachmentUtil attachmentUtil, ConfigurationManager configurationManager) {
+    public DocumentManager(final AttachmentUtil attachmentUtil, final ConfigurationManager configurationManager) {
         this.attachmentUtil = attachmentUtil;
         this.configurationManager = configurationManager;
     }
 
-    public List<Format> enrichmentSupportedFormats(List<Format> supportedFormats) {
+    public List<Format> enrichmentSupportedFormats(final List<Format> supportedFormats) {
         List<Format> extendSupportedFormats = new ArrayList<>();
         Map<String, Boolean> customizableEditingTypes = configurationManager.getCustomizableEditingTypes();
         for (Map.Entry<String, Boolean> customizableEditingType : customizableEditingTypes.entrySet()) {
@@ -63,7 +66,7 @@ public class DocumentManager {
         return extendSupportedFormats;
     }
 
-    public long GetMaxFileSize() {
+    public long getMaxFileSize() {
         long size;
         try {
             String filesizeMax = configurationManager.getProperty("filesize-max");
@@ -72,10 +75,10 @@ public class DocumentManager {
             size = 0;
         }
 
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : DEFAULT_MAX_FILE_SIZE;
     }
 
-    public boolean isEditable(String ext) {
+    public boolean isEditable(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
         List<Format> enrichmentSupportedFormats = this.enrichmentSupportedFormats(supportedFormats);
         for (Format format : enrichmentSupportedFormats) {
@@ -86,7 +89,7 @@ public class DocumentManager {
         return false;
     }
 
-    public String getDefaultExtForEditableFormats(String ext) {
+    public String getDefaultExtForEditableFormats(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
         for (Format format : supportedFormats) {
             if (format.getName().equals(ext)) {
@@ -96,7 +99,7 @@ public class DocumentManager {
         return ext;
     }
 
-    public boolean isFillForm(String ext) {
+    public boolean isFillForm(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
         boolean isFillForm = false;
 
@@ -110,13 +113,14 @@ public class DocumentManager {
         return isFillForm;
     }
 
-    public String getDocType(String ext) {
+    public String getDocType(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
 
         for (Format format : supportedFormats) {
             if (format.getName().equals(ext)) {
 
-                String type = format.getType().name().toLowerCase().equals("form") ? "word" : format.getType().name().toLowerCase();
+                String type = format.getType().name().toLowerCase().equals("form") ? "word"
+                        : format.getType().name().toLowerCase();
 
                 return type;
             }
@@ -125,7 +129,7 @@ public class DocumentManager {
         return null;
     }
 
-    public String getDefaultExtByType(String type) {
+    public String getDefaultExtByType(final String type) {
         switch (type) {
             case "word":
                 return "docx";
@@ -140,7 +144,7 @@ public class DocumentManager {
         }
     }
 
-    public String getKeyOfFile(Long attachmentId) {
+    public String getKeyOfFile(final Long attachmentId) {
         String key = attachmentUtil.getProperty(attachmentId, "onlyoffice-collaborative-editor-key");
 
         if (key == null || key.isEmpty()) {
@@ -151,11 +155,11 @@ public class DocumentManager {
         return key;
     }
 
-    public String CreateHash(String str) {
+    public String createHash(final String str) {
         try {
             String secret = configurationManager.getProperty("files.docservice.secret");
 
-            String payload = GetHashHex(str + secret) + "?" + str;
+            String payload = getHashHex(str + secret) + "?" + str;
 
             String base64 = Base64.getEncoder().encodeToString(payload.getBytes("UTF-8"));
             return base64;
@@ -165,7 +169,7 @@ public class DocumentManager {
         return "";
     }
 
-    public String ReadHash(String base64) {
+    public String readHash(final String base64) {
         try {
             String str = new String(Base64.getDecoder().decode(base64), "UTF-8");
 
@@ -173,7 +177,7 @@ public class DocumentManager {
 
             String[] payloadParts = str.split("\\?");
 
-            String payload = GetHashHex(payloadParts[1] + secret);
+            String payload = getHashHex(payloadParts[1] + secret);
             if (payload.equals(payloadParts[0])) {
                 return payloadParts[1];
             }
@@ -183,7 +187,7 @@ public class DocumentManager {
         return "";
     }
 
-    private static String GetHashHex(String str) {
+    private String getHashHex(final String str) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(str.getBytes());
@@ -196,7 +200,7 @@ public class DocumentManager {
         return "";
     }
 
-    public String getMimeType(String name) {
+    public String getMimeType(final String name) {
         Path path = new File(name).toPath();
         String mimeType = null;
         try {

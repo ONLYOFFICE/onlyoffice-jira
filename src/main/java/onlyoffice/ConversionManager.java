@@ -43,6 +43,7 @@ import java.util.List;
 public class ConversionManager {
     private final Logger log = LogManager.getLogger("onlyoffice.convert.ConvertManager");
 
+    public static final int STATUS_NOT_OK = -10;
     private final UrlManager urlManager;
     private final JwtManager jwtManager;
     private final ConfigurationManager configurationManager;
@@ -50,9 +51,9 @@ public class ConversionManager {
     private final LocaleManager localeManager;
 
     @Inject
-    public ConversionManager(UrlManager urlManager, JwtManager jwtManager,
-                             ConfigurationManager configurationManager,
-                             DocumentManager documentManager, LocaleManager localeManager) {
+    public ConversionManager(final UrlManager urlManager, final JwtManager jwtManager,
+                             final ConfigurationManager configurationManager,
+                             final DocumentManager documentManager, final LocaleManager localeManager) {
         this.urlManager = urlManager;
         this.jwtManager = jwtManager;
         this.configurationManager = configurationManager;
@@ -60,23 +61,31 @@ public class ConversionManager {
         this.localeManager = localeManager;
     }
 
-    public String getTargetExt(String ext) {
+    public String getTargetExt(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
 
         for (Format format : supportedFormats) {
             if (format.getName().equals(ext)) {
-                switch(format.getType()) {
+                switch (format.getType()) {
                     case FORM:
-                        if (format.getConvertTo().contains("oform")) return "oform";
+                        if (format.getConvertTo().contains("oform")) {
+                            return "oform";
+                        }
                         break;
                     case WORD:
-                        if (format.getConvertTo().contains("docx")) return "docx";
+                        if (format.getConvertTo().contains("docx")) {
+                            return "docx";
+                        }
                         break;
                     case CELL:
-                        if (format.getConvertTo().contains("xlsx")) return "xlsx";
+                        if (format.getConvertTo().contains("xlsx")) {
+                            return "xlsx";
+                        }
                         break;
                     case SLIDE:
-                        if (format.getConvertTo().contains("pptx")) return "pptx";
+                        if (format.getConvertTo().contains("pptx")) {
+                            return "pptx";
+                        }
                         break;
                     default:
                         break;
@@ -87,7 +96,7 @@ public class ConversionManager {
         return null;
     }
 
-    public List<String> getTargetExtList(String ext) {
+    public List<String> getTargetExtList(final String ext) {
         List<Format> supportedFormats = Formats.getSupportedFormats();
 
         for (Format format : supportedFormats) {
@@ -99,13 +108,16 @@ public class ConversionManager {
         return null;
     }
 
-    public JSONObject convert(Long attachmentId, String downloadUrl, String ext, ApplicationUser user) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String downloadUrl, final String ext,
+                              final ApplicationUser user) throws Exception {
         String region = localeManager.getLocaleFor(user).toLanguageTag();
         String defaultExt = this.documentManager.getDefaultExtForEditableFormats(ext);
         return this.convert(attachmentId, null, defaultExt, ext, downloadUrl, region, false);
     }
 
-    public JSONObject convert(Long attachmentId, String title, String currentExt, String convertToExt, String url, String region, boolean async) throws Exception {
+    public JSONObject convert(final Long attachmentId, final String title, final String currentExt,
+                              final String convertToExt, final String url, final String region, final boolean async)
+            throws Exception {
         try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
             JSONObject body = new JSONObject();
             body.put("async", async);
@@ -118,7 +130,8 @@ public class ConversionManager {
             body.put("region", region);
 
             StringEntity requestEntity = new StringEntity(body.toString(), ContentType.APPLICATION_JSON);
-            String conversionServiceUrl = urlManager.getInnerDocEditorUrl() + configurationManager.getProperties().getProperty("files.docservice.url.convert");
+            String conversionServiceUrl = urlManager.getInnerDocEditorUrl()
+                    + configurationManager.getProperties().getProperty("files.docservice.url.convert");
 
             HttpPost request = new HttpPost(conversionServiceUrl);
 
@@ -143,7 +156,7 @@ public class ConversionManager {
 
                 if (status != HttpStatus.SC_OK) {
                     log.error("Conversion service returned code " + status + ". URL: " + conversionServiceUrl);
-                    callBackJson.put("error", -10);
+                    callBackJson.put("error", STATUS_NOT_OK);
                 } else {
                     InputStream is = response.getEntity().getContent();
                     String content = IOUtils.toString(is, String.valueOf(StandardCharsets.UTF_8));

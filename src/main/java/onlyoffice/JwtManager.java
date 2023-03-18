@@ -13,34 +13,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package onlyoffice;
 
-import org.json.JSONObject;
-
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.json.JSONObject;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 
-import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.Mac;
-
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 @Named
 public class JwtManager {
+
+    private static final int NUMBER_PARTS_TOKEN = 3;
 
     private final PluginSettings settings;
     private final DemoManager demoManager;
 
     @Inject
-    public JwtManager(PluginSettingsFactory pluginSettingsFactory, DemoManager demoManager) {
+    public JwtManager(final PluginSettingsFactory pluginSettingsFactory, final DemoManager demoManager) {
         settings = pluginSettingsFactory.createGlobalSettings();
         this.demoManager = demoManager;
     }
@@ -50,7 +47,7 @@ public class JwtManager {
                 && !((String) settings.get("onlyoffice.jwtSecret")).isEmpty();
     }
 
-    public String createToken(JSONObject payload) throws Exception {
+    public String createToken(final JSONObject payload) throws Exception {
         JSONObject header = new JSONObject();
         header.put("alg", "HS256");
         header.put("typ", "JWT");
@@ -64,19 +61,21 @@ public class JwtManager {
         return encHeader + "." + encPayload + "." + hash;
     }
 
-    public Boolean verify(String token) {
-        if (!jwtEnabled())
+    public Boolean verify(final String token) {
+        if (!jwtEnabled()) {
             return false;
+        }
 
         String[] jwt = token.split("\\.");
-        if (jwt.length != 3) {
+        if (jwt.length != NUMBER_PARTS_TOKEN) {
             return false;
         }
 
         try {
             String hash = calculateHash(jwt[0], jwt[1]);
-            if (!hash.equals(jwt[2]))
+            if (!hash.equals(jwt[2])) {
                 return false;
+            }
         } catch (Exception ex) {
             return false;
         }
@@ -94,7 +93,7 @@ public class JwtManager {
         return header == null || header.isEmpty() ? "Authorization" : header;
     }
 
-    private String calculateHash(String header, String payload) throws Exception {
+    private String calculateHash(final String header, final String payload) throws Exception {
         Mac hasher;
         hasher = getHasher();
         return Base64.getUrlEncoder().encodeToString(hasher.doFinal((header + "." + payload).getBytes("UTF-8")))
@@ -109,8 +108,8 @@ public class JwtManager {
         }
 
         Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secret_key = new SecretKeySpec(jwts.getBytes("UTF-8"), "HmacSHA256");
-        sha256.init(secret_key);
+        SecretKeySpec secretKey = new SecretKeySpec(jwts.getBytes("UTF-8"), "HmacSHA256");
+        sha256.init(secretKey);
 
         return sha256;
     }

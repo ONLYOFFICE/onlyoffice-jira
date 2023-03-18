@@ -41,9 +41,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 @Scanned
-public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
-{
-    private static final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
+public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
+    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
@@ -57,7 +56,8 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
     private String fileName;
 
     @Inject
-    public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext, PluginAccessor pluginAccessor,
+    public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext,
+                                final PluginAccessor pluginAccessor,
                                 final DocumentManager documentManager, final AttachmentUtil attachmentUtil) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.pluginAccessor = pluginAccessor;
@@ -71,7 +71,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         return INPUT;
@@ -99,7 +99,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
 
         if (user == null) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(401);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         InputStream demoFileStream = null;
@@ -107,7 +107,8 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
 
         try {
             String fileExt = documentManager.getDefaultExtByType(fileType);
-            String correctFileName = attachmentUtil.getCorrectAttachmentName(fileName + "." + fileExt, getIssueObject());
+            String correctFileName =
+                    attachmentUtil.getCorrectAttachmentName(fileName + "." + fileExt, getIssueObject());
             String mimeType = documentManager.getMimeType(correctFileName);
             String pathToDemoFile = "app_data/" + getLocale().toLanguageTag();
 
@@ -125,13 +126,14 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
 
             ChangeItemBean changeItemBean = attachmentManager.createAttachment(createAttachmentParamsBean);
 
-            return returnCompleteWithInlineRedirect("/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
+            return returnCompleteWithInlineRedirect(
+                    "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
             return INPUT;
         } finally {
-            if( demoFileStream != null ) {
+            if (demoFileStream != null) {
                 demoFileStream.close();
             }
 
@@ -142,11 +144,11 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction
     }
 
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 }

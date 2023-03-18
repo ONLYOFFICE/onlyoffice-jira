@@ -23,7 +23,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +41,7 @@ public class DemoManager {
 
 
     @Inject
-    public DemoManager(PluginSettingsFactory pluginSettingsFactory) {
+    public DemoManager(final PluginSettingsFactory pluginSettingsFactory) {
         this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
     }
 
