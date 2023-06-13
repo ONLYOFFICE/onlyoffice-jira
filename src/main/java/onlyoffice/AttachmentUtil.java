@@ -146,20 +146,20 @@ public class AttachmentUtil {
     public String getCorrectAttachmentName(final String fileName, final Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 
-        fileName = fileName.replaceAll("[*?:\"<>/|\\\\]", "_");
+        String sanitizedFileName = fileName.replaceAll("[*?:\"<>/|\\\\]", "_");
 
-        String basename = fileName.substring(0, fileName.lastIndexOf('.'));
-        String ext = fileName.substring(fileName.lastIndexOf("."));
+        String basename = sanitizedFileName.substring(0, sanitizedFileName.lastIndexOf('.'));
+        String ext = sanitizedFileName.substring(sanitizedFileName.lastIndexOf("."));
 
         int count = 0;
         Boolean exist = true;
 
-        String result = fileName;
+        String result = sanitizedFileName;
 
         while (exist) {
             exist = false;
             for (Attachment attachment : attachments) {
-                if (attachment.getFilename().equals(fileName)) {
+                if (attachment.getFilename().equals(sanitizedFileName)) {
                     count++;
                     result = basename + "-" + count + ext;
                     exist = true;
