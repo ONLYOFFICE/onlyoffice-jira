@@ -1,6 +1,6 @@
 # Change Log
 
-## 
+## 2.2.0
 ## Added
 - opening for editing not OOXML
 
