@@ -2,6 +2,7 @@
 
 ## 
 ## Added
+- compatible with JIRA 9.9.*
 - opening for editing not OOXML
 
 ## 2.1.0
