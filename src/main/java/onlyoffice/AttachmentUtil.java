@@ -159,7 +159,7 @@ public class AttachmentUtil {
         while (exist) {
             exist = false;
             for (Attachment attachment : attachments) {
-                if (attachment.getFilename().equals(sanitizedFileName)) {
+                if (attachment.getFilename().equals(result)) {
                     count++;
                     result = basename + "-" + count + ext;
                     exist = true;
