@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,26 @@
 
 package onlyoffice;
 
-import com.atlassian.jira.user.ApplicationUser;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.atlassian.jira.component.ComponentAccessor;
-
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.net.URLEncoder;
 
 @Named
 public class UrlManager {
-    private static final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
+    private final Logger log = LogManager.getLogger("onlyoffice.UrlManager");
 
-    private static final String callbackServler = "plugins/servlet/onlyoffice/save";
-    private final String APIServlet = "plugins/servlet/onlyoffice/api";
+    private final String callbackServlet = "plugins/servlet/onlyoffice/save";
+    private final String apiServlet = "plugins/servlet/onlyoffice/api";
 
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
@@ -52,8 +49,9 @@ public class UrlManager {
     private final DemoManager demoManager;
 
     @Inject
-    public UrlManager(PluginSettingsFactory pluginSettingsFactory, AttachmentUtil attachmentUtil, DocumentManager documentManager,
-                      DemoManager demoManager) {
+    public UrlManager(final PluginSettingsFactory pluginSettingsFactory, final AttachmentUtil attachmentUtil,
+                      final DocumentManager documentManager,
+                      final DemoManager demoManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         pluginSettings = pluginSettingsFactory.createGlobalSettings();
         this.attachmentUtil = attachmentUtil;
@@ -81,19 +79,19 @@ public class UrlManager {
         }
     }
 
-    public String GetFileUri(Long attachmentId) throws Exception {
-        String hash = documentManager.CreateHash(Long.toString(attachmentId));
+    public String getFileUri(final Long attachmentId) throws Exception {
+        String hash = documentManager.createHash(Long.toString(attachmentId));
 
-        String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
+        String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("fileUrl " + callbackUrl);
 
         return callbackUrl;
     }
 
-    public String getCallbackUrl(Long attachmentId) throws Exception {
-        String hash = documentManager.CreateHash(Long.toString(attachmentId));
+    public String getCallbackUrl(final Long attachmentId) throws Exception {
+        String hash = documentManager.createHash(Long.toString(attachmentId));
 
-        String callbackUrl = getJiraBaseUrl() + callbackServler + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
+        String callbackUrl = getJiraBaseUrl() + callbackServlet + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
         log.info("callbackUrl " + callbackUrl);
 
         return callbackUrl;
@@ -108,24 +106,24 @@ public class UrlManager {
         }
     }
 
-    public String replaceDocEditorURLToInternal(String url) {
+    public String replaceDocEditorURLToInternal(final String url) {
         String innerDocEditorUrl = getInnerDocEditorUrl();
         String publicDocEditorUrl = getPublicDocEditorUrl();
         if (!publicDocEditorUrl.equals(innerDocEditorUrl)) {
-            url = url.replace(publicDocEditorUrl, innerDocEditorUrl);
+            return url.replace(publicDocEditorUrl, innerDocEditorUrl);
         }
         return url;
     }
 
-    public String getGobackUrl(Long attachmentId) {
+    public String getGobackUrl(final Long attachmentId) {
         String issueKey = attachmentUtil.getIssueKey(attachmentId);
 
         return ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/" + issueKey;
     }
 
-    public JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user) throws JSONException {
+    public JSONObject getSaveAsObject(final Long attachmentId, final ApplicationUser user) throws JSONException {
         JSONObject saveAs = new JSONObject();
-        saveAs.put("uri", getJiraBaseUrl() + APIServlet + "?type=save-as");
+        saveAs.put("uri", getJiraBaseUrl() + apiServlet + "?type=save-as");
         saveAs.put("available", attachmentUtil.checkAccess(attachmentId, user, true));
 
         return saveAs;
