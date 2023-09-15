@@ -1,5 +1,10 @@
 # Change Log
 
+
+## 
+## Added
+- link to docs cloud
+
 ## 2.2.0
 ## Added
 - opening for editing not OOXML
