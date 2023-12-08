@@ -69,9 +69,9 @@ You will need:
 
 With the ONLYOFFICE integration plugin, you can view, edit and co-author office files attached to tasks right within your Jira dashboard. 
 
-To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment   the corresponding online editor will be opened in a new tab.
+To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment - the corresponding online editor will be opened in a new tab.
 
-After the editing session is over, a document with all the changes will be saved as a new attachment. You will recognize it by the same name with a postfix. If you re editing an attachment collaboratively, the changes are saved only after the last user quits the editor.
+After the editing session is over, a document with all the changes will be saved as a new attachment. You will recognize it by the same name with a postfix. If you're editing an attachment collaboratively, the changes are saved only after the last user quits the editor.
  
 ## How it works
 
