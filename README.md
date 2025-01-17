@@ -1,4 +1,4 @@
-# Jira ONLYOFFICE integration app
+# ONLYOFFICE app for Jira
 
 This app enables users to edit office documents from [Jira Software](https://www.atlassian.com/software/jira) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
 
@@ -27,7 +27,7 @@ To install Enterprise Edition, follow the instructions [here](https://helpcenter
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
-## Installing Jira ONLYOFFICE integration app
+## Installing ONLYOFFICE app for Jira
 
 Upload the compiled ***target/onlyoffice-jira-app.jar*** to Jira on the `Manage apps` page.
 
@@ -40,7 +40,7 @@ You can also install the app from the Jira administration panel:
 3. Locate **ONLYOFFICE Connector for Jira** using search.
 4. Click **Install** to download and install the app.
 
-## Configuring Jira ONLYOFFICE integration app
+## Configuring ONLYOFFICE app for Jira
 
 Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Document Server installed:
 ```
@@ -52,7 +52,7 @@ In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/editors/signatur
 
 Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Document Server using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Document Server address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Document Server. 
 
-## Compiling Jira ONLYOFFICE integration app
+## Compiling ONLYOFFICE app for Jira
 
 You will need:
 
@@ -65,9 +65,9 @@ You will need:
   atlas-package
   ```
 
-## Using Jira ONLYOFFICE integration plugin
+## Using ONLYOFFICE app for Jira
 
-With the ONLYOFFICE integration plugin, you can view, edit and co-author office files attached to tasks right within your Jira dashboard. 
+With the ONLYOFFICE app, you can view, edit and co-author office files attached to tasks right within your Jira dashboard. 
 
 To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment - the corresponding online editor will be opened in a new tab.
 
@@ -75,7 +75,7 @@ After the editing session is over, a document with all the changes will be saved
  
 ## How it works
 
-The ONLYOFFICE integration follows the API documented [here](https://api.onlyoffice.com/editors/basic):
+The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/editors/basic):
 
 * User navigates to the Jira attachments and selects the `Edit in ONLYOFFICE` action.
 * Jira makes a request to OnlyOfficeEditorServlet (URL of the form: `/plugins/servlet/onlyoffice/doceditor?attachmentId=$attachment.id`).

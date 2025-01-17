@@ -1,4 +1,4 @@
-Jira ONLYOFFICE integration app uses code from the following 3rd party projects:
+ONLYOFFICE app for Jira uses code from the following 3rd party projects:
 
 
 atlassian-spring-scanner-annotation - Atlassian Spring Scanner Annotations (https://www.apache.org/licenses/LICENSE-2.0)
