@@ -1,5 +1,9 @@
 # Change Log
 
+## 
+## Added
+- link to docs cloud
+
 ## 2.3.0
 ## Added
 - compatible with JIRA 9.9.*

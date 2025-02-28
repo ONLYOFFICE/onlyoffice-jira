@@ -44,13 +44,16 @@
   </web-resource>
 
   <web-resource key="editor-page-resources" name="Editor Page Web Resources">
-    <resource type="download" name="text.ico" location="/images/word.ico"/>
-    <resource type="download" name="spreadsheet.ico" location="/images/cell.ico"/>
-    <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
+    <resource type="download" name="word.ico" location="/images/word.ico"/>
+    <resource type="download" name="cell.ico" location="/images/cell.ico"/>
+    <resource type="download" name="slide.ico" location="/images/slide.ico"/>
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
 
   <web-resource key="onlyoffice-jira-app-resources-configure" name="Web Resources container for the configuration page">
+    <resource type="download" name="banner.css" location="css/banner/banner.css"/>
+    <resource type="download" name="background.svg" location="images/banner/background.svg"/>
+    <resource type="download" name="logo.svg" location="images/banner/logo.svg"/>
     <resource type="download" name="configure.css" location="css/configure.css"/>
   </web-resource>
 
