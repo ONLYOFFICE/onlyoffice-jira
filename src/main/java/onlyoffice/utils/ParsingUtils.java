@@ -16,15 +16,15 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.utils;
 
-import javax.inject.Named;
 import java.io.InputStream;
 import java.util.Scanner;
 
-@Named
-public class ParsingUtil {
-    public String getBody(final InputStream stream) {
+public final class ParsingUtils {
+    private ParsingUtils() { };
+
+    public static String getBody(final InputStream stream) {
         Scanner scanner = null;
         Scanner scannerUseDelimiter = null;
         try {
