@@ -5,11 +5,11 @@
         <ul class="dialog-menu">
             #if ($action.isConvertibleToDefault())
                 <li>
-                    <button id="item-conversion" class="dialog-menu-item selected">Conversion</button>
+                    <button id="item-conversion" class="dialog-menu-item selected">$i18n.getText('onlyoffice.connector.dialog.conversion.menu-item.conversion')</button>
                 </li>
             #end
             <li>
-                <button id="item-download-as" class="dialog-menu-item #if (!$action.isConvertibleToDefault()) selected #end" >Download as</button>
+                <button id="item-download-as" class="dialog-menu-item #if (!$action.isConvertibleToDefault()) selected #end" >$i18n.getText('onlyoffice.connector.dialog.conversion.menu-item.download-as')</button>
             </li>
        </ul>
     </div>
