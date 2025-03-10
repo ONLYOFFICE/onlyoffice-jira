@@ -26,6 +26,7 @@ import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.ofbiz.FieldMap;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.jira.permission.ProjectPermissions;
+import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
@@ -39,6 +40,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +66,14 @@ public class AttachmentUtil {
         ofBizDelegator = ComponentAccessor.getOfBizDelegator();
     }
 
+    public Attachment getAttachment(final Long attachmentId) {
+        try {
+            return attachmentManager.getAttachment(attachmentId);
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
     public boolean checkAccess(final Long attachmentId, final ApplicationUser user, final boolean forEdit) {
         return checkAccess(attachmentManager.getAttachment(attachmentId), user, forEdit);
     }
@@ -79,36 +90,6 @@ public class AttachmentUtil {
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
         }
-    }
-
-    public void saveAttachment(final Long attachmentId, final File file, final ApplicationUser user)
-            throws IllegalArgumentException, AttachmentException {
-
-        Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
-
-        String newFileName = getCorrectAttachmentName(oldAttachment.getFilename(), oldAttachment.getIssue());
-
-        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
-                newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
-
-        attachmentManager.createAttachment(createAttachmentParamsBean);
-    }
-
-    public ChangeItemBean saveAttachment(final Long attachmentId, final File file, final String ext,
-                                         final ApplicationUser user)
-            throws IllegalArgumentException, AttachmentException {
-
-        Attachment oldAttachment = attachmentManager.getAttachment(attachmentId);
-
-        String oldFileName = oldAttachment.getFilename();
-        String newFileName = oldFileName.substring(0, oldFileName.lastIndexOf(".") + 1) + ext;
-
-        newFileName = getCorrectAttachmentName(newFileName, oldAttachment.getIssue());
-
-        CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(file,
-                newFileName, oldAttachment.getMimetype(), user, oldAttachment.getIssue()).build();
-
-        return attachmentManager.createAttachment(createAttachmentParamsBean);
     }
 
     public void getAttachmentData(final DownloadFileStreamConsumer consumer, final Long attachmentId)
@@ -132,18 +113,13 @@ public class AttachmentUtil {
         return attachment.getFilename();
     }
 
-    public String getFileExt(final Long attachmentId) {
-        String fileName = getFileName(attachmentId);
-        return fileName.substring(fileName.lastIndexOf(".") + 1).trim().toLowerCase();
-    }
-
     public String getIssueKey(final Long attachmentId) {
         Attachment attachment = attachmentManager.getAttachment(attachmentId);
         Issue issue = attachment.getIssue();
         return issue.getKey();
     }
 
-    public String getCorrectAttachmentName(final String fileName, final Issue issue) {
+    public String getNewAttachmentFileName(final String fileName, final Issue issue) {
         Collection<Attachment> attachments = issue.getAttachments();
 
         String sanitizedFileName = fileName.replaceAll("[*?:\"<>/|\\\\]", "_");
@@ -219,6 +195,36 @@ public class AttachmentUtil {
             for (GenericValue property : properties) {
                 ofBizDelegator.removeById("OSPropertyString", property.getLong("id"));
             }
+        }
+    }
+
+    public String getMimeType(final String name) {
+        Path path = new File(name).toPath();
+        String mimeType = null;
+        try {
+            mimeType = Files.probeContentType(path);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return mimeType != null ? mimeType : "application/octet-stream";
+    }
+
+    public ChangeItemBean createNewAttachment(final String fileName, final File file, final Issue issue) {
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+
+        try {
+            CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(
+                    file,
+                    fileName,
+                    getMimeType(fileName),
+                    user,
+                    issue
+            ).build();
+
+            return attachmentManager.createAttachment(createAttachmentParamsBean);
+        } catch (AttachmentException e) {
+            throw new RuntimeException(e);
         }
     }
 }
