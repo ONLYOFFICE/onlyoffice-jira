@@ -59,7 +59,7 @@
 <body>
     <div class="form">
         <div id="iframeEditor"></div>
-        <span style="display:none;" id="editorConfig" aria-hidden="true">$jsonAsHtml</span>
+        <span style="display:none;" id="editorConfig" aria-hidden="true">$!{configAsHtml}</span>
     </div>
 
     <script type="text/javascript" src="${docserviceApiUrl}"></script>
@@ -82,12 +82,12 @@
             var saveAs = JSON.parse('${saveAsAsHtml}');
 
             var onAppReady = function () {
-                var errorMessage = "${errorMessage}";
+                var errorMessage = "$!{errorMessage}";
                 if (errorMessage) {
                     docEditor.showMessage(errorMessage);
                 }
 
-                if (${demo}) {
+                if (Boolean($!{demo})) {
                     docEditor.showMessage("$i18n.getText('onlyoffice.editor.message.demo')");
                 }
             };
@@ -133,7 +133,7 @@
 
             Object.assign(config, JSON.parse(document.getElementById("editorConfig").innerHTML || "{}"));
 
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
+            if (config.document && (config.document.fileType === "docxf" || config.document.fileType === "oform")
                 && docsVersion[0] < 7) {
                 alert("$i18n.getText('onlyoffice.editor.forms.error.version')");
                 return;
