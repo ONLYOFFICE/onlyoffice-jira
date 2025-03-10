@@ -22,7 +22,6 @@ import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
@@ -31,7 +30,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,15 +43,11 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeAPIServlet");
 
-
-    @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;
-
     private final DocumentServerClient documentServerClient;
     private final DocumentManager documentManager;
 
-    @Inject
     public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                 final AttachmentUtil attachmentUtil,
                                 final DocsIntegrationSdkContext docsIntegrationSdkContext) {

@@ -88,6 +88,18 @@
     </actions>
   </webwork1>
 
+  <component name="Attachment Util" key="onlyoffice-attachment-util" class="onlyoffice.AttachmentUtil" public="false" />
+
+  <component name="ONLYOFFICE Docs Integration SDK Configuration" key="onlyoffice-integration-sdk-configuration" class="onlyoffice.sdk.configuration.JiraDocsIntegrationSdkConfiguration" public="false">
+    <interface>com.onlyoffice.configuration.DocsIntegrationSdkConfiguration</interface>
+  </component>
+  <component name="ONLYOFFICE Docs Integration SDK Context" key="onlyoffice-integration-sdk-context" class="com.onlyoffice.context.DocsIntegrationSdkContext" public="false" />
+
+  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
+  <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer"/>
+  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+  <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+
   <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
     <url-pattern>/onlyoffice/doceditor</url-pattern>

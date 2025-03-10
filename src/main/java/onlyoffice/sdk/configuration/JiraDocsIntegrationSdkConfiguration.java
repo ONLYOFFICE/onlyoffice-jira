@@ -18,7 +18,6 @@
 
 package onlyoffice.sdk.configuration;
 
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.onlyoffice.client.DocumentServerClient;
@@ -39,25 +38,19 @@ import onlyoffice.sdk.service.callback.CallbackServiceImpl;
 import onlyoffice.sdk.service.config.ConfigServiceImpl;
 import onlyoffice.sdk.service.settings.SettingsValidationServiceImpl;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-@Named
 public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkConfiguration {
-    @JiraImport
     private final PluginSettingsFactory pluginSettingsFactory;
     private final AttachmentUtil attachmentUtil;
-    private final I18nResolver i18n;
+    private final I18nResolver i18nResolver;
     private DocumentServerClient documentServerClient;
     private DocumentManager documentManager;
     private ConvertService convertService;
 
-    @Inject
     public JiraDocsIntegrationSdkConfiguration(final PluginSettingsFactory pluginSettingsFactory,
-                                               final AttachmentUtil attachmentUtil, final I18nResolver i18n) {
+                                               final AttachmentUtil attachmentUtil, final I18nResolver i18nResolver) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.attachmentUtil = attachmentUtil;
-        this.i18n = i18n;
+        this.i18nResolver = i18nResolver;
     }
 
     @Override
@@ -117,6 +110,6 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     @Override
     public SettingsValidationService settingsValidationService(final DocumentServerClient documentServerClient,
                                                                final UrlManager urlManager) {
-        return new SettingsValidationServiceImpl(documentServerClient, urlManager, i18n);
+        return new SettingsValidationServiceImpl(documentServerClient, urlManager, i18nResolver);
     }
 }

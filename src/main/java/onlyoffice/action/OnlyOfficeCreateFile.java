@@ -25,8 +25,6 @@ import com.atlassian.jira.security.request.RequestMethod;
 import com.atlassian.jira.security.request.SupportedMethods;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
@@ -35,28 +33,23 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-@Scanned
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
     private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
 
-    @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;
-
     private final DocumentManager documentManager;
 
     private String fileType;
     private String fileName;
 
-    @Inject
     public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext,
                                 final AttachmentUtil attachmentUtil,
                                 final DocsIntegrationSdkContext docsIntegrationSdkContext) {

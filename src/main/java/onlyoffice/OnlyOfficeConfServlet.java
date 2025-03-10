@@ -19,8 +19,6 @@
 package onlyoffice;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
@@ -38,7 +36,6 @@ import onlyoffice.utils.ParsingUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,11 +46,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Scanned
+
 public class OnlyOfficeConfServlet extends HttpServlet {
-    @JiraImport
     private final UserManager userManager;
-    @JiraImport
     private final TemplateRenderer templateRenderer;
 
     private final SettingsManager settingsManager;
@@ -62,7 +57,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Inject
     public OnlyOfficeConfServlet(final UserManager userManager, final TemplateRenderer templateRenderer,
                                  final DocsIntegrationSdkContext docsIntegrationSdk) {
         this.userManager = userManager;
