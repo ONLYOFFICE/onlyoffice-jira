@@ -21,37 +21,33 @@ package onlyoffice;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.context.DocsIntegrationSdkContext;
+import com.onlyoffice.manager.document.DocumentManager;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.model.settings.Settings;
+import com.onlyoffice.model.settings.SettingsConstants;
+import com.onlyoffice.model.settings.security.Security;
+import com.onlyoffice.model.settings.validation.ValidationResult;
+import onlyoffice.sdk.service.settings.SettingsValidationService;
+import onlyoffice.utils.ParsingUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 @Scanned
 public class OnlyOfficeConfServlet extends HttpServlet {
@@ -59,31 +55,30 @@ public class OnlyOfficeConfServlet extends HttpServlet {
     private final UserManager userManager;
     @JiraImport
     private final TemplateRenderer templateRenderer;
-    private final PluginSettings pluginSettings;
 
-    private final JwtManager jwtManager;
-    private final ConfigurationManager configurationManager;
-    private final DemoManager demoManager;
+    private final SettingsManager settingsManager;
+    private final DocumentManager documentManager;
+    private final SettingsValidationService settingsValidationService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
-    public OnlyOfficeConfServlet(final UserManager userManager, final PluginSettingsFactory pluginSettingsFactory,
-                                 final JwtManager jwtManager, final TemplateRenderer templateRenderer,
-                                 final ConfigurationManager configurationManager, final DemoManager demoManager) {
+    public OnlyOfficeConfServlet(final UserManager userManager, final TemplateRenderer templateRenderer,
+                                 final DocsIntegrationSdkContext docsIntegrationSdk) {
         this.userManager = userManager;
-        this.pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        this.jwtManager = jwtManager;
         this.templateRenderer = templateRenderer;
-        this.configurationManager = configurationManager;
-        this.demoManager = demoManager;
-    }
 
+        this.settingsManager = docsIntegrationSdk.getSettingsManager();
+        this.documentManager = docsIntegrationSdk.getDocumentManager();
+        this.settingsValidationService = (SettingsValidationService) docsIntegrationSdk.getSettingsValidationService();
+    }
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
+
     private static final long serialVersionUID = 1L;
-    private static final int ERROR_INVALID_TOKEN = 6;
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
+            IOException {
         UserProfile user = userManager.getRemoteUser(request);
         if (user == null || !userManager.isSystemAdmin(user.getUserKey())) {
             String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
@@ -91,40 +86,27 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             return;
         }
 
-        String apiUrl = (String) pluginSettings.get("onlyoffice.apiUrl");
-        String docInnerUrl = (String) pluginSettings.get("onlyoffice.docInnerUrl");
-        String confUrl = (String) pluginSettings.get("onlyoffice.confUrl");
-        String jwtSecret = (String) pluginSettings.get("onlyoffice.jwtSecret");
-        Boolean ignoreCertificate = configurationManager.getBooleanPluginSetting("ignoreCertificate", false);
-        Boolean demoEnable = demoManager.isEnable();
-        Boolean demoTrialIsOver = demoManager.trialIsOver();
-        Map<String, Boolean> defaultCustomizableEditingTypes = configurationManager.getCustomizableEditingTypes();
-
-        if (apiUrl == null || apiUrl.isEmpty()) {
-            apiUrl = "";
-        }
-        if (docInnerUrl == null || docInnerUrl.isEmpty()) {
-            docInnerUrl = "";
-        }
-        if (confUrl == null || confUrl.isEmpty()) {
-            confUrl = "";
-        }
-        if (jwtSecret == null || jwtSecret.isEmpty()) {
-            jwtSecret = "";
-        }
-
-        response.setContentType("text/html;charset=UTF-8");
+        Boolean demoAvailable = settingsManager.isDemoAvailable();
+        Map<String, Boolean> defaultCustomizableEditingTypes = documentManager.getLossyEditableMap();
 
         Map<String, Object> defaults = new HashMap<String, Object>();
-        defaults.put("docserviceApiUrl", apiUrl);
-        defaults.put("docserviceInnerUrl", docInnerUrl);
-        defaults.put("docserviceConfUrl", confUrl);
-        defaults.put("docserviceJwtSecret", jwtSecret);
-        defaults.put("ignoreCertificate", ignoreCertificate);
-        defaults.put("demoEnable", demoEnable);
-        defaults.put("demoTrialIsOver", demoTrialIsOver);
-        defaults.put("pathApiUrl", configurationManager.getProperty("files.docservice.url.api"));
+        defaults.put("demoAvailable", demoAvailable);
+        defaults.put("pathApiUrl", settingsManager.getDocsIntegrationSdkProperties().getDocumentServer().getApiUrl());
+
+        if (settingsManager.getSetting(SettingsConstants.LOSSY_EDIT) == null
+                || settingsManager.getSetting(SettingsConstants.LOSSY_EDIT).isEmpty()) {
+            defaultCustomizableEditingTypes.put("txt", true);
+            defaultCustomizableEditingTypes.put("csv", true);
+        }
+
         defaults.put("defaultCustomizableEditingTypes", defaultCustomizableEditingTypes);
+
+        try {
+            Map<String, String> settings = settingsManager.getSettings();
+            defaults.put("settings", settings);
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         templateRenderer.render("templates/configure.vm", defaults, response.getWriter());
     }
@@ -138,168 +120,41 @@ public class OnlyOfficeConfServlet extends HttpServlet {
             return;
         }
 
-        String body = getBody(request.getInputStream());
+        String body = ParsingUtils.getBody(request.getInputStream());
         if (body.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        String apiUrl;
-        String docInnerUrl;
-        String confUrl;
-        String jwtSecret;
-        Boolean demoEnable;
+        Settings settings = objectMapper.readValue(body, Settings.class);
 
-        try {
-            JSONObject jsonObj = new JSONObject(body);
-
-            demoEnable = jsonObj.getBoolean("demoEnable");
-            pluginSettings.put("onlyoffice.demo", demoEnable.toString());
-
-            if (demoEnable) {
-                demoManager.activate();
-            }
-
-            if (demoManager.isActive()) {
-                apiUrl = demoManager.getUrl();
-                docInnerUrl = demoManager.getUrl();
-            } else {
-                apiUrl = appendSlash(jsonObj.getString("apiUrl"));
-                docInnerUrl = appendSlash(jsonObj.getString("docInnerUrl"));
-                jwtSecret = jsonObj.getString("jwtSecret");
-                Boolean ignoreCertificate = jsonObj.getBoolean("ignoreCertificate");
-
-                pluginSettings.put("onlyoffice.apiUrl", apiUrl);
-                pluginSettings.put("onlyoffice.docInnerUrl", docInnerUrl);
-                pluginSettings.put("onlyoffice.jwtSecret", jwtSecret);
-                pluginSettings.put("onlyoffice.ignoreCertificate", ignoreCertificate.toString());
-            }
-
-            confUrl = appendSlash(jsonObj.getString("confUrl"));
-            JSONArray editingTypes = jsonObj.getJSONArray("editingTypes");
-
-            pluginSettings.put("onlyoffice.confUrl", confUrl);
-            pluginSettings.put("onlyoffice.editingTypes", editingTypes.toString());
-
-        } catch (Exception ex) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            String error = ex.toString() + "\n" + sw.toString();
-            log.error(error);
-
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\": false, \"message\": \"jsonparse\"}");
-            return;
-        }
-
-        log.debug("Checking docserv url");
-        if (!checkDocServUrl((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
-            response.getWriter().write("{\"success\": false, \"message\": \"docservunreachable\"}");
-            return;
-        }
-
-        try {
-            log.debug("Checking docserv commandservice");
-            if (!checkDocServCommandService((docInnerUrl == null || docInnerUrl.isEmpty()) ? apiUrl : docInnerUrl)) {
-                response.getWriter().write("{\"success\": false, \"message\": \"docservcommand\"}");
-                return;
-            }
-        } catch (SecurityException ex) {
-            response.getWriter().write("{\"success\": false, \"message\": \"jwterror\"}");
-            return;
-        }
-
-        response.getWriter().write("{\"success\": true}");
-    }
-
-    private String appendSlash(final String str) {
-        if (str == null || str.isEmpty() || str.endsWith("/")) {
-            return str;
-        }
-
-        return str + "/";
-    }
-
-    private String getBody(final InputStream stream) {
-        try (Scanner scanner = new Scanner(stream)) {
-            try (Scanner scannerUseDelimiter = scanner.useDelimiter("\\A")) {
-                return scanner.hasNext() ? scanner.next() : "";
-            }
-        }
-    }
-
-    private Boolean checkDocServUrl(final String url) {
-        try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
-            HttpGet request = new HttpGet(url + "healthcheck");
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-
-                String content = IOUtils.toString(response.getEntity().getContent(), "utf-8").trim();
-                if (content.equalsIgnoreCase("true")) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            log.debug("/healthcheck error: " + e.getMessage());
-        }
-
-        return false;
-    }
-
-    private Boolean checkDocServCommandService(final String url) throws SecurityException {
-        Integer errorCode = -1;
-        try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
-            JSONObject body = new JSONObject();
-            body.put("c", "version");
-
-            HttpPost request = new HttpPost(url + "coauthoring/CommandService.ashx");
-
-            if (jwtManager.jwtEnabled()) {
-                String token = jwtManager.createToken(body);
-                JSONObject payloadBody = new JSONObject();
-                payloadBody.put("payload", body);
-                String headerToken = jwtManager.createToken(body);
-                body.put("token", token);
-                String header = jwtManager.getJwtHeader();
-                request.setHeader(header, "Bearer " + headerToken);
-            }
-
-            StringEntity requestEntity = new StringEntity(body.toString(), ContentType.APPLICATION_JSON);
-            request.setEntity(requestEntity);
-            request.setHeader("Accept", "application/json");
-
-            log.debug("Sending POST to Docserver: " + body.toString());
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-                int status = response.getStatusLine().getStatusCode();
-
-                if (status != HttpStatus.SC_OK) {
-                    return false;
-                } else {
-                    String content = IOUtils.toString(response.getEntity().getContent(), "utf-8");
-                    log.debug("/CommandService content: " + content);
-                    JSONObject callBackJson = null;
-                    callBackJson = new JSONObject(content);
-
-                    if (callBackJson.isNull("error")) {
-                        return false;
-                    }
-
-                    errorCode = callBackJson.getInt("error");
-                }
-            }
-        } catch (Exception e) {
-            log.debug("/CommandService error: " + e.getMessage());
-            return false;
-        }
-
-        if (errorCode == ERROR_INVALID_TOKEN) {
-            throw new SecurityException();
+        if (settings.getDemo() != null && settings.getDemo()) {
+            settingsManager.enableDemo();
         } else {
-            return errorCode == 0;
+            settingsManager.disableDemo();
         }
-    }
 
-    private String getBoolAsAttribute(final String value) {
-        return value.equals("true") ? "checked=\"\"" : "";
+        if (settingsManager.isDemoActive()) {
+            Security security = settings.getSecurity();
+            security.setKey(null);
+            security.setHeader(null);
+
+            settings.setUrl(null);
+            settings.setInnerUrl(null);
+            settings.setSecurity(security);
+        }
+
+        try {
+            settingsManager.setSettings(settings);
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        Map<String, ValidationResult> validationResults = settingsValidationService.validateSettings(settings);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("validationResults", validationResults);
+
+        response.getWriter().write(objectMapper.writeValueAsString(responseMap));
     }
 }

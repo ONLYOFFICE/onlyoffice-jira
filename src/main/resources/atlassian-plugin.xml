@@ -51,6 +51,11 @@
   </web-resource>
 
   <web-resource key="onlyoffice-jira-app-resources-configure" name="Web Resources container for the configuration page">
+    <dependency>jira.webresources:jira-global</dependency>
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+    <resource type="download" name="settings.js" location="js/settings.js"/>
     <resource type="download" name="banner.css" location="css/banner/banner.css"/>
     <resource type="download" name="background.svg" location="images/banner/background.svg"/>
     <resource type="download" name="logo.svg" location="images/banner/logo.svg"/>
@@ -103,6 +108,10 @@
   <servlet key="OnlyOfficeFormatsInfo" class="onlyoffice.OnlyOfficeFormatsInfoServlet" name="ONLYOFFICE Formats Information">
     <description>ONLYOFFICE Formats Information.</description>
     <url-pattern>/onlyoffice/formats/info</url-pattern>
+  </servlet>
+  <servlet key="OnlyOfficeTest" class="onlyoffice.OnlyOfficeTestServlet" name="ONLYOFFICE Test">
+    <description>The ONLYOFFICE Test.</description>
+    <url-pattern>/onlyoffice/test</url-pattern>
   </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">
