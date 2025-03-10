@@ -13,10 +13,6 @@ atlassian-template-renderer-api - Atlassian Template Renderer API (https://www.a
 License:              Atlassian 3.0
 License File:         atlassian-template-renderer-api.license
 
-httpclient          - Apache HttpComponents Client (https://www.apache.org/licenses/LICENSE-2.0)
-License:              Apache 2.0
-License File:         httpclient.license
-
 javax.inject        - The javax.inject API (https://www.apache.org/licenses/LICENSE-2.0)
 License:              Apache 2.0
 License File:         javax.inject.license
