@@ -18,7 +18,6 @@
 
 package onlyoffice.action;
 
-import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -26,11 +25,12 @@ import com.atlassian.jira.security.request.RequestMethod;
 import com.atlassian.jira.security.request.SupportedMethods;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
-import com.atlassian.plugin.PluginAccessor;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.onlyoffice.context.DocsIntegrationSdkContext;
+import com.onlyoffice.manager.document.DocumentManager;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import onlyoffice.AttachmentUtil;
-import onlyoffice.DocumentManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -49,23 +49,20 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
-    @JiraImport
-    private final PluginAccessor pluginAccessor;
+    private final AttachmentUtil attachmentUtil;
 
     private final DocumentManager documentManager;
-    private final AttachmentUtil attachmentUtil;
 
     private String fileType;
     private String fileName;
 
     @Inject
     public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext,
-                                final PluginAccessor pluginAccessor,
-                                final DocumentManager documentManager, final AttachmentUtil attachmentUtil) {
+                                final AttachmentUtil attachmentUtil,
+                                final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
-        this.pluginAccessor = pluginAccessor;
-        this.documentManager = documentManager;
         this.attachmentUtil = attachmentUtil;
+        this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }
 
     @Override
@@ -88,7 +85,8 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
             return;
         }
 
-        String fileExt = documentManager.getDefaultExtByType(fileType);
+        DocumentType documentType = DocumentType.valueOf(fileType.toUpperCase());
+        String fileExt = documentManager.getDefaultExtension(documentType);
 
         if (fileName == null || fileName.isEmpty() || fileExt == null) {
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
@@ -105,29 +103,24 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        InputStream demoFileStream = null;
-        File demoFile = null;
+        DocumentType documentType = DocumentType.valueOf(fileType.toUpperCase());
+        String extension = documentManager.getDefaultExtension(documentType);
+        String newFileName = attachmentUtil.getNewAttachmentFileName(
+                fileName + "." + extension,
+                getIssueObject()
+        );
 
-        try {
-            String fileExt = documentManager.getDefaultExtByType(fileType);
-            String correctFileName =
-                    attachmentUtil.getCorrectAttachmentName(fileName + "." + fileExt, getIssueObject());
-            String mimeType = documentManager.getMimeType(correctFileName);
-            String pathToDemoFile = "app_data/" + getLocale().toLanguageTag();
+        File newBlankFile = null;
+        try (InputStream newBlankFileInputStream = documentManager.getNewBlankFile(extension, getLocale())) {
+            newBlankFile = Files.createTempFile(null, null).toFile();
 
-            if (pluginAccessor.getDynamicResourceAsStream(pathToDemoFile) == null) {
-                pathToDemoFile = "app_data/en-US";
-            }
+            FileUtils.copyInputStreamToFile(newBlankFileInputStream, newBlankFile);
 
-            demoFileStream = pluginAccessor.getDynamicResourceAsStream(pathToDemoFile + "/new." + fileExt);
-            demoFile = Files.createTempFile(null, null).toFile();
-
-            FileUtils.copyInputStreamToFile(demoFileStream, demoFile);
-
-            CreateAttachmentParamsBean createAttachmentParamsBean = new CreateAttachmentParamsBean.Builder(demoFile,
-                    correctFileName, mimeType, user, getIssueObject()).build();
-
-            ChangeItemBean changeItemBean = attachmentManager.createAttachment(createAttachmentParamsBean);
+            ChangeItemBean changeItemBean = attachmentUtil.createNewAttachment(
+                    newFileName,
+                    newBlankFile,
+                    getIssueObject()
+            );
 
             return returnCompleteWithInlineRedirect(
                     "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
@@ -136,16 +129,11 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
             return INPUT;
         } finally {
-            if (demoFileStream != null) {
-                demoFileStream.close();
-            }
-
-            if (demoFile != null && demoFile.exists()) {
-                demoFile.delete();
+            if (newBlankFile != null) {
+                Files.deleteIfExists(newBlankFile.toPath());
             }
         }
     }
-
 
     public void setFileType(final String fileType) {
         this.fileType = fileType;
