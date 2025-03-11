@@ -2,7 +2,18 @@
 
 ## 
 ## Added
+- core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - link to docs cloud
+
+## Changed
+- com.onlyoffice:documentserver-sdk-java
+    - address of the convert service, /converter instead /ConvertService.ashx
+    - apache httpclient 5
+    - default token lifetime is 5 minutes
+    - shardkey parameter
+    - default template for create new blank file
+    - demo server address changed
+    - extended list supported formats
 
 ## 2.3.0
 ## Added
