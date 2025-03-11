@@ -14,6 +14,8 @@
     - default template for create new blank file
     - demo server address changed
     - extended list supported formats
+- create pdf instead docxf
+- remove filling for oform
 
 ## 2.3.0
 ## Added
