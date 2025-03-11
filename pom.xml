@@ -45,12 +45,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.atlassian.plugin</groupId>
             <artifactId>atlassian-spring-scanner-annotation</artifactId>
             <version>${atlassian.spring.scanner.version}</version>
@@ -80,6 +74,11 @@
             <version>2.0.0</version>
             <scope>provided</scope>
           </dependency>
+        <dependency>
+            <groupId>com.onlyoffice</groupId>
+            <artifactId>docs-integration-sdk</artifactId>
+            <version>1.4.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -99,7 +98,7 @@
                         <!-- Add package to export here -->
                         <Export-Package>onlyoffice.api,</Export-Package>
                         <!-- Add package import here -->
-                        <Import-Package>com.atlassian.jira.plugin.webfragment.conditions,org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
+                        <Import-Package>com.atlassian.jira.plugin.webfragment.conditions,org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", !org.brotli.dec.*, !org.conscrypt, !org.slf4j.*, *</Import-Package>
                         <!-- Ensure plugin is spring powered -->
                         <Spring-Context>*</Spring-Context>
                     </instructions>

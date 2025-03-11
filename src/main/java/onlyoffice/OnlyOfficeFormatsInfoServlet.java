@@ -18,11 +18,11 @@
 
 package onlyoffice;
 
-import onlyoffice.constants.Format;
-import onlyoffice.constants.Formats;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.context.DocsIntegrationSdkContext;
+import com.onlyoffice.manager.document.DocumentManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import javax.inject.Inject;
@@ -31,27 +31,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeFormatsInfoServlet");
+
     private final DocumentManager documentManager;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Inject
-    public OnlyOfficeFormatsInfoServlet(final DocumentManager documentManager) {
-        this.documentManager = documentManager;
+    public OnlyOfficeFormatsInfoServlet(final DocsIntegrationSdkContext docsIntegrationSdkContext) {
+        this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try {
-            List<Format> supportedFormats = Formats.getSupportedFormats();
-            List<Format> enrichmentFormats = documentManager.enrichmentSupportedFormats(supportedFormats);
-            JSONArray enrichmentFormatsJson = Formats.getFormatsAsJson(enrichmentFormats);
+            Map<String, Object> result = new HashMap<>();
+
+            result.put("supportedFormats", documentManager.getFormats());
+            result.put("lossyEditableMap", documentManager.getLossyEditableMap());
+
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
-            writer.write(enrichmentFormatsJson.toString());
+            writer.write(objectMapper.writeValueAsString(result));
         } catch (JSONException e) {
             throw new IOException(e.getMessage(), e);
         }

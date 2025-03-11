@@ -18,87 +18,58 @@
 
 package onlyoffice;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.context.DocsIntegrationSdkContext;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.service.documenteditor.callback.CallbackService;
+import onlyoffice.utils.ParsingUtils;
+import onlyoffice.utils.SecurityUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Base64;
 
 @Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
-    private static final int STATUS_EDITING = 1;
-    private static final int STATUS_MUST_SAVE = 2;
-    private static final int STATUS_CORRUPTED = 3;
-    private static final int STATUS_CLOSED = 4;
-    private static final int STATUS_FORCE_SAVE = 6;
-    private static final int STATUS_CORRUPTED_FORCE_SAVE = 7;
-
-    private final UserManager userManager;
-    private final JwtManager jwtManager;
-    private final PluginSettings settings;
     private final AttachmentUtil attachmentUtil;
-    private final UrlManager urlManager;
-    private final ParsingUtil parsingUtil;
-    private final DocumentManager documentManager;
-    private final ConfigurationManager configurationManager;
-    private final ConversionManager conversionManager;
+
+    private final JwtManager jwtManager;
+    private final SettingsManager settingsManager;
+    private final CallbackService callbackService;
 
     @Inject
-    public OnlyOfficeSaveFileServlet(final PluginSettingsFactory pluginSettingsFactory, final JwtManager jwtManager,
-                                     final AttachmentUtil attachmentUtil, final UrlManager urlManager,
-                                     final ParsingUtil parsingUtil, final DocumentManager documentManager,
-                                     final ConfigurationManager configurationManager,
-                                     final ConversionManager conversionManager) {
-        settings = pluginSettingsFactory.createGlobalSettings();
-        this.jwtManager = jwtManager;
+    public OnlyOfficeSaveFileServlet(final AttachmentUtil attachmentUtil,
+                                     final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.attachmentUtil = attachmentUtil;
-        this.urlManager = urlManager;
-        this.parsingUtil = parsingUtil;
-        this.documentManager = documentManager;
-        this.configurationManager = configurationManager;
-        this.conversionManager = conversionManager;
 
-        userManager = ComponentAccessor.getUserManager();
+        this.jwtManager = docsIntegrationSdkContext.getJwtManager();
+        this.settingsManager = docsIntegrationSdkContext.getSettingsManager();
+        this.callbackService = docsIntegrationSdkContext.getCallbackService();
     }
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        if (jwtManager.jwtEnabled()) {
-            String jwth = jwtManager.getJwtHeader();
+        if (settingsManager.isSecurityEnabled()) {
+            String jwth = settingsManager.getSecurityHeader();
             String header = (String) request.getHeader(jwth);
-            String authorizationPrefix = "Bearer ";
+            String authorizationPrefix = settingsManager.getSecurityPrefix();
             String token = (header != null && header.startsWith(authorizationPrefix))
                     ? header.substring(authorizationPrefix.length()) : header;
 
@@ -106,14 +77,16 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
                 throw new SecurityException("Expected JWT");
             }
 
-            if (!jwtManager.verify(token)) {
-                throw new SecurityException("JWT verification failed");
+            try {
+                String payload = jwtManager.verify(token);
+            } catch (Exception e) {
+                throw new SecurityException("JWT verification failed!");
             }
         }
 
         String vkey = request.getParameter("vkey");
         log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.readHash(vkey);
+        String attachmentIdString = SecurityUtils.readHash(vkey);
 
         Long attachmentId = Long.parseLong(attachmentIdString);
         log.info("attachmentId " + attachmentId);
@@ -134,13 +107,28 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         response.setContentType("text/plain; charset=utf-8");
 
         String vkey = request.getParameter("vkey");
-        log.info("vkey = " + vkey);
-        String attachmentIdString = documentManager.readHash(vkey);
+        String attachmentIdString = SecurityUtils.readHash(vkey);
 
         String error = "";
         try {
-            processData(attachmentIdString, request);
+            InputStream requestStream = request.getInputStream();
+
+            String bodyString = ParsingUtils.getBody(requestStream);
+
+            if (bodyString.isEmpty()) {
+                throw new IllegalArgumentException("requestBody is empty");
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            Callback callback = mapper.readValue(bodyString, Callback.class);
+
+            String authorizationHeader = request.getHeader(settingsManager.getSecurityHeader());
+            callback = callbackService.verifyCallback(callback, authorizationHeader);
+
+            callbackService.processCallback(callback, attachmentIdString);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
+
             error = e.getMessage();
         }
 
@@ -150,126 +138,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
         } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             writer.write("{\"error\":1,\"message\":\"" + error + "\"}");
-        }
-
-        log.info("error = " + error);
-    }
-
-    private void processData(final String attachmentIdString, final HttpServletRequest request) throws Exception {
-        log.info("attachmentId = " + attachmentIdString);
-        InputStream requestStream = request.getInputStream();
-        if (attachmentIdString.isEmpty()) {
-            throw new IllegalArgumentException("attachmentId is empty");
-        }
-
-        Path tempFile = null;
-
-        try {
-            Long attachmentId = Long.parseLong(attachmentIdString);
-
-            String body = parsingUtil.getBody(requestStream);
-            log.info("body = " + body);
-            if (body.isEmpty()) {
-                throw new IllegalArgumentException("requestBody is empty");
-            }
-
-            JSONObject jsonObj = new JSONObject(body);
-
-            if (jwtManager.jwtEnabled()) {
-                String token = jsonObj.optString("token");
-                Boolean inBody = true;
-
-                if (token == null || token == "") {
-                    String jwth = jwtManager.getJwtHeader();
-                    String header = (String) request.getHeader(jwth);
-                    String authorizationPrefix = "Bearer ";
-                    token = (header != null && header.startsWith(authorizationPrefix))
-                            ? header.substring(authorizationPrefix.length()) : header;
-                    inBody = false;
-                }
-
-                if (token == null || token == "") {
-                    throw new SecurityException("Try save without JWT");
-                }
-
-                if (!jwtManager.verify(token)) {
-                    throw new SecurityException("Try save with wrong JWT");
-                }
-
-                JSONObject bodyFromToken = new JSONObject(
-                        new String(Base64.getUrlDecoder().decode(token.split("\\.")[1]), "UTF-8"));
-
-                if (inBody) {
-                    jsonObj = bodyFromToken;
-                } else {
-                    jsonObj = bodyFromToken.getJSONObject("payload");
-                }
-            }
-
-            long status = jsonObj.getLong("status");
-            log.info("status = " + status);
-
-            // MustSave, Corrupted
-            if (status == STATUS_MUST_SAVE || status == STATUS_CORRUPTED) {
-                ApplicationUser user = null;
-                JSONArray users = jsonObj.getJSONArray("users");
-                if (users.length() > 0) {
-                    String userName = users.getString(0);
-
-                    user = userManager.getUserByName(userName);
-                    log.info("user = " + user);
-                }
-
-                if (user == null || !attachmentUtil.checkAccess(attachmentId, user, true)) {
-                    throw new SecurityException("Try save without access: " + user);
-                }
-
-                String downloadUrl = jsonObj.getString("url");
-                downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
-                log.info("downloadUri = " + downloadUrl);
-
-                String attachmentExt = attachmentUtil.getFileExt(attachmentId);
-                String extDownloadUrl = jsonObj.getString("filetype");
-
-                if (!extDownloadUrl.equals(attachmentExt)) {
-                    JSONObject response = conversionManager.convert(attachmentId, downloadUrl, attachmentExt, user);
-                    downloadUrl = response.getString("fileUrl");
-                }
-
-                try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
-                    HttpGet httpGet = new HttpGet(downloadUrl);
-
-                    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                        int statusCode = response.getStatusLine().getStatusCode();
-                        HttpEntity entity = response.getEntity();
-
-                        if (statusCode == HttpStatus.SC_OK) {
-                            byte[] bytes = IOUtils.toByteArray(entity.getContent());
-                            InputStream inputStream = new ByteArrayInputStream(bytes);
-
-                            tempFile = Files.createTempFile(null, null);
-                            FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
-
-                            attachmentUtil.saveAttachment(attachmentId, tempFile.toFile(), user);
-                            attachmentUtil.removeProperty(attachmentId, "onlyoffice-collaborative-editor-key");
-                        } else {
-                            throw new HttpException("Document Server returned code " + status);
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            String error = ex.toString() + "\n" + sw.toString();
-            log.error(error);
-
-            throw ex;
-        } finally {
-            if (tempFile != null && Files.exists(tempFile)) {
-                Files.delete(tempFile);
-            }
         }
     }
 }

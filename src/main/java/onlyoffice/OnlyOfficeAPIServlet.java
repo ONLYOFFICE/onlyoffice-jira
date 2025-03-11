@@ -18,18 +18,15 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.onlyoffice.client.DocumentServerClient;
+import com.onlyoffice.context.DocsIntegrationSdkContext;
+import com.onlyoffice.manager.document.DocumentManager;
+import onlyoffice.utils.ParsingUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -39,9 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,22 +48,20 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
 
     @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
-
     private final AttachmentUtil attachmentUtil;
-    private final ParsingUtil parsingUtil;
-    private final UrlManager urlManager;
-    private final ConfigurationManager configurationManager;
+
+    private final DocumentServerClient documentServerClient;
+    private final DocumentManager documentManager;
 
     @Inject
     public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                 final AttachmentUtil attachmentUtil,
-                                final ParsingUtil parsingUtil, final UrlManager urlManager,
-                                final ConfigurationManager configurationManager) {
+                                final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.attachmentUtil = attachmentUtil;
-        this.parsingUtil = parsingUtil;
-        this.urlManager = urlManager;
-        this.configurationManager = configurationManager;
+
+        this.documentServerClient = docsIntegrationSdkContext.getDocumentServerClient();
+        this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }
 
     @Override
@@ -98,64 +91,61 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
             return;
         }
 
-        String body = parsingUtil.getBody(request.getInputStream());
+        String body = ParsingUtils.getBody(request.getInputStream());
+        JSONObject bodyJson = new JSONObject(body);
+
+        String downloadUrl = bodyJson.getString("url");
+        String fileType = bodyJson.getString("fileType");
+        String attachmentIdString = bodyJson.getString("attachmentId");
+
+        Long attachmentId = Long.parseLong(attachmentIdString);
+
+        if (downloadUrl.isEmpty() || fileType.isEmpty() || attachmentIdString.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        Attachment attachment = attachmentUtil.getAttachment(attachmentId);
+
+        if (attachment == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        if (!attachmentUtil.checkAccess(attachmentId, user, true)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        String fileName = documentManager.getDocumentName(attachmentIdString);
+        String baseFileName = documentManager.getBaseName(fileName);
+        String newFileName = attachmentUtil.getNewAttachmentFileName(
+                baseFileName + "." + fileType,
+                attachment.getIssue()
+        );
 
         Path tempFile = null;
-
         try {
-            JSONObject bodyJson = new JSONObject(body);
+            tempFile = Files.createTempFile(null, null);
 
-            String downloadUrl = bodyJson.getString("url");
-            String fileType = bodyJson.getString("fileType");
-            String attachmentId = bodyJson.getString("attachmentId");
+            documentServerClient.getFile(
+                    downloadUrl,
+                    Files.newOutputStream(tempFile)
+            );
 
-            if (downloadUrl.isEmpty() || fileType.isEmpty() || attachmentId.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
+            ChangeItemBean changeItemBean = attachmentUtil.createNewAttachment(
+                    newFileName,
+                    tempFile.toFile(),
+                    attachment.getIssue()
+            );
 
-            Long attachmentIdAsLong = Long.parseLong(attachmentId);
-
-            if (!attachmentUtil.checkAccess(attachmentIdAsLong, user, true)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
-
-            downloadUrl = urlManager.replaceDocEditorURLToInternal(downloadUrl);
-
-            try (CloseableHttpClient httpClient = configurationManager.getHttpClient()) {
-                HttpGet httpGet = new HttpGet(downloadUrl);
-
-                try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
-                    int status = httpResponse.getStatusLine().getStatusCode();
-                    HttpEntity entity = httpResponse.getEntity();
-
-                    if (status == HttpStatus.SC_OK) {
-                        byte[] bytes = IOUtils.toByteArray(entity.getContent());
-                        InputStream inputStream = new ByteArrayInputStream(bytes);
-
-                        log.info("size = " + bytes.length);
-                        tempFile = Files.createTempFile(null, null);
-                        FileUtils.copyInputStreamToFile(inputStream, tempFile.toFile());
-
-                        ChangeItemBean changeItemBean =
-                                attachmentUtil.saveAttachment(attachmentIdAsLong, tempFile.toFile(), fileType, user);
-
-                        response.setContentType("application/json");
-                        PrintWriter writer = response.getWriter();
-                        writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\""
-                                + changeItemBean.getToString() + "\"}");
-                    } else {
-                        throw new HttpException("Document Server returned code " + status);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write("{\"attachmentId\":\"" + changeItemBean.getTo() + "\", \"fileName\":\""
+                    + changeItemBean.getToString() + "\"}");
         } finally {
-            if (tempFile != null && Files.exists(tempFile)) {
-                Files.delete(tempFile);
+            if (tempFile != null) {
+                Files.deleteIfExists(tempFile);
             }
         }
     }

@@ -21,10 +21,12 @@ jQuery(function() {
 
     AJS.Onlyoffice.FormatManager = {
         supportedFormats: null,
+        lossyEditableMap: null,
         isEditable: function (ext) {
             for (i = 0; i < this.supportedFormats.length; i++) {
                 if (this.supportedFormats[i].name == ext) {
-                    return Boolean(this.supportedFormats[i].edit);
+                    return this.supportedFormats[i].actions.includes("edit")
+                        || this.lossyEditableMap[ext];
                 }
             }
 
@@ -33,7 +35,7 @@ jQuery(function() {
         isFillForm: function (ext) {
             for (i = 0; i < this.supportedFormats.length; i++) {
                 if (this.supportedFormats[i].name == ext) {
-                    return Boolean(this.supportedFormats[i].fillForm);
+                    return this.supportedFormats[i].actions.includes("fill");
                 }
             }
 
@@ -42,7 +44,7 @@ jQuery(function() {
         isViewable: function (ext) {
             for (i = 0; i < this.supportedFormats.length; i++) {
                 if (this.supportedFormats[i].name == ext) {
-                    return true;
+                    return this.supportedFormats[i].actions.includes("view");
                 }
             }
 
@@ -51,7 +53,7 @@ jQuery(function() {
         isConvertible: function (ext) {
             for (i = 0; i < this.supportedFormats.length; i++) {
                 if (this.supportedFormats[i].name == ext) {
-                    return this.supportedFormats[i].convertTo != null && this.supportedFormats[i].convertTo.length != 0;
+                    return this.supportedFormats[i].convert != null && this.supportedFormats[i].convert.length != 0;
                 }
             }
 
@@ -60,7 +62,8 @@ jQuery(function() {
     };
 
     jQuery.get("/plugins/servlet/onlyoffice/formats/info", function(data) {
-        AJS.Onlyoffice.FormatManager.supportedFormats = data;
+        AJS.Onlyoffice.FormatManager.supportedFormats = data.supportedFormats;
+        AJS.Onlyoffice.FormatManager.lossyEditableMap = data.lossyEditableMap;
     });
 
 });

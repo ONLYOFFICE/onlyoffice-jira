@@ -11,9 +11,25 @@ The app allows to:
 
 Supported formats:
 
-* For editing: DOCX, XLSX, PPTX, DOCXF, OFORM. 
-* For viewing: DOC, DOCX, DOCM, DOC, DOTX, DOTM, ODT, FODT, OTT, RTF, TXT, HTML, HTM, MHT, PDF, DJVU, FB2, EPUB, XPS, XLS,
-XLSX, XLSM, XLTZ , XLTX, XLTM, ODS, FODS, OTS, CSV, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP.
+**For viewing:**
+
+* **WORD**: DOC, DOCM, DOCX, DOT, DOTM, DOTX, EPUB, FB2, FODT, HTM, HTML, HWP, HWPX, MHT, MHTML, ODT, OTT, PAGES, RTF, STW, SXW, TXT, WPS, WPT, XML
+* **CELL**: CSV, ET, ETT, FODS, NUMBERS, ODS, OTS, SXC, XLS, XLSB, XLSM, XLSX, XLT, XLTM, XLTX
+* **SLIDE**: DPS, DPT, FODP, KEY, ODP, OTP, POT, POTM, POTX, PPS, PPSM, PPSX, PPT, PPTM, PPTX, SXI
+* **PDF**: DJVU, DOCXF, OFORM, OXPS, PDF, XPS
+
+**For editing:**
+
+* **WORD**: DOCM, DOCX, DOTM, DOTX
+* **CELL**: XLSM, XLSX, XLTM, XLTX
+* **SLIDE**: POTM, POTX, PPSM, PPSX, PPTM, PPTX
+* **PDF**: PDF
+
+**For editing with possible loss of information:**
+
+* **WORD**: EPUB, FB2, HTML, ODT, OTT, RTF, TXT
+* **CELL**: CSV, ODS, OTS
+* **SLIDE**: ODP, OTP
 
 ## Installing ONLYOFFICE Docs
 
