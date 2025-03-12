@@ -19,16 +19,17 @@
 package onlyoffice.sdk.manager.url;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
 import com.onlyoffice.model.settings.SettingsConstants;
 import onlyoffice.AttachmentUtil;
-import onlyoffice.utils.SecurityUtils;
+import onlyoffice.sdk.manager.security.JwtManager;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     private static final String CALLBACK_SERVLET = "/plugins/servlet/onlyoffice/save";
@@ -36,37 +37,49 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     private static final String TEST_SERVLET = "/plugins/servlet/onlyoffice/test";
 
     private final AttachmentUtil attachmentUtil;
+    private final JwtManager jwtManager;
 
-    public UrlManagerImpl(final SettingsManager settingsManager, final AttachmentUtil attachmentUtil) {
+    public UrlManagerImpl(final SettingsManager settingsManager, final AttachmentUtil attachmentUtil,
+                          final JwtManager jwtManager) {
         super(settingsManager);
 
         this.attachmentUtil = attachmentUtil;
+        this.jwtManager = jwtManager;
     }
 
     @Override
     public String getFileUrl(final String fileId) {
-        String hash = SecurityUtils.createHash(fileId);
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
-        try {
-            return getJiraBaseUrl(true)
-                    + CALLBACK_SERVLET
-                    + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        Map<String, String> params = new HashMap<>();
+
+        if (user != null) {
+            params.put("userKey", user.getKey());
         }
+        params.put("attachmentId", fileId);
+        params.put("action", "download");
+
+        return getJiraBaseUrl(true)
+                + CALLBACK_SERVLET
+                + "?token=" + jwtManager.createInternalToken(params);
     }
 
     @Override
     public String getCallbackUrl(final String fileId) {
-        String hash = SecurityUtils.createHash(fileId);
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
-        try {
-            return getJiraBaseUrl(true)
-                    + CALLBACK_SERVLET
-                    + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        Map<String, String> params = new HashMap<>();
+        if (user != null) {
+            params.put("userKey", user.getKey());
         }
+        params.put("attachmentId", fileId);
+        params.put("action", "download");
+
+        return getJiraBaseUrl(true)
+                + CALLBACK_SERVLET
+                + "?token=" + jwtManager.createInternalToken(params);
     }
 
     @Override

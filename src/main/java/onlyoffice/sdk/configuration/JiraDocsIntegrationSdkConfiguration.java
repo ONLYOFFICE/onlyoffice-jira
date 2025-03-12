@@ -32,6 +32,7 @@ import com.onlyoffice.service.documenteditor.config.ConfigService;
 import com.onlyoffice.service.settings.SettingsValidationService;
 import onlyoffice.AttachmentUtil;
 import onlyoffice.sdk.manager.document.DocumentManagerImpl;
+import onlyoffice.sdk.manager.security.JwtManagerImpl;
 import onlyoffice.sdk.manager.settings.SettingsManagerImpl;
 import onlyoffice.sdk.manager.url.UrlManagerImpl;
 import onlyoffice.sdk.service.callback.CallbackServiceImpl;
@@ -44,6 +45,7 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     private final I18nResolver i18nResolver;
     private DocumentServerClient documentServerClient;
     private DocumentManager documentManager;
+    private JwtManager jwtManager;
     private ConvertService convertService;
 
     public JiraDocsIntegrationSdkConfiguration(final PluginSettingsFactory pluginSettingsFactory,
@@ -75,8 +77,19 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     }
 
     @Override
+    public JwtManager jwtManager(final SettingsManager settingsManager) {
+        this.jwtManager = new JwtManagerImpl(settingsManager);
+
+        return this.jwtManager;
+    }
+
+    @Override
     public UrlManager urlManager(final SettingsManager settingsManager) {
-        return new UrlManagerImpl(settingsManager, attachmentUtil);
+        return new UrlManagerImpl(
+                settingsManager,
+                attachmentUtil,
+                (onlyoffice.sdk.manager.security.JwtManager) jwtManager
+        );
     }
 
     @Override
