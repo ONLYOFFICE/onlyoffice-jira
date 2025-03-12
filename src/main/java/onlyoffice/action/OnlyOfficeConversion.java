@@ -163,7 +163,9 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
 
         ConvertResponse convertResponse = convertService.processConvert(convertRequest, attachmentId);
 
-        if (convertResponse.getEndConvert() != null && convertResponse.getEndConvert()) {
+        if (actionType.equals("conversion")
+                && convertResponse.getEndConvert() != null
+                && convertResponse.getEndConvert()) {
             String fileUrl = convertResponse.getFileUrl();
             String newFileName = attachmentUtil.getNewAttachmentFileName(
                     this.fileName + "." + convertToExt,
