@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.security.JwtManager;
@@ -81,7 +80,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final JwtManager jwtManager;
     private final SettingsManager settingsManager;
     private final ConfigService configService;
-    private final DocumentServerClient documentServerClient;
 
     @Inject
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
@@ -105,7 +103,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.jwtManager = docsIntegrationSdkContext.getJwtManager();
         this.settingsManager = docsIntegrationSdkContext.getSettingsManager();
         this.configService = docsIntegrationSdkContext.getConfigService();
-        this.documentServerClient = docsIntegrationSdkContext.getDocumentServerClient();
     }
 
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
