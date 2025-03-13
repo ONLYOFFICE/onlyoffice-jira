@@ -18,6 +18,7 @@
 
 package onlyoffice.action;
 
+import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.request.RequestMethod;
@@ -77,10 +78,16 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     @Override
     public String doDefault() throws IOException {
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+        Long attachmentId = Long.parseLong(this.attachmentId);
+        Attachment attachment = attachmentUtil.getAttachment(attachmentId);
 
-        if (user == null) {
+        if (attachment == null || !attachmentUtil.checkAccess(attachmentId, user, false)) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
         }
 
         return INPUT;

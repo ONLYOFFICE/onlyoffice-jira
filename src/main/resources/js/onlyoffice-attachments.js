@@ -42,8 +42,6 @@ jQuery(function() {
     }
 
     function CreateOnlyofficeConversionButton(el) {
-        var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
-
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
@@ -53,7 +51,7 @@ jQuery(function() {
         var iconButton = "icon-onlyoffice-conversion";
         var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
 
-        if (AJS.Onlyoffice.FormatManager.isConvertible(ext) && dropZone.length != 0) {
+        if (AJS.Onlyoffice.FormatManager.isConvertible(ext)) {
             CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
         }
 
