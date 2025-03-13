@@ -1,21 +1,17 @@
 ONLYOFFICE app for Jira uses code from the following 3rd party projects:
 
 
-atlassian-spring-scanner-annotation - Atlassian Spring Scanner Annotations (https://www.apache.org/licenses/LICENSE-2.0)
-License:              Apache 2.0
-License File:         atlassian-spring-scanner-annotation.license
+com.atlassian.jira.jira-api - API elements for JIRA. (https://www.apache.org/licenses/LICENSE-2.0.txt)
+License:              Apache License 2.0
+License File:         com.atlassian.jira.jira-api
 
-atlassian-spring-scanner-runtime - Atlassian Spring Scanner Runtime  (https://www.apache.org/licenses/LICENSE-2.0)
-License:              Apache 2.0
-License File:         atlassian-spring-scanner-runtime.license
+com.atlassian.jira.jira-core - JIRA provides cutting edge issue tracking and project management. (https://www.apache.org/licenses/LICENSE-2.0.txt)
+License:              Apache License 2.0
+License File:         com.atlassian.jira.jira-core
 
 atlassian-template-renderer-api - Atlassian Template Renderer API (https://www.atlassian.com/legal/software-license-agreement)
 License:              Atlassian 3.0
 License File:         atlassian-template-renderer-api.license
-
-javax.inject        - The javax.inject API (https://www.apache.org/licenses/LICENSE-2.0)
-License:              Apache 2.0
-License File:         javax.inject.license
 
 json                - JSON is a light-weight, language independent, data interchange format. See http://www.JSON.org/ The files in this package implement JSON encoders/decoders in Java. It also includes the capability to convert between JSON and XML, HTTP headers, Cookies, and CDL. This is a reference implementation. (http://json.org/license.html)
 License:              JSON
