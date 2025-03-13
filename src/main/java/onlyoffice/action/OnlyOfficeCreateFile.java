@@ -18,6 +18,7 @@
 
 package onlyoffice.action;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+@AnonymousSiteAccess
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
     private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");

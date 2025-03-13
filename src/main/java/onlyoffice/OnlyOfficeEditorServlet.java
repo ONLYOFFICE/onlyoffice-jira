@@ -18,6 +18,7 @@
 
 package onlyoffice;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -54,6 +55,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+@AnonymousSiteAccess
 public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

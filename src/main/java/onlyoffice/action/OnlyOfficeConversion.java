@@ -18,6 +18,7 @@
 
 package onlyoffice.action;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@AnonymousSiteAccess
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");

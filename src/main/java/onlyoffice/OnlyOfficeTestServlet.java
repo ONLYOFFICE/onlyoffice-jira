@@ -18,6 +18,7 @@
 
 package onlyoffice;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@AnonymousSiteAccess
 public class OnlyOfficeTestServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

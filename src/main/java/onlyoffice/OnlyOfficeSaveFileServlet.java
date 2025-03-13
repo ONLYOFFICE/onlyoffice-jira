@@ -18,6 +18,7 @@
 
 package onlyoffice;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.util.UserManager;
@@ -42,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+@AnonymousSiteAccess
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

@@ -18,6 +18,7 @@
 
 package onlyoffice;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -39,6 +40,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@AnonymousSiteAccess
 public class OnlyOfficeAPIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeAPIServlet");
