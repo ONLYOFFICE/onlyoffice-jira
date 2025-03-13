@@ -49,13 +49,11 @@ div[class~="attachment-onlyoffice-button"] {
 }
 
 #attachment_thumbnails .attachment-content:hover .blender-onlyoffice1 {
-    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
-    width: 6em!important;
+    width: 4em!important;
 }
 
 #attachment_thumbnails .attachment-content:hover .blender-onlyoffice2 {
-    background-image:linear-gradient(to right, rgba(255,255,255,0) 0, #f4f5f7 50%)!important;
-    width: 9em!important;
+    width: 5em!important;
 }
 
 .icon-onlyoffice-edit {

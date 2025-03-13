@@ -29,6 +29,7 @@
 
     <title>$!{docTitle} - ONLYOFFICE</title>
     <link rel="icon" href="$!{favicon}" type="image/x-icon" />
+    <meta name="decorator" content="atl.general" />
 
     <style type="text/css">
         html {
@@ -51,6 +52,19 @@
         div {
             margin: 0;
             padding: 0;
+        }
+
+        #header {
+            display: none;
+        }
+
+        #content, #page {
+            width: 100%;
+            height: 100%;
+        }
+
+        #footer {
+            display: none;
         }
     </style>
 

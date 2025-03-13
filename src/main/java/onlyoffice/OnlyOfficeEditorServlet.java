@@ -25,9 +25,6 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.webresource.api.UrlMode;
-import com.atlassian.webresource.api.assembler.WebResourceAssembler;
-import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,7 +62,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final TemplateRenderer templateRenderer;
     private final LocaleManager localeManager;
     private final I18nResolver i18nResolver;
-    private final WebResourceAssemblerFactory webResourceAssemblerFactory;
     private final AttachmentUtil attachmentUtil;
 
     private final DocumentManager documentManager;
@@ -77,7 +73,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                    final I18nResolver i18nResolver, final TemplateRenderer templateRenderer,
                                    final LocaleManager localeManager,
-                                   final WebResourceAssemblerFactory webResourceAssemblerFactory,
                                    final AttachmentUtil attachmentUtil,
                                    final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -85,7 +80,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
-        this.webResourceAssemblerFactory = webResourceAssemblerFactory;
         this.attachmentUtil = attachmentUtil;
 
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
@@ -183,13 +177,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     }
 
     private void render(final Map<String, Object> context, final HttpServletResponse response) throws IOException {
-        WebResourceAssembler webResourceAssembler =
-                webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
-        webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
-        webResourceAssembler.assembled().drainIncludedResources()
-                .writeHtmlTags(response.getWriter(), UrlMode.AUTO);
-
-        response.setContentType("text/html;charset=UTF-8");
         templateRenderer.render("templates/editor.vm", context, response.getWriter());
     }
 

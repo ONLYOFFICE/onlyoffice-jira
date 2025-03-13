@@ -60,6 +60,7 @@
     <resource type="download" name="banner.css" location="css/banner/banner.css"/>
     <resource type="download" name="background.svg" location="images/banner/background.svg"/>
     <resource type="download" name="logo.svg" location="images/banner/logo.svg"/>
+    <resource type="download" name="logo-dark.svg" location="images/banner/logo-dark.svg"/>
     <resource type="download" name="configure.css" location="css/configure.css"/>
   </web-resource>
 
