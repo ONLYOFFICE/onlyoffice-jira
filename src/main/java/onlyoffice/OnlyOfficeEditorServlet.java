@@ -22,10 +22,9 @@ import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.plugin.webresource.UrlMode;
-import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import com.atlassian.webresource.api.UrlMode;
 import com.atlassian.webresource.api.assembler.WebResourceAssembler;
 import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -186,7 +185,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                 webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
         webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
         webResourceAssembler.assembled().drainIncludedResources()
-                .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
+                .writeHtmlTags(response.getWriter(), UrlMode.AUTO);
 
         response.setContentType("text/html;charset=UTF-8");
         templateRenderer.render("templates/editor.vm", context, response.getWriter());

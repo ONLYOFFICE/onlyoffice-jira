@@ -18,9 +18,9 @@
 
 package onlyoffice.sdk.configuration;
 
-import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.webresource.api.WebResourceUrlProvider;
 import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.configuration.DocsIntegrationSdkConfiguration;
 import com.onlyoffice.manager.document.DocumentManager;
