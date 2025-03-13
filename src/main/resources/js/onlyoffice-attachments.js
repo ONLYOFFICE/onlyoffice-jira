@@ -53,7 +53,7 @@ jQuery(function() {
         var iconButton = "icon-onlyoffice-conversion";
         var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
 
-        if (AJS.Onlyoffice.FormatManager.isConvertible(ext)) {
+        if (AJS.Onlyoffice.FormatManager.isConvertible(ext) && dropZone.length != 0) {
             CreateOnlyofficeButton(el.currentTarget, nameButton, titleButton, hrefButton, false, iconButton);
         }
 
