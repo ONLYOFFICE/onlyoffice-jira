@@ -15,23 +15,3 @@
  * limitations under the License.
  *
  */
-
-.onlyoffice-docs-cloud-banner-main {
-    align-items: center;
-    background: url(background.svg) no-repeat;
-    background-color: #f5f6f8;
-    display: flex;
-    height: 135px;
-    width: 500px;
-    margin: 30px 0 0;
-}
-
-.onlyoffice-docs-cloud-banner-section {
-  padding: 0 15px;
-}
-
-.onlyoffice-docs-cloud-banner-image {
-    background-image: url(logo.svg);
-    width: 82px;
-    height: 79px;
-}
