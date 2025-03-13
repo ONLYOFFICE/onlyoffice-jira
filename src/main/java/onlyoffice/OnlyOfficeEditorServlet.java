@@ -187,7 +187,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
         webResourceAssembler.assembled().drainIncludedResources()
                 .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
-        response.setContentType("text/html;charset=UTF-8");
 
         response.setContentType("text/html;charset=UTF-8");
         templateRenderer.render("templates/editor.vm", context, response.getWriter());
