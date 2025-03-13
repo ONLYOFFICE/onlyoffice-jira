@@ -73,10 +73,6 @@ public class AttachmentUtil {
     }
 
     public boolean checkAccess(final Attachment attachment, final ApplicationUser user, final boolean forEdit) {
-        if (user == null) {
-            return false;
-        }
-
         Issue issue = attachment.getIssue();
         if (forEdit) {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)

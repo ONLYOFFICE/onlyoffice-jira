@@ -23,7 +23,6 @@ import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.webresource.UrlMode;
-import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -57,11 +56,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OnlyOfficeEditorServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    private final Logger log = LogManager.getLogger(this.getClass());
+
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final TemplateRenderer templateRenderer;
     private final LocaleManager localeManager;
     private final I18nResolver i18nResolver;
-    private final WebResourceUrlProvider webResourceUrlProvider;
     private final WebResourceAssemblerFactory webResourceAssemblerFactory;
     private final AttachmentUtil attachmentUtil;
 
@@ -74,7 +76,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                    final I18nResolver i18nResolver, final TemplateRenderer templateRenderer,
                                    final LocaleManager localeManager,
-                                   final WebResourceUrlProvider webResourceUrlProvider,
                                    final WebResourceAssemblerFactory webResourceAssemblerFactory,
                                    final AttachmentUtil attachmentUtil,
                                    final DocsIntegrationSdkContext docsIntegrationSdkContext) {
@@ -83,7 +84,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
-        this.webResourceUrlProvider = webResourceUrlProvider;
         this.webResourceAssemblerFactory = webResourceAssemblerFactory;
         this.attachmentUtil = attachmentUtil;
 
@@ -94,85 +94,68 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         this.configService = docsIntegrationSdkContext.getConfigService();
     }
 
-    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeEditorServlet");
-    private static final long serialVersionUID = 1L;
-
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
-
         String attachmentIdString = request.getParameter("attachmentId");
+        Long attachmentId = Long.parseLong(attachmentIdString);
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+        Map<String, Object> context = getDefaultContext();
 
-        if (!jiraAuthenticationContext.isLoggedInUser()) {
-            String currentURL = request.getRequestURI() + "?" + request.getQueryString();
-            String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
-            response.sendRedirect("/login.jsp" + query);
+        Attachment attachment = attachmentUtil.getAttachment(attachmentId);
+
+        if (attachment == null || !attachmentUtil.checkAccess(attachmentId, user, false)) {
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                context.put("errorMessage", i18nResolver.getText("onlyoffice.connector.error.AccessDenied"));
+                render(context, response);
+            } else {
+                sendRedirectToLogin(request, response);
+            }
             return;
         }
 
-        try {
-            Long attachmentId = Long.parseLong(attachmentIdString);
-            Attachment attachment = attachmentUtil.getAttachment(attachmentId);
-            String fileName = documentManager.getDocumentName(String.valueOf(attachmentId));
-            DocumentType documentType = documentManager.getDocumentType(fileName);
+        String fileName = documentManager.getDocumentName(String.valueOf(attachmentId));
+        DocumentType documentType = documentManager.getDocumentType(fileName);
 
-            if (attachment == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
+        context.put("attachmentId", attachmentId);
+        context.put("docTitle", fileName);
 
-            if (!attachmentUtil.checkAccess(attachmentId, user, false)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN); //ToDo
-                return;
-            }
+        if (documentType == null) {
+            context.put(
+                    "errorMessage",
+                    i18nResolver.getText("onlyoffice.connector.error.NotSupportedFormat")
+                            + "(." + documentManager.getExtension(fileName) + ")"
+            );
 
-            Map<String, Object> context = new HashMap<String, Object>();
-            context.put("attachmentId", attachmentId);
-            context.put("docTitle", documentManager.getDocumentName(String.valueOf(attachmentId)));
-            context.put("favicon", webResourceUrlProvider.getStaticPluginResourceUrl(
-                    "onlyoffice.onlyoffice-jira-app:editor-page-resources",
-                    documentType + ".ico", UrlMode.ABSOLUTE));
-            context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
-            context.put("saveAsAsHtml", urlManager.getSaveAsObject(attachmentId, user).toString());
-
-            if (documentType != null) {
-
-                Config config = configService.createConfig(
-                        attachmentId.toString(),
-                        Mode.EDIT,
-                        request.getHeader("User-Agent")
-                );
-
-                config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
-
-                if (settingsManager.isSecurityEnabled()) {
-                    config.setToken(jwtManager.createToken(config));
-                }
-
-                String shardKey = config.getDocument().getKey();
-
-                ObjectMapper mapper = createObjectMapper();
-                context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
-                context.put("configAsHtml", mapper.writeValueAsString(config));
-                context.put("demo", settingsManager.isDemoActive());
-
-            } else {
-                context.put("errorMessage", i18nResolver.getText("onlyoffice.connector.error.NotSupportedFormat") + "(."
-                        + documentManager.getExtension(fileName) + ")");
-            }
-
-            WebResourceAssembler webResourceAssembler =
-                    webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
-            webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
-            webResourceAssembler.assembled().drainIncludedResources()
-                    .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
-            response.setContentType("text/html;charset=UTF-8");
-
-            templateRenderer.render("templates/editor.vm", context, response.getWriter());
-        } catch (Exception e) {
-            throw new ServletException(e.getMessage(), e);
+            render(context, response);
+            return;
         }
+
+        Config config = configService.createConfig(
+                attachmentId.toString(),
+                Mode.EDIT,
+                request.getHeader("User-Agent")
+        );
+
+        config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
+
+        if (settingsManager.isSecurityEnabled()) {
+            config.setToken(jwtManager.createToken(config));
+        }
+
+        ObjectMapper mapper = createObjectMapper();
+        String shardKey = config.getDocument().getKey();
+
+        context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
+        context.put("configAsHtml", mapper.writeValueAsString(config));
+        context.put("demo", settingsManager.isDemoActive());
+        context.put("favicon", urlManager.getFaviconUrl(documentType));
+
+        if (config.getDocument().getPermissions().getEdit()) {
+            context.put("saveAsUrl", urlManager.getSaveAsUrl(attachmentId));
+        }
+
+        render(context, response);
     }
 
     private ObjectMapper createObjectMapper() {
@@ -188,5 +171,32 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         objectMapper.registerModule(module);
 
         return objectMapper;
+    }
+
+    private Map<String, Object> getDefaultContext() {
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
+
+        return context;
+    }
+
+    private void render(final Map<String, Object> context, final HttpServletResponse response) throws IOException {
+        WebResourceAssembler webResourceAssembler =
+                webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
+        webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
+        webResourceAssembler.assembled().drainIncludedResources()
+                .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
+        response.setContentType("text/html;charset=UTF-8");
+
+        response.setContentType("text/html;charset=UTF-8");
+        templateRenderer.render("templates/editor.vm", context, response.getWriter());
+    }
+
+    private void sendRedirectToLogin(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException {
+        String currentURL = request.getRequestURI() + "?" + request.getQueryString();
+        String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
+        response.sendRedirect("/login.jsp" + query);
     }
 }

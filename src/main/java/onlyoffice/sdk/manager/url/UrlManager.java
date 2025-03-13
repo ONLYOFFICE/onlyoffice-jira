@@ -18,9 +18,9 @@
 
 package onlyoffice.sdk.manager.url;
 
-import com.atlassian.jira.user.ApplicationUser;
-import org.json.JSONObject;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 
 public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
-    JSONObject getSaveAsObject(Long attachmentId, ApplicationUser user);
+    String getFaviconUrl(DocumentType documentType);
+    String getSaveAsUrl(Long attachmentId);
 }

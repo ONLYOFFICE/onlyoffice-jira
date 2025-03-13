@@ -27,8 +27,8 @@
     *
     -->
 
-    <title>${docTitle} - ONLYOFFICE</title>
-    <link rel="icon" href="${favicon}" type="image/x-icon" />
+    <title>$!{docTitle} - ONLYOFFICE</title>
+    <link rel="icon" href="$!{favicon}" type="image/x-icon" />
 
     <style type="text/css">
         html {
@@ -79,7 +79,7 @@
                 return;
             }
 
-            var saveAs = JSON.parse('${saveAsAsHtml}');
+            var saveAsUrl = "$!{saveAsUrl}";
 
             var onAppReady = function () {
                 var errorMessage = "$!{errorMessage}";
@@ -97,7 +97,7 @@
                 var fileType = event.data.fileType ? event.data.fileType : event.data.title.split(".").pop();
 
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", saveAs.uri, true);
+                xhr.open("POST", saveAsUrl, true);
                 xhr.send(JSON.stringify({
                     url: url,
                     fileType: fileType,
@@ -127,7 +127,7 @@
                 },
             };
 
-            if (saveAs.available) {
+            if (saveAsUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
             }
 

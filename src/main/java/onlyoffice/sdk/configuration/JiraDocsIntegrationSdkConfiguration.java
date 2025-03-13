@@ -18,6 +18,7 @@
 
 package onlyoffice.sdk.configuration;
 
+import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.onlyoffice.client.DocumentServerClient;
@@ -43,16 +44,19 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     private final PluginSettingsFactory pluginSettingsFactory;
     private final AttachmentUtil attachmentUtil;
     private final I18nResolver i18nResolver;
+    private final WebResourceUrlProvider webResourceUrlProvider;
     private DocumentServerClient documentServerClient;
     private DocumentManager documentManager;
     private JwtManager jwtManager;
     private ConvertService convertService;
 
     public JiraDocsIntegrationSdkConfiguration(final PluginSettingsFactory pluginSettingsFactory,
-                                               final AttachmentUtil attachmentUtil, final I18nResolver i18nResolver) {
+                                               final AttachmentUtil attachmentUtil, final I18nResolver i18nResolver,
+                                               final WebResourceUrlProvider webResourceUrlProvider) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.attachmentUtil = attachmentUtil;
         this.i18nResolver = i18nResolver;
+        this.webResourceUrlProvider = webResourceUrlProvider;
     }
 
     @Override
@@ -87,6 +91,7 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     public UrlManager urlManager(final SettingsManager settingsManager) {
         return new UrlManagerImpl(
                 settingsManager,
+                webResourceUrlProvider,
                 attachmentUtil,
                 (onlyoffice.sdk.manager.security.JwtManager) jwtManager
         );
