@@ -16,6 +16,7 @@
     - extended list supported formats
 - create pdf instead docxf
 - remove filling for oform
+- fixed work with plugin for anonymous user
 
 ## 2.3.0
 ## Added
