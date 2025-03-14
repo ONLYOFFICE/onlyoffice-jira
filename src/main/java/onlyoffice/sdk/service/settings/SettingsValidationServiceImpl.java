@@ -28,8 +28,6 @@ public class SettingsValidationServiceImpl extends DefaultSettingsValidationServ
 
     @Override
     public Map<String, ValidationResult> validateSettings(final Settings settings) {
-        getDocumentServerClient().applySettings(settings);
-
         Map<String, ValidationResult> result = new HashMap<>();
 
         try {
@@ -69,7 +67,7 @@ public class SettingsValidationServiceImpl extends DefaultSettingsValidationServ
         try {
             result.put(
                     "convertService",
-                    checkConvertService()
+                    checkConvertService(null)
             );
         } catch (Exception e) {
             log.error(e.getMessage(), e);

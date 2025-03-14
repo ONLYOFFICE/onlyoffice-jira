@@ -55,9 +55,9 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
 
     @Override
     public DocumentServerClient documentServerClient(final SettingsManager settingsManager,
-                                              final UrlManager urlManager, final JwtManager jwtManager) {
+                                              final UrlManager urlManager) {
         this.documentServerClient = DocsIntegrationSdkConfiguration.super
-                .documentServerClient(settingsManager, urlManager, jwtManager);
+                .documentServerClient(settingsManager, urlManager);
 
         return this.documentServerClient;
     }
