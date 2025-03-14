@@ -32,8 +32,6 @@ jQuery(function() {
 
         if (AJS.Onlyoffice.FormatManager.isEditable(ext) && dropZone.length != 0) {
             titleButton = AJS.I18n.getText("onlyoffice.connector.editlink");
-        } else if (AJS.Onlyoffice.FormatManager.isFillForm(ext) && dropZone.length != 0){
-            titleButton = AJS.I18n.getText("onlyoffice.connector.fillFormlink");;
         } else if (AJS.Onlyoffice.FormatManager.isViewable(ext)) {
             titleButton = AJS.I18n.getText("onlyoffice.connector.viewlink");
         }
