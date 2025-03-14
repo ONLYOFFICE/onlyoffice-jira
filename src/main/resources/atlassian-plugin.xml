@@ -35,7 +35,7 @@
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
     <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
-    <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
+    <resource type="download" name="create_icon.svg" location="/images/create_icon.svg"/>
     <resource type="download" name="conversion.soy.js" location="/templates/actions/conversion.soy"/>
 
     <context>jira.view.issue</context>

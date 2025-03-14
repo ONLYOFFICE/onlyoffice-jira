@@ -84,7 +84,7 @@ div[class~="attachment-onlyoffice-button"] {
 }
 
 #onlyoffice-create-file-button span {
-    background-image: url("сreate_icon.svg");
+    background-image: url("create_icon.svg");
     padding-left: 24px;
     --aui-icon-size: 16px;
     background-repeat: no-repeat;
