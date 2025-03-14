@@ -25,7 +25,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +41,6 @@ public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Inject
     public OnlyOfficeFormatsInfoServlet(final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }

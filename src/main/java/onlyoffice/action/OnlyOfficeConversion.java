@@ -23,8 +23,6 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.request.RequestMethod;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.jira.security.request.SupportedMethods;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.client.DocumentServerClient;
@@ -38,7 +36,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import webwork.action.ServletActionContext;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,12 +45,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Scanned
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
 
-    @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;
 
@@ -68,7 +63,6 @@ public class OnlyOfficeConversion extends AbstractIssueSelectAction {
     private String targetFileType;
     private String actionType;
 
-    @Inject
     public OnlyOfficeConversion(final JiraAuthenticationContext jiraAuthenticationContext,
                                 final AttachmentUtil attachmentUtil,
                                 final DocsIntegrationSdkContext docsIntegrationSdkContext) {

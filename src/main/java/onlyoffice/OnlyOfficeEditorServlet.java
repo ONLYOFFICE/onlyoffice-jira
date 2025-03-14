@@ -22,8 +22,6 @@ import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.plugin.webresource.UrlMode;
 import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
@@ -49,7 +47,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,19 +56,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-@Scanned
 public class OnlyOfficeEditorServlet extends HttpServlet {
-    @JiraImport
     private final JiraAuthenticationContext jiraAuthenticationContext;
-    @JiraImport
     private final TemplateRenderer templateRenderer;
-    @JiraImport
     private final LocaleManager localeManager;
-    @JiraImport
-    private final I18nResolver i18n;
-    @JiraImport
+    private final I18nResolver i18nResolver;
     private final WebResourceUrlProvider webResourceUrlProvider;
-    @JiraImport
     private final WebResourceAssemblerFactory webResourceAssemblerFactory;
     private final AttachmentUtil attachmentUtil;
 
@@ -81,16 +71,15 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final SettingsManager settingsManager;
     private final ConfigService configService;
 
-    @Inject
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
-                                   final I18nResolver i18n, final TemplateRenderer templateRenderer,
+                                   final I18nResolver i18nResolver, final TemplateRenderer templateRenderer,
                                    final LocaleManager localeManager,
                                    final WebResourceUrlProvider webResourceUrlProvider,
                                    final WebResourceAssemblerFactory webResourceAssemblerFactory,
                                    final AttachmentUtil attachmentUtil,
                                    final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
-        this.i18n = i18n;
+        this.i18nResolver = i18nResolver;
 
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
@@ -169,7 +158,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
                 context.put("demo", settingsManager.isDemoActive());
 
             } else {
-                context.put("errorMessage", i18n.getText("onlyoffice.connector.error.NotSupportedFormat") + "(."
+                context.put("errorMessage", i18nResolver.getText("onlyoffice.connector.error.NotSupportedFormat") + "(."
                         + documentManager.getExtension(fileName) + ")");
             }
 

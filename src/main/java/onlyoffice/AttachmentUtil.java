@@ -30,14 +30,11 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.opensymphony.module.propertyset.PropertySet;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.ofbiz.core.entity.GenericValue;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,18 +43,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Named
 public class AttachmentUtil {
     private final Logger log = LogManager.getLogger("onlyoffice.AttachmentUtil");
     private static final int TYPE_STRING = 5;
-    @ComponentImport
+
     private final AttachmentManager attachmentManager;
-    @ComponentImport
     private final PermissionManager permissionManager;
 
     private final OfBizDelegator ofBizDelegator;
 
-    @Inject
     public AttachmentUtil(final AttachmentManager attachmentManager, final PermissionManager permissionManager) {
 
         this.attachmentManager = attachmentManager;

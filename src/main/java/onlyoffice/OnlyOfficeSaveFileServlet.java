@@ -18,7 +18,6 @@
 
 package onlyoffice;
 
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.settings.SettingsManager;
@@ -30,7 +29,6 @@ import onlyoffice.utils.SecurityUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +39,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-@Scanned
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -53,7 +50,6 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private final SettingsManager settingsManager;
     private final CallbackService callbackService;
 
-    @Inject
     public OnlyOfficeSaveFileServlet(final AttachmentUtil attachmentUtil,
                                      final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.attachmentUtil = attachmentUtil;
