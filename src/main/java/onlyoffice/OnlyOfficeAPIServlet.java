@@ -78,13 +78,6 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     }
 
     private void saveAs(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
-
-        if (user == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
         String body = ParsingUtils.getBody(request.getInputStream());
         JSONObject bodyJson = new JSONObject(body);
 
@@ -99,10 +92,15 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
             return;
         }
 
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
         Attachment attachment = attachmentUtil.getAttachment(attachmentId);
 
         if (attachment == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
             return;
         }
 

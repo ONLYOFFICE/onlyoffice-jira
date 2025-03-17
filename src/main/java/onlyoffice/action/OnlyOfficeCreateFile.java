@@ -23,7 +23,6 @@ import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.request.RequestMethod;
 import com.atlassian.jira.security.request.SupportedMethods;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
@@ -60,11 +59,14 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
     @Override
     public String doDefault() throws IOException {
-        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
-
-        if (user == null) {
+        if (!hasIssuePermission(ProjectPermissions.BROWSE_PROJECTS, getIssueObject())
+                || !hasIssuePermission(ProjectPermissions.CREATE_ATTACHMENTS, getIssueObject())) {
             HttpServletResponse response = this.getHttpResponse();
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
         }
 
         return INPUT;
@@ -89,13 +91,6 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
     @Override
     public String doExecute() throws Exception {
-        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
-
-        if (user == null) {
-            HttpServletResponse response = this.getHttpResponse();
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
         DocumentType documentType = DocumentType.valueOf(fileType.toUpperCase());
         String extension = documentManager.getDefaultExtension(documentType);
         String newFileName = attachmentUtil.getNewAttachmentFileName(
@@ -119,6 +114,7 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
                     "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + changeItemBean.getTo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+
             addErrorMessage(getText("onlyoffice.connector.error.Unknown"));
             return INPUT;
         } finally {

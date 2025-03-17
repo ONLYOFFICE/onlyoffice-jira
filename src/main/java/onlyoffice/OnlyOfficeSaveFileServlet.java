@@ -18,16 +18,19 @@
 
 package onlyoffice;
 
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.settings.SettingsManager;
-import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
+import onlyoffice.sdk.manager.security.JwtManager;
 import onlyoffice.utils.ParsingUtils;
-import onlyoffice.utils.SecurityUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,17 +47,22 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
 
     private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
 
+    private final JiraAuthenticationContext jiraAuthenticationContext;
+    private final UserManager userManager;
     private final AttachmentUtil attachmentUtil;
 
     private final JwtManager jwtManager;
     private final SettingsManager settingsManager;
     private final CallbackService callbackService;
 
-    public OnlyOfficeSaveFileServlet(final AttachmentUtil attachmentUtil,
+    public OnlyOfficeSaveFileServlet(final JiraAuthenticationContext jiraAuthenticationContext,
+                                     final UserManager userManager, final AttachmentUtil attachmentUtil,
                                      final DocsIntegrationSdkContext docsIntegrationSdkContext) {
+        this.jiraAuthenticationContext = jiraAuthenticationContext;
+        this.userManager = userManager;
         this.attachmentUtil = attachmentUtil;
 
-        this.jwtManager = docsIntegrationSdkContext.getJwtManager();
+        this.jwtManager = (JwtManager) docsIntegrationSdkContext.getJwtManager();
         this.settingsManager = docsIntegrationSdkContext.getSettingsManager();
         this.callbackService = docsIntegrationSdkContext.getCallbackService();
     }
@@ -69,7 +77,7 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             String token = (header != null && header.startsWith(authorizationPrefix))
                     ? header.substring(authorizationPrefix.length()) : header;
 
-            if (token == null || token == "") {
+            if (token == null || token.isEmpty()) {
                 throw new SecurityException("Expected JWT");
             }
 
@@ -80,12 +88,35 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             }
         }
 
-        String vkey = request.getParameter("vkey");
-        log.info("vkey = " + vkey);
-        String attachmentIdString = SecurityUtils.readHash(vkey);
+        String token = request.getParameter("token");
+        String payload;
+        JSONObject bodyFromToken;
 
+        try {
+            payload = jwtManager.verifyInternalToken(token);
+            bodyFromToken = new JSONObject(payload);
+
+            if (!bodyFromToken.getString("action").equals("download")) {
+                throw new SecurityException();
+            }
+        } catch (Exception e) {
+            throw new SecurityException("Invalid link token!");
+        }
+
+        String userKey = bodyFromToken.has("userKey") ? bodyFromToken.getString("userKey") : null;
+        String attachmentIdString = bodyFromToken.getString("attachmentId");
         Long attachmentId = Long.parseLong(attachmentIdString);
-        log.info("attachmentId " + attachmentId);
+        ApplicationUser user = userManager.getUserByKey(userKey);
+
+        if (attachmentUtil.getAttachment(attachmentId) == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        if (!attachmentUtil.checkAccess(attachmentId, user, false)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String contentType = attachmentUtil.getMediaType(attachmentId);
         response.setContentType(contentType);
@@ -102,8 +133,37 @@ public class OnlyOfficeSaveFileServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/plain; charset=utf-8");
 
-        String vkey = request.getParameter("vkey");
-        String attachmentIdString = SecurityUtils.readHash(vkey);
+        String token = request.getParameter("token");
+        String payload;
+        JSONObject bodyFromToken;
+
+        try {
+            payload = jwtManager.verifyInternalToken(token);
+            bodyFromToken = new JSONObject(payload);
+
+            if (!bodyFromToken.getString("action").equals("download")) {
+                throw new SecurityException();
+            }
+        } catch (Exception e) {
+            throw new SecurityException("Invalid link token!");
+        }
+
+        String userKey = bodyFromToken.has("userKey") ? bodyFromToken.getString("userKey") : null;
+        String attachmentIdString = bodyFromToken.getString("attachmentId");
+        Long attachmentId = Long.parseLong(attachmentIdString);
+        ApplicationUser user = userManager.getUserByKey(userKey);
+
+        jiraAuthenticationContext.setLoggedInUser(user);
+
+        if (attachmentUtil.getAttachment(attachmentId) == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        if (!attachmentUtil.checkAccess(attachmentId, user, true)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String error = "";
         try {

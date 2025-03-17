@@ -16,11 +16,11 @@
  *
  */
 
-package onlyoffice.sdk.manager.url;
+package onlyoffice.sdk.manager.security;
 
-import com.onlyoffice.model.documenteditor.config.document.DocumentType;
+import java.util.Map;
 
-public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
-    String getFaviconUrl(DocumentType documentType);
-    String getSaveAsUrl(Long attachmentId);
+public interface JwtManager extends com.onlyoffice.manager.security.JwtManager {
+    String createInternalToken(Map<String, ?> payloadMap);
+    String verifyInternalToken(String token);
 }

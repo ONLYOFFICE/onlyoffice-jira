@@ -19,54 +19,71 @@
 package onlyoffice.sdk.manager.url;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.plugin.webresource.UrlMode;
+import com.atlassian.plugin.webresource.WebResourceUrlProvider;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.settings.SettingsConstants;
 import onlyoffice.AttachmentUtil;
-import onlyoffice.utils.SecurityUtils;
-import org.json.JSONObject;
+import onlyoffice.sdk.manager.security.JwtManager;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     private static final String CALLBACK_SERVLET = "/plugins/servlet/onlyoffice/save";
     private static final String API_SERVLET = "/plugins/servlet/onlyoffice/api";
     private static final String TEST_SERVLET = "/plugins/servlet/onlyoffice/test";
 
+    private final WebResourceUrlProvider webResourceUrlProvider;
     private final AttachmentUtil attachmentUtil;
+    private final JwtManager jwtManager;
 
-    public UrlManagerImpl(final SettingsManager settingsManager, final AttachmentUtil attachmentUtil) {
+    public UrlManagerImpl(final SettingsManager settingsManager, final WebResourceUrlProvider webResourceUrlProvider,
+                          final AttachmentUtil attachmentUtil, final JwtManager jwtManager) {
         super(settingsManager);
 
+        this.webResourceUrlProvider = webResourceUrlProvider;
         this.attachmentUtil = attachmentUtil;
+        this.jwtManager = jwtManager;
     }
 
     @Override
     public String getFileUrl(final String fileId) {
-        String hash = SecurityUtils.createHash(fileId);
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
-        try {
-            return getJiraBaseUrl(true)
-                    + CALLBACK_SERVLET
-                    + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        Map<String, String> params = new HashMap<>();
+
+        if (user != null) {
+            params.put("userKey", user.getKey());
         }
+        params.put("attachmentId", fileId);
+        params.put("action", "download");
+
+        return getJiraBaseUrl(true)
+                + CALLBACK_SERVLET
+                + "?token=" + jwtManager.createInternalToken(params);
     }
 
     @Override
     public String getCallbackUrl(final String fileId) {
-        String hash = SecurityUtils.createHash(fileId);
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 
-        try {
-            return getJiraBaseUrl(true)
-                    + CALLBACK_SERVLET
-                    + "?vkey=" + URLEncoder.encode(hash, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        Map<String, String> params = new HashMap<>();
+        if (user != null) {
+            params.put("userKey", user.getKey());
         }
+        params.put("attachmentId", fileId);
+        params.put("action", "download");
+
+        return getJiraBaseUrl(true)
+                + CALLBACK_SERVLET
+                + "?token=" + jwtManager.createInternalToken(params);
     }
 
     @Override
@@ -92,11 +109,14 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     }
 
     @Override
-    public JSONObject getSaveAsObject(final Long attachmentId, final ApplicationUser user) {
-        JSONObject saveAs = new JSONObject();
-        saveAs.put("uri", getJiraBaseUrl(false) + API_SERVLET + "?type=save-as");
-        saveAs.put("available", attachmentUtil.checkAccess(attachmentId, user, true));
+    public String getFaviconUrl(final DocumentType documentType) {
+        return  webResourceUrlProvider.getStaticPluginResourceUrl(
+                "onlyoffice.onlyoffice-jira-app:editor-page-resources",
+                documentType + ".ico", UrlMode.ABSOLUTE);
+    }
 
-        return saveAs;
+    @Override
+    public String getSaveAsUrl(final Long attachmentId) {
+        return getJiraBaseUrl(false) + API_SERVLET + "?type=save-as";
     }
 }

@@ -42,8 +42,6 @@ jQuery(function() {
     }
 
     function CreateOnlyofficeConversionButton(el) {
-        var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
-
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();
