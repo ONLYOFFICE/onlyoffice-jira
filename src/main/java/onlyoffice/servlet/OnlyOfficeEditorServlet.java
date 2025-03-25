@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.attachment.Attachment;

@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.security.JwtManager;

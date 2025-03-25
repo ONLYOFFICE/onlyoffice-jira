@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;

@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.sal.api.user.UserKey;

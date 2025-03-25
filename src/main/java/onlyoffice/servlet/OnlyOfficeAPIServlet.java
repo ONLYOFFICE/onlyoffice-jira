@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
