@@ -89,7 +89,7 @@
     </actions>
   </webwork1>
 
-  <component name="Attachment Util" key="onlyoffice-attachment-util" class="onlyoffice.AttachmentUtil" public="false" />
+  <component name="Attachment Util" key="onlyoffice-attachment-util" class="onlyoffice.utils.AttachmentUtil" public="false" />
 
   <component name="ONLYOFFICE Docs Integration SDK Configuration" key="onlyoffice-integration-sdk-configuration" class="onlyoffice.sdk.configuration.JiraDocsIntegrationSdkConfiguration" public="false">
     <interface>com.onlyoffice.configuration.DocsIntegrationSdkConfiguration</interface>

@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.utils;
 
 import com.atlassian.jira.util.io.InputStreamConsumer;
 import org.apache.commons.io.IOUtils;

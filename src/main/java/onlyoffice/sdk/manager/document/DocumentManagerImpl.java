@@ -20,7 +20,7 @@ package onlyoffice.sdk.manager.document;
 
 import com.onlyoffice.manager.document.DefaultDocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 
 import java.util.UUID;
 

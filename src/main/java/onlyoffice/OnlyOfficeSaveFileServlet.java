@@ -27,6 +27,8 @@ import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import onlyoffice.sdk.manager.security.JwtManager;
+import onlyoffice.utils.AttachmentUtil;
+import onlyoffice.utils.DownloadFileStreamConsumer;
 import onlyoffice.utils.ParsingUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

@@ -32,7 +32,7 @@ import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.service.convert.ConvertService;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 import webwork.action.ServletActionContext;
 
 import javax.servlet.http.HttpServletResponse;

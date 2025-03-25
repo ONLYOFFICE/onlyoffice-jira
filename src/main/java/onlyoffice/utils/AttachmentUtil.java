@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.utils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.AttachmentManager;

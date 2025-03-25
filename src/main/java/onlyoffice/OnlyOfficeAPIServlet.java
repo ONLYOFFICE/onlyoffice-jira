@@ -25,6 +25,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
+import onlyoffice.utils.AttachmentUtil;
 import onlyoffice.utils.ParsingUtils;
 import org.json.JSONObject;
 

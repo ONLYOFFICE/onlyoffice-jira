@@ -42,6 +42,7 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import onlyoffice.sdk.manager.url.UrlManager;
+import onlyoffice.utils.AttachmentUtil;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
