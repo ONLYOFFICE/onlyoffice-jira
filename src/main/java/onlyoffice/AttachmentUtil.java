@@ -45,8 +45,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class AttachmentUtil {
-    private final Logger log = LogManager.getLogger("onlyoffice.AttachmentUtil");
     private static final int TYPE_STRING = 5;
+
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final AttachmentManager attachmentManager;
     private final PermissionManager permissionManager;

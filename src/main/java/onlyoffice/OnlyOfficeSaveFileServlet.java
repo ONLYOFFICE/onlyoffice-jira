@@ -45,7 +45,7 @@ import java.io.PrintWriter;
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final UserManager userManager;

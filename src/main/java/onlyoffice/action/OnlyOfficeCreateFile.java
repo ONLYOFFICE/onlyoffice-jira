@@ -40,7 +40,7 @@ import java.nio.file.Files;
 
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
-    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;

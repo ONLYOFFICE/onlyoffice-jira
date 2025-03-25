@@ -33,8 +33,6 @@ import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.service.convert.ConvertService;
 import onlyoffice.AttachmentUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import webwork.action.ServletActionContext;
 
 import javax.servlet.http.HttpServletResponse;
@@ -48,8 +46,6 @@ import java.util.Map;
 
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeConversion extends AbstractIssueSelectAction {
-    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeConversion");
-
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;
 

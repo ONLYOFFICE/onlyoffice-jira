@@ -33,8 +33,6 @@ import com.onlyoffice.model.settings.security.Security;
 import com.onlyoffice.model.settings.validation.ValidationResult;
 import onlyoffice.sdk.service.settings.SettingsValidationService;
 import onlyoffice.utils.ParsingUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -48,6 +46,8 @@ import java.util.Map;
 
 
 public class OnlyOfficeConfServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     private final UserManager userManager;
     private final TemplateRenderer templateRenderer;
 
@@ -66,9 +66,6 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         this.documentManager = docsIntegrationSdk.getDocumentManager();
         this.settingsValidationService = (SettingsValidationService) docsIntegrationSdk.getSettingsValidationService();
     }
-    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeConfServlet");
-
-    private static final long serialVersionUID = 1L;
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,

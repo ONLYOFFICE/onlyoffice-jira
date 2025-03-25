@@ -42,8 +42,6 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import onlyoffice.sdk.manager.url.UrlManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -57,8 +55,6 @@ import java.util.Map;
 
 public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final TemplateRenderer templateRenderer;

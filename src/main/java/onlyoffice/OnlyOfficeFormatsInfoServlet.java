@@ -21,8 +21,6 @@ package onlyoffice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import javax.servlet.http.HttpServlet;
@@ -35,7 +33,6 @@ import java.util.Map;
 
 public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeFormatsInfoServlet");
 
     private final DocumentManager documentManager;
 
