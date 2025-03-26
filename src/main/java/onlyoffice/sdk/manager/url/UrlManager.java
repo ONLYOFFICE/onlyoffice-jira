@@ -22,5 +22,5 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 
 public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
     String getFaviconUrl(DocumentType documentType);
-    String getSaveAsUrl(Long attachmentId);
+    String getApiPath();
 }

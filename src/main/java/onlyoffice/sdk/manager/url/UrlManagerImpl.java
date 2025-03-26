@@ -116,7 +116,7 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     }
 
     @Override
-    public String getSaveAsUrl(final Long attachmentId) {
-        return getJiraBaseUrl(false) + API_SERVLET + "?type=save-as";
+    public String getApiPath() {
+        return API_SERVLET;
     }
 }

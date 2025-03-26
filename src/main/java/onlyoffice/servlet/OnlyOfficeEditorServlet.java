@@ -136,21 +136,14 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
 
-        if (settingsManager.isSecurityEnabled()) {
-            config.setToken(jwtManager.createToken(config));
-        }
-
         ObjectMapper mapper = createObjectMapper();
         String shardKey = config.getDocument().getKey();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
-        context.put("configAsHtml", mapper.writeValueAsString(config));
+        context.put("config", mapper.writeValueAsString(config));
         context.put("demo", settingsManager.isDemoActive());
         context.put("favicon", urlManager.getFaviconUrl(documentType));
-
-        if (config.getDocument().getPermissions().getEdit()) {
-            context.put("saveAsUrl", urlManager.getSaveAsUrl(attachmentId));
-        }
+        context.put("canSaveAs", config.getDocument().getPermissions().getEdit());
 
         render(context, response);
     }
@@ -174,6 +167,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         Map<String, Object> context = new HashMap<>();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
+        context.put("apiPath", urlManager.getApiPath());
 
         return context;
     }

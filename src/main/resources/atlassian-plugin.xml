@@ -44,6 +44,12 @@
   </web-resource>
 
   <web-resource key="editor-page-resources" name="Editor Page Web Resources">
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+    <resource type="download" name="editor.js" location="js/editor.js"/>
+    <resource type="download" name="editor.css" location="css/editor.css"/>
+    <resource type="download" name="banner.css" location="css/banner/banner.css"/>
     <resource type="download" name="word.ico" location="/images/word.ico"/>
     <resource type="download" name="cell.ico" location="/images/cell.ico"/>
     <resource type="download" name="slide.ico" location="/images/slide.ico"/>
