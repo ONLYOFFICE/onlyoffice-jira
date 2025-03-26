@@ -4,6 +4,7 @@
 ## Added
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - link to docs cloud
+- editor interface settings
 
 ## Changed
 - com.onlyoffice:documentserver-sdk-java

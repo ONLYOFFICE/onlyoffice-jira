@@ -53,6 +53,7 @@ public class ConfigServiceImpl extends DefaultConfigService {
 
         return Permissions.builder()
                 .edit(editPermission && isEditable)
+                .chat(getSettingsManager().getSettingBoolean("customization.chat", true))
                 .build();
     }
 
