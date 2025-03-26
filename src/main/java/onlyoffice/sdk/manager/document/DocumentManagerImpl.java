@@ -20,15 +20,11 @@ package onlyoffice.sdk.manager.document;
 
 import com.onlyoffice.manager.document.DefaultDocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
-import onlyoffice.AttachmentUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import onlyoffice.utils.AttachmentUtil;
 
 import java.util.UUID;
 
 public class DocumentManagerImpl extends DefaultDocumentManager {
-    private final Logger log = LogManager.getLogger(this.getClass());
-
     private final AttachmentUtil attachmentUtil;
 
     public DocumentManagerImpl(final SettingsManager settingsManager, final AttachmentUtil attachmentUtil) {

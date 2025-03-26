@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.security.JiraAuthenticationContext;
@@ -28,6 +28,8 @@ import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import onlyoffice.sdk.manager.security.JwtManager;
+import onlyoffice.utils.AttachmentUtil;
+import onlyoffice.utils.DownloadFileStreamConsumer;
 import onlyoffice.utils.ParsingUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -47,7 +49,7 @@ import java.io.PrintWriter;
 public class OnlyOfficeSaveFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final Logger log = LogManager.getLogger("onlyoffice.OnlyOfficeSaveFileServlet");
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final UserManager userManager;

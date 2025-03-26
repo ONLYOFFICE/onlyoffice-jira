@@ -27,7 +27,7 @@ import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.settings.SettingsConstants;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 import onlyoffice.sdk.manager.security.JwtManager;
 
 import java.util.HashMap;
@@ -116,7 +116,7 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     }
 
     @Override
-    public String getSaveAsUrl(final Long attachmentId) {
-        return getJiraBaseUrl(false) + API_SERVLET + "?type=save-as";
+    public String getApiPath() {
+        return API_SERVLET;
     }
 }

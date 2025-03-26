@@ -28,7 +28,7 @@ import com.atlassian.jira.web.action.issue.AbstractIssueSelectAction;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,7 +42,7 @@ import java.nio.file.Files;
 @AnonymousSiteAccess
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
-    private final Logger log = LogManager.getLogger("onlyoffice.action.OnlyOfficeCreateFile");
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final AttachmentUtil attachmentUtil;

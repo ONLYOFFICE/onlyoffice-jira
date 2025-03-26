@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.config.LocaleManager;
@@ -39,8 +39,7 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import onlyoffice.sdk.manager.url.UrlManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import onlyoffice.utils.AttachmentUtil;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -55,8 +54,6 @@ import java.util.Map;
 @AnonymousSiteAccess
 public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    private final Logger log = LogManager.getLogger(this.getClass());
 
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final TemplateRenderer templateRenderer;
@@ -134,21 +131,14 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
 
-        if (settingsManager.isSecurityEnabled()) {
-            config.setToken(jwtManager.createToken(config));
-        }
-
         ObjectMapper mapper = createObjectMapper();
         String shardKey = config.getDocument().getKey();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
-        context.put("configAsHtml", mapper.writeValueAsString(config));
+        context.put("config", mapper.writeValueAsString(config));
         context.put("demo", settingsManager.isDemoActive());
         context.put("favicon", urlManager.getFaviconUrl(documentType));
-
-        if (config.getDocument().getPermissions().getEdit()) {
-            context.put("saveAsUrl", urlManager.getSaveAsUrl(attachmentId));
-        }
+        context.put("canSaveAs", config.getDocument().getPermissions().getEdit());
 
         render(context, response);
     }
@@ -172,6 +162,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         Map<String, Object> context = new HashMap<>();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
+        context.put("apiPath", urlManager.getApiPath());
 
         return context;
     }

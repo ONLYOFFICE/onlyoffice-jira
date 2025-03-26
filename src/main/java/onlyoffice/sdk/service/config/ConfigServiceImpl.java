@@ -28,7 +28,7 @@ import com.onlyoffice.manager.url.UrlManager;
 import com.onlyoffice.model.common.User;
 import com.onlyoffice.model.documenteditor.config.document.Permissions;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 
 public class ConfigServiceImpl extends DefaultConfigService {
     private final AttachmentUtil attachmentUtil;

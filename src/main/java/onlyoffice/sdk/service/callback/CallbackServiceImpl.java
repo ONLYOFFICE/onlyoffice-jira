@@ -29,7 +29,7 @@ import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.DefaultCallbackService;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -31,7 +31,7 @@ import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import com.onlyoffice.service.settings.SettingsValidationService;
-import onlyoffice.AttachmentUtil;
+import onlyoffice.utils.AttachmentUtil;
 import onlyoffice.sdk.manager.document.DocumentManagerImpl;
 import onlyoffice.sdk.manager.security.JwtManagerImpl;
 import onlyoffice.sdk.manager.settings.SettingsManagerImpl;

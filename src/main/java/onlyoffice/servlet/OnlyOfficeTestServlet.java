@@ -16,7 +16,7 @@
  *
  */
 
-package onlyoffice;
+package onlyoffice.servlet;
 
 import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.onlyoffice.context.DocsIntegrationSdkContext;

@@ -1,168 +1,49 @@
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ANSI" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ANSI" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+        <!--
+        *
+        * (c) Copyright Ascensio System SIA 2025
+        *
+        * Licensed under the Apache License, Version 2.0 (the "License");
+        * you may not use this file except in compliance with the License.
+        * You may obtain a copy of the License at
+        *
+        *     http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software
+        * distributed under the License is distributed on an "AS IS" BASIS,
+        * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        * See the License for the specific language governing permissions and
+        * limitations under the License.
+        *
+        -->
 
-    <!--
-    *
-    * (c) Copyright Ascensio System SIA 2025
-    *
-    * Licensed under the Apache License, Version 2.0 (the "License");
-    * you may not use this file except in compliance with the License.
-    * You may obtain a copy of the License at
-    *
-    *     http://www.apache.org/licenses/LICENSE-2.0
-    *
-    * Unless required by applicable law or agreed to in writing, software
-    * distributed under the License is distributed on an "AS IS" BASIS,
-    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    * See the License for the specific language governing permissions and
-    * limitations under the License.
-    *
-    -->
+        <title>$!{docTitle} - ONLYOFFICE</title>
+        <link rel="icon" href="$!{favicon}" type="image/x-icon" />
 
-    <title>$!{docTitle} - ONLYOFFICE</title>
-    <link rel="icon" href="$!{favicon}" type="image/x-icon" />
-    <meta name="decorator" content="atl.general" />
+        <meta name="ajs-onlyoffice-attachment-id" content="$!{attachmentId}">
+        <meta name="ajs-onlyoffice-editor-config" content="$!{config}">
+        <meta name="ajs-onlyoffice-demo" content="$!{demo}">
+        <meta name="ajs-onlyoffice-error" content="$!{errorMessage}">
+        <meta name="ajs-onlyoffice-api-path" content="$!{apiPath}">
+        <meta name="ajs-onlyoffice-can-save-as" content="$!{canSaveAs}">
 
-    <style type="text/css">
-        html {
-            height: 100%;
-            width: 100%;
-        }
+        <meta name="decorator" content="atl.general" />
 
-        body {
-            background: #fff;
-            height: 100%;
-            margin: 0;
-            overflow-y: hidden;
-            padding: 0;
-        }
+        <script type="text/javascript" src="${docserviceApiUrl}"></script>
+    </head>
 
-        .form {
-            height: 100%;
-        }
-
-        div {
-            margin: 0;
-            padding: 0;
-        }
-
-        #header {
-            display: none;
-        }
-
-        #content, #page {
-            width: 100%;
-            height: 100%;
-        }
-
-        #footer {
-            display: none;
-        }
-    </style>
-
-</head>
-
-<body>
-    <div class="form">
-        <div id="iframeEditor"></div>
-        <span style="display:none;" id="editorConfig" aria-hidden="true">$!{configAsHtml}</span>
-    </div>
-
-    <script type="text/javascript" src="${docserviceApiUrl}"></script>
-    <script type="text/javascript" language="javascript">
-
-        var docEditor;
-
-        var connectEditor = function () {
-            if (typeof DocsAPI === "undefined") {
-                alert("ONLYOFFICE is not available. Please contact us at support@onlyoffice.com");
-                return;
-            }
-
-            var docsVersion = DocsAPI.DocEditor.version().split(".");
-            if (docsVersion[0] < 6 || docsVersion[0] == 6 && docsVersion[1] == 0) {
-                alert("$i18n.getText('onlyoffice.editor.error.version')");
-                return;
-            }
-
-            var saveAsUrl = "$!{saveAsUrl}";
-
-            var onAppReady = function () {
-                var errorMessage = "$!{errorMessage}";
-                if (errorMessage) {
-                    docEditor.showMessage(errorMessage);
-                }
-
-                if (Boolean($!{demo})) {
-                    docEditor.showMessage("$i18n.getText('onlyoffice.editor.message.demo')");
-                }
-            };
-
-            var onRequestSaveAs = function (event) {
-                var url = event.data.url;
-                var fileType = event.data.fileType ? event.data.fileType : event.data.title.split(".").pop();
-
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", saveAsUrl, true);
-                xhr.send(JSON.stringify({
-                    url: url,
-                    fileType: fileType,
-                    attachmentId: "${attachmentId}"
-                }));
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState != 4) return;
-                    if (xhr.status == 200) {
-                        var response = JSON.parse(xhr.responseText)
-                        var successMessage = "$i18n.getText('onlyoffice.editor.save-as.message.success')".replace("$",
-                            '<a href="/plugins/servlet/onlyoffice/doceditor?attachmentId=' + response.attachmentId + '" target="_blank"><b>' + response.fileName + '</b></a>'
-                            );
-
-                        JIRA.Messages.showSuccessMsg(successMessage, {closeable: true});
-                    } else if (xhr.status == 403) {
-                        JIRA.Messages.showErrorMsg("$i18n.getText('attachment.service.error.create.no.permission')", {closeable: true});
-                    } else {
-                       JIRA.Messages.showErrorMsg("$i18n.getText('rest.error.unexpected')", {closeable: true});
-                    }
-                }
-            };
-
-            var config = {
-                "events" : {
-                    "onAppReady": onAppReady
-                },
-            };
-
-            if (saveAsUrl) {
-                config.events.onRequestSaveAs = onRequestSaveAs;
-            }
-
-            Object.assign(config, JSON.parse(document.getElementById("editorConfig").innerHTML || "{}"));
-
-            if (config.document && (config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && docsVersion[0] < 7) {
-                alert("$i18n.getText('onlyoffice.editor.forms.error.version')");
-                return;
-            }
-
-            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
-        };
-
-        if (window.addEventListener) {
-            window.addEventListener("load", connectEditor);
-        } else if (window.attachEvent) {
-            window.attachEvent("load", connectEditor);
-        }
-
-    </script>
-</body>
-
+    <body>
+        <div class="form">
+            <div id="iframeEditor"></div>
+        </div>
+    </body>
 </html>
