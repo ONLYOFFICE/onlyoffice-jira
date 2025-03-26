@@ -53,6 +53,7 @@ public class ConfigServiceImpl extends DefaultConfigService {
 
         return Permissions.builder()
                 .edit(editPermission && isEditable)
+                .protect(user != null)
                 .build();
     }
 

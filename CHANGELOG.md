@@ -4,6 +4,7 @@
 ## Added
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - link to docs cloud
+- protection tab on the toolbar and the protect button in the left menu hidden for anonymous
 
 ## Changed
 - com.onlyoffice:documentserver-sdk-java
