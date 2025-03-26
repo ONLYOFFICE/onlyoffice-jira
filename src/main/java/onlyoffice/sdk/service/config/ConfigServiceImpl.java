@@ -26,7 +26,11 @@ import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
 import com.onlyoffice.model.common.User;
+import com.onlyoffice.model.documenteditor.Config;
 import com.onlyoffice.model.documenteditor.config.document.Permissions;
+import com.onlyoffice.model.documenteditor.config.document.Type;
+import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
+import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Anonymous;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
 import onlyoffice.utils.AttachmentUtil;
 
@@ -39,6 +43,23 @@ public class ConfigServiceImpl extends DefaultConfigService {
         super(documentManager, urlManager, jwtManager, settingsManager);
 
         this.attachmentUtil = attachmentUtil;
+    }
+
+    @Override
+    public Config createConfig(final String fileId, final Mode mode, final Type type) {
+        Config config = super.createConfig(fileId, mode, type);
+
+        if (mode.equals(Mode.VIEW) || config.getDocument().getPermissions().getEdit().equals(false)) {
+            Anonymous anonymous = Anonymous.builder()
+                    .request(false)
+                    .build();
+
+            config.getEditorConfig()
+                    .getCustomization()
+                    .setAnonymous(anonymous);
+        }
+
+        return config;
     }
 
     @Override

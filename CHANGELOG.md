@@ -6,6 +6,7 @@
 - link to docs cloud
 - chat hidden for anonymous
 - protection tab on the toolbar and the protect button in the left menu hidden for anonymous
+- don't request name for anonymous user in view mode
 
 ## Changed
 - com.onlyoffice:documentserver-sdk-java
