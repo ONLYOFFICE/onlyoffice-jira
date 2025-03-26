@@ -14,6 +14,15 @@
         }
     }
 
+    var onMakeActionLink = function (event) {
+        var actionData = JSON.stringify(event.data);
+        var actionLink = new URL(location.href);
+
+        actionLink.searchParams.set("actionData", actionData);
+
+        docEditor.setActionLink(actionLink.toString());
+    };
+
     var onRequestSaveAs = function (event) {
         var url = event.data.url;
         var fileType = event.data.fileType ? event.data.fileType : event.data.title.split(".").pop();
@@ -89,7 +98,8 @@
         }
 
         config.events = {
-            "onAppReady": onAppReady
+            "onAppReady": onAppReady,
+            "onMakeActionLink": onMakeActionLink
         };
 
         if (AJS.Meta.get("onlyoffice-can-save-as")) {
