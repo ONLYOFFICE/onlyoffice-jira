@@ -95,6 +95,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         String attachmentIdString = request.getParameter("attachmentId");
+        String actionDataString = request.getParameter("actionData");
         Long attachmentId = Long.parseLong(attachmentIdString);
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
         Map<String, Object> context = getDefaultContext();
@@ -135,6 +136,7 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         );
 
         config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
+        config.getEditorConfig().setActionLink(getActionLink(actionDataString));
 
         ObjectMapper mapper = createObjectMapper();
         String shardKey = config.getDocument().getKey();
@@ -188,5 +190,13 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String currentURL = request.getRequestURI() + "?" + request.getQueryString();
         String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
         response.sendRedirect("/login.jsp" + query);
+    }
+
+    private JSONObject getActionLink(final String actionData) {
+        if (actionData != null && !actionData.isEmpty()) {
+            return new JSONObject(actionData);
+        }
+
+        return null;
     }
 }
