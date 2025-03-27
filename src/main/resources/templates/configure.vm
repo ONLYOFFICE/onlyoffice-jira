@@ -82,6 +82,31 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
             </div>
 
             <div class="field-group">
+                <label>$i18n.getText('onlyoffice.configuration.interface.label')</label>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="chat" #if($!settings.get('customization.chat') == "true") checked="checked" #end />
+                    <label for="chat">$i18n.getText('onlyoffice.configuration.interface.chat')</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="compactHeader" #if($!settings.get('customization.compactHeader') == "true") checked="checked" #end />
+                    <label for="compactHeader">$i18n.getText('onlyoffice.configuration.interface.compactHeader')</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="feedback" #if($!settings.get('customization.feedback') == "true") checked="checked" #end />
+                    <label for="feedback">$i18n.getText('onlyoffice.configuration.interface.feedback')</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="helpMenu" #if($!settings.get('customization.help') == "true") checked="checked" #end />
+                    <label for="helpMenu">$i18n.getText('onlyoffice.configuration.interface.helpMenu')</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="toolbarNoTabs" #if($!settings.get('customization.toolbarNoTabs') == "true") checked="checked" #end />
+                    <label for="toolbarNoTabs">$i18n.getText('onlyoffice.configuration.interface.toolbarNoTabs')</label>
+                </div>
+                <div class="description">$i18n.getText('onlyoffice.configuration.interface.description')</div>
+            </div>
+
+            <div class="field-group">
                 <input id="onlyofficeSubmitBtn" type="submit" value="$i18n.getText('onlyoffice.configuration.save')" class="button">
             </div>
         </form>

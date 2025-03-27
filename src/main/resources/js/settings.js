@@ -36,6 +36,13 @@
                     "key": $("#jwtSecretField").attr("value")
                 },
                 "ignoreSSLCertificate": $("#ignoreCertificate").is(":checked"),
+                "customization": {
+                    "chat": $("#chat").is(":checked"),
+                    "compactHeader": $("#compactHeader").is(":checked"),
+                    "feedback": $("#feedback").is(":checked"),
+                    "help": $("#helpMenu").is(":checked"),
+                    "toolbarNoTabs": $("#toolbarNoTabs").is(":checked")
+                },
                 "demo": $("#onlyofficeDemo").is(":checked"),
                 "lossyEdit": editingTypes
             };
