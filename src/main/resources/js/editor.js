@@ -68,6 +68,43 @@
         });
     };
 
+    const onRequestUsers = function(event) {
+        switch (event.data.c) {
+            case "info":
+                const queryParams = new URLSearchParams({
+                    type: "users-info"
+                });
+
+                fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ids: event.data.id
+
+                    })
+                }).then(function(response) {
+                    if (!response.ok) {
+                         return;
+                    }
+
+                    return  response.json();
+                })
+                .then(function (data) {
+                    if (!data) {
+                        return;
+                    }
+
+                    docEditor.setUsers({
+                        "c": event.data.c,
+                        "users": data.users,
+                    });
+                })
+                break;
+        }
+    }
+
     var connectEditor = function() {
         if (typeof DocsAPI === "undefined") {
             alert("ONLYOFFICE is not available. Please contact us at support@onlyoffice.com");
@@ -89,7 +126,8 @@
         }
 
         config.events = {
-            "onAppReady": onAppReady
+            "onAppReady": onAppReady,
+            "onRequestUsers": onRequestUsers
         };
 
         if (AJS.Meta.get("onlyoffice-can-save-as")) {
