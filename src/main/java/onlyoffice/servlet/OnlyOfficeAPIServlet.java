@@ -18,6 +18,8 @@
 
 package onlyoffice.servlet;
 
+import com.atlassian.jira.config.LocaleManager;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.avatar.AvatarService;
@@ -31,11 +33,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
+import onlyoffice.model.dto.CreateRequest;
+import onlyoffice.model.dto.CreateResponse;
 import com.onlyoffice.model.common.User;
 import onlyoffice.model.dto.UsersInfoRequest;
 import onlyoffice.model.dto.UsersInfoResponse;
 import onlyoffice.utils.AttachmentUtil;
 import onlyoffice.utils.ParsingUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -44,10 +50,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +70,7 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     private final AvatarManager avatarManager;
     private final AvatarService avatarService;
     private final AttachmentUtil attachmentUtil;
+    private final LocaleManager localeManager;
     private final DocumentServerClient documentServerClient;
     private final DocumentManager documentManager;
 
@@ -69,12 +79,14 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
     public OnlyOfficeAPIServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                 final UserManager userManager, final AvatarManager avatarManager,
                                 final AvatarService avatarService,  final AttachmentUtil attachmentUtil,
+                                final LocaleManager localeManager,
                                 final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.userManager = userManager;
         this.avatarManager = avatarManager;
         this.avatarService = avatarService;
         this.attachmentUtil = attachmentUtil;
+        this.localeManager = localeManager;
 
         this.documentServerClient = docsIntegrationSdkContext.getDocumentServerClient();
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
@@ -86,6 +98,9 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
         String type = request.getParameter("type");
         if (type != null) {
             switch (type.toLowerCase()) {
+                case "create-new":
+                    createNew(request, response);
+                    break;
                 case "save-as":
                     saveAs(request, response);
                     break;
@@ -102,6 +117,69 @@ public class OnlyOfficeAPIServlet extends HttpServlet {
         }
     }
 
+    private void createNew(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+        CreateRequest createRequest = ParsingUtils.getBody(request.getInputStream(), CreateRequest.class);
+        Long issueId = createRequest.getIssueId();
+        DocumentType documentType = createRequest.getDocumentType();
+        String fileName = createRequest.getFileName();
+
+        Issue issue = attachmentUtil.getIssue(issueId);
+
+        if (issue == null) {
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+            return;
+        }
+
+        if (!attachmentUtil.checkCreateAccess(issue, user)) {
+            if (jiraAuthenticationContext.isLoggedInUser()) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+            return;
+        }
+
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = attachmentUtil.getDefaultFileName(documentType);
+        }
+
+        String extension = documentManager.getDefaultExtension(documentType);
+        fileName = attachmentUtil.getNewAttachmentFileName(fileName + "." + extension, issue);
+        Locale locale = localeManager.getLocaleFor(user);
+
+        File newBlankFile = null;
+        try (InputStream newBlankFileInputStream = documentManager.getNewBlankFile(extension, locale)) {
+            newBlankFile = Files.createTempFile(null, null).toFile();
+
+            FileUtils.copyInputStreamToFile(newBlankFileInputStream, newBlankFile);
+
+            ChangeItemBean changeItemBean = attachmentUtil.createNewAttachment(
+                    fileName,
+                    newBlankFile,
+                    issue
+            );
+
+            CreateResponse createResponse = new CreateResponse();
+            createResponse.setAttachmentId(changeItemBean.getTo());
+
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write(objectMapper.writeValueAsString(createResponse));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } finally {
+            if (newBlankFile != null) {
+                Files.deleteIfExists(newBlankFile.toPath());
+            }
+        }
+    }
     private void usersInfo(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         ApplicationUser currentUser = jiraAuthenticationContext.getLoggedInUser();
         UsersInfoRequest usersInfoRequest = new UsersInfoRequest();
