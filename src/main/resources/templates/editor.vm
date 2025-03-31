@@ -29,7 +29,10 @@
         <title>$!{docTitle} - ONLYOFFICE</title>
         <link rel="icon" href="$!{favicon}" type="image/x-icon" />
 
+        <meta name="ajs-onlyoffice-issue-id" content="$!{issueId}">
         <meta name="ajs-onlyoffice-attachment-id" content="$!{attachmentId}">
+        <meta name="ajs-onlyoffice-document-type" content="$!{documentType}">
+        <meta name="ajs-onlyoffice-file-name" content="$!{fileName}">
         <meta name="ajs-onlyoffice-editor-config" content="$!{config}">
         <meta name="ajs-onlyoffice-demo" content="$!{demo}">
         <meta name="ajs-onlyoffice-error" content="$!{errorMessage}">

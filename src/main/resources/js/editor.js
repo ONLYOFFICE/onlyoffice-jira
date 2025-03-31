@@ -8,6 +8,11 @@
             return;
         }
 
+        if (!AJS.Meta.get("onlyoffice-attachment-id")) {
+            createNewAttachment();
+            return;
+        }
+
         if (AJS.Meta.get("onlyoffice-demo")) {
             docEditor.showMessage(AJS.I18n.getText("onlyoffice.editor.message.demo"));
             return
@@ -146,6 +151,48 @@
 
         docEditor = new DocsAPI.DocEditor("iframeEditor", config);
     };
+
+    var createNewAttachment = function () {
+        const queryParams = new URLSearchParams({
+            type: "create-new"
+        });
+
+        fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                issueId: AJS.Meta.get("onlyoffice-issue-id"),
+                documentType: AJS.Meta.get("onlyoffice-document-type"),
+                fileName: AJS.Meta.get("onlyoffice-file-name")
+            })
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                if (response.status === 403 || response.status === 404) {
+                     docEditor.showMessage(AJS.I18n.getText("attachment.service.error.create.no.permission"));
+                    return;
+                }
+
+                docEditor.showMessage(AJS.I18n.getText("rest.error.unexpected"));
+                return;
+            }
+
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data) {
+                return;
+            }
+
+            const url = new URL(window.location);
+            url.search = "";
+            url.searchParams.set('attachmentId', data.attachmentId);
+
+            window.location.href = url.toString();
+        })
+    }
 
     if (window.addEventListener) {
         window.addEventListener("load", connectEditor);
