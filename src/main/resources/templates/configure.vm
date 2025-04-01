@@ -110,6 +110,10 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
 
             <div class="field-group">
                 <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="plugins" #if($!settings.get('customization.plugins') == "true") checked="checked" #end />
+                    <label for="plugins">$i18n.getText('onlyoffice.configuration.customization.plugins')</label>
+                </div>
+                <div class="checkbox">
                     <input type="checkbox" class="checkbox" id="macros" #if($!settings.get('customization.macros') == "true") checked="checked" #end />
                     <label for="macros">$i18n.getText('onlyoffice.configuration.customization.macros')</label>
                 </div>

@@ -104,6 +104,10 @@ public class ConfigServiceImpl extends DefaultConfigService {
                 getSettingsManager().getSettingBoolean("customization.macros", true)
         );
 
+        customization.setPlugins(
+                getSettingsManager().getSettingBoolean("customization.plugins", true)
+        );
+
         return customization;
     }
 }
