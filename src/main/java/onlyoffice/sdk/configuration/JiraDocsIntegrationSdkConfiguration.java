@@ -93,7 +93,8 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
                 settingsManager,
                 webResourceUrlProvider,
                 attachmentUtil,
-                (onlyoffice.sdk.manager.security.JwtManager) jwtManager
+                (onlyoffice.sdk.manager.security.JwtManager) jwtManager,
+                documentManager
         );
     }
 

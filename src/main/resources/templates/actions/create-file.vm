@@ -19,8 +19,8 @@
         #end
 
         <div class="field-group">
-            <label for="fileName">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type')</label>
-            <select class="select" id="onlyoffice-create-file-type" name="fileType">
+            <label for="documentType">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type')</label>
+            <select class="select" id="onlyoffice-create-file-type" name="documentType">
                 <option value="word">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.word')</option>
                 <option value="cell">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.cell')</option>
                 <option value="slide">$i18n.getText('onlyoffice.connector.dialog.create-file.field.type.option.slide')</option>

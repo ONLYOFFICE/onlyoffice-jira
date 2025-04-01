@@ -19,8 +19,10 @@
 package onlyoffice.utils;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.history.ChangeItemBean;
@@ -31,6 +33,8 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.util.AttachmentException;
+import com.atlassian.sal.api.message.I18nResolver;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.opensymphony.module.propertyset.PropertySet;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -50,16 +54,30 @@ public class AttachmentUtil {
     private final Logger log = LogManager.getLogger(this.getClass());
 
     private final AttachmentManager attachmentManager;
+    private final IssueManager issueManager;
     private final PermissionManager permissionManager;
+    private final I18nResolver i18nResolver;
+
 
     private final OfBizDelegator ofBizDelegator;
 
-    public AttachmentUtil(final AttachmentManager attachmentManager, final PermissionManager permissionManager) {
+    public AttachmentUtil(final AttachmentManager attachmentManager, final IssueManager issueManager,
+                          final PermissionManager permissionManager, final I18nResolver i18nResolver) {
 
         this.attachmentManager = attachmentManager;
+        this.issueManager = issueManager;
         this.permissionManager = permissionManager;
+        this.i18nResolver = i18nResolver;
 
         ofBizDelegator = ComponentAccessor.getOfBizDelegator();
+    }
+
+    public Issue getIssue(final Long issueId) {
+        try {
+            return issueManager.getIssueObject(issueId);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     public Attachment getAttachment(final Long attachmentId) {
@@ -82,6 +100,11 @@ public class AttachmentUtil {
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
         }
+    }
+
+    public boolean checkCreateAccess(final Issue issue, final ApplicationUser user) {
+        return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
+                && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
     }
 
     public void getAttachmentData(final DownloadFileStreamConsumer consumer, final Long attachmentId)
@@ -199,6 +222,12 @@ public class AttachmentUtil {
             log.error(e.getMessage(), e);
         }
         return mimeType != null ? mimeType : "application/octet-stream";
+    }
+
+    public String getDefaultFileName(final DocumentType documentType) {
+        return i18nResolver.getText(
+                "onlyoffice.connector.dialog.create-file.field.type.option." + documentType.toString().toLowerCase()
+        );
     }
 
     public ChangeItemBean createNewAttachment(final String fileName, final File file, final Issue issue) {
