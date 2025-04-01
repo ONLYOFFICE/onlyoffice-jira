@@ -29,6 +29,7 @@ import com.onlyoffice.model.common.User;
 import com.onlyoffice.model.documenteditor.Config;
 import com.onlyoffice.model.documenteditor.config.document.Permissions;
 import com.onlyoffice.model.documenteditor.config.document.Type;
+import com.onlyoffice.model.documenteditor.config.editorconfig.Customization;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Anonymous;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
@@ -93,5 +94,16 @@ public class ConfigServiceImpl extends DefaultConfigService {
         } else {
             return super.getUser();
         }
+    }
+
+    @Override
+    public Customization getCustomization(final String fileId) {
+        Customization customization = super.getCustomization(fileId);
+
+        customization.setMacros(
+                getSettingsManager().getSettingBoolean("customization.macros", true)
+        );
+
+        return customization;
     }
 }
