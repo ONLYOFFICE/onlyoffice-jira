@@ -20,6 +20,7 @@ package onlyoffice.servlet;
 
 import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.config.LocaleManager;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
@@ -32,7 +33,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
-import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.documenteditor.Config;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
@@ -63,7 +63,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
     private final DocumentManager documentManager;
     private final UrlManager urlManager;
-    private final JwtManager jwtManager;
     private final SettingsManager settingsManager;
     private final ConfigService configService;
 
@@ -81,7 +80,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
         this.urlManager = (UrlManager) docsIntegrationSdkContext.getUrlManager();
-        this.jwtManager = docsIntegrationSdkContext.getJwtManager();
         this.settingsManager = docsIntegrationSdkContext.getSettingsManager();
         this.configService = docsIntegrationSdkContext.getConfigService();
     }
@@ -90,10 +88,40 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         String attachmentIdString = request.getParameter("attachmentId");
-        Long attachmentId = Long.parseLong(attachmentIdString);
+        String actionDataString = request.getParameter("actionData");
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
         Map<String, Object> context = getDefaultContext();
 
+        if (attachmentIdString == null || attachmentIdString.isEmpty()) {
+            String issueIdString = request.getParameter("issueId");
+
+            Issue issue = null;
+            if (issueIdString != null && !issueIdString.isEmpty()) {
+                try {
+                    Long issueId = Long.parseLong(issueIdString);
+                    issue = attachmentUtil.getIssue(issueId);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            if (issue == null || !attachmentUtil.checkCreateAccess(issue, user)) {
+                if (jiraAuthenticationContext.isLoggedInUser()) {
+                    context.put("errorMessage", i18nResolver.getText("attachment.service.error.create.no.permission"));
+                    render(context, response);
+                } else {
+                    sendRedirectToLogin(request, response);
+                }
+                return;
+            }
+
+            context.put("issueId", issueIdString);
+            context.put("documentType", request.getParameter("documentType"));
+            context.put("fileName", request.getParameter("fileName"));
+            render(context, response);
+            return;
+        }
+
+        Long attachmentId = Long.parseLong(attachmentIdString);
         Attachment attachment = attachmentUtil.getAttachment(attachmentId);
 
         if (attachment == null || !attachmentUtil.checkAccess(attachmentId, user, false)) {
@@ -106,9 +134,11 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
             return;
         }
 
+        Issue issue = attachment.getIssue();
         String fileName = documentManager.getDocumentName(String.valueOf(attachmentId));
         DocumentType documentType = documentManager.getDocumentType(fileName);
 
+        context.put("issueId", issue.getId());
         context.put("attachmentId", attachmentId);
         context.put("docTitle", fileName);
 
@@ -130,11 +160,13 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         );
 
         config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
+        config.getEditorConfig().setActionLink(getActionLink(actionDataString));
 
         ObjectMapper mapper = createObjectMapper();
         String shardKey = config.getDocument().getKey();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
+        context.put("documentType", documentType.toString().toLowerCase());
         context.put("config", mapper.writeValueAsString(config));
         context.put("demo", settingsManager.isDemoActive());
         context.put("favicon", urlManager.getFaviconUrl(documentType));
@@ -176,5 +208,13 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         String currentURL = request.getRequestURI() + "?" + request.getQueryString();
         String query = "?permissionViolation=true&os_destination=" + URLEncoder.encode(currentURL, "UTF-8");
         response.sendRedirect("/login.jsp" + query);
+    }
+
+    private JSONObject getActionLink(final String actionData) {
+        if (actionData != null && !actionData.isEmpty()) {
+            return new JSONObject(actionData);
+        }
+
+        return null;
     }
 }

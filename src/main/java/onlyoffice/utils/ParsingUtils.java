@@ -18,6 +18,9 @@
 
 package onlyoffice.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -35,5 +38,11 @@ public final class ParsingUtils {
             scannerUseDelimiter.close();
             scanner.close();
         }
+    }
+
+    public static <T> T getBody(final InputStream inputStream, final Class<T> valueType) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.readValue(inputStream, valueType);
     }
 }

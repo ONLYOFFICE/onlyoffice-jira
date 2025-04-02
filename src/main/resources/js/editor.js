@@ -8,11 +8,25 @@
             return;
         }
 
+        if (!AJS.Meta.get("onlyoffice-attachment-id")) {
+            createNewAttachment();
+            return;
+        }
+
         if (AJS.Meta.get("onlyoffice-demo")) {
             docEditor.showMessage(AJS.I18n.getText("onlyoffice.editor.message.demo"));
             return
         }
     }
+
+    var onMakeActionLink = function (event) {
+        var actionData = JSON.stringify(event.data);
+        var actionLink = new URL(location.href);
+
+        actionLink.searchParams.set("actionData", actionData);
+
+        docEditor.setActionLink(actionLink.toString());
+    };
 
     var onRequestSaveAs = function (event) {
         var url = event.data.url;
@@ -68,6 +82,43 @@
         });
     };
 
+    const onRequestUsers = function(event) {
+        switch (event.data.c) {
+            case "info":
+                const queryParams = new URLSearchParams({
+                    type: "users-info"
+                });
+
+                fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ids: event.data.id
+
+                    })
+                }).then(function(response) {
+                    if (!response.ok) {
+                         return;
+                    }
+
+                    return  response.json();
+                })
+                .then(function (data) {
+                    if (!data) {
+                        return;
+                    }
+
+                    docEditor.setUsers({
+                        "c": event.data.c,
+                        "users": data.users,
+                    });
+                })
+                break;
+        }
+    }
+
     var connectEditor = function() {
         if (typeof DocsAPI === "undefined") {
             alert("ONLYOFFICE is not available. Please contact us at support@onlyoffice.com");
@@ -89,7 +140,9 @@
         }
 
         config.events = {
-            "onAppReady": onAppReady
+            "onAppReady": onAppReady,
+            "onMakeActionLink": onMakeActionLink,
+            "onRequestUsers": onRequestUsers
         };
 
         if (AJS.Meta.get("onlyoffice-can-save-as")) {
@@ -98,6 +151,48 @@
 
         docEditor = new DocsAPI.DocEditor("iframeEditor", config);
     };
+
+    var createNewAttachment = function () {
+        const queryParams = new URLSearchParams({
+            type: "create-new"
+        });
+
+        fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                issueId: AJS.Meta.get("onlyoffice-issue-id"),
+                documentType: AJS.Meta.get("onlyoffice-document-type"),
+                fileName: AJS.Meta.get("onlyoffice-file-name")
+            })
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                if (response.status === 403 || response.status === 404) {
+                     docEditor.showMessage(AJS.I18n.getText("attachment.service.error.create.no.permission"));
+                    return;
+                }
+
+                docEditor.showMessage(AJS.I18n.getText("rest.error.unexpected"));
+                return;
+            }
+
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data) {
+                return;
+            }
+
+            const url = new URL(window.location);
+            url.search = "";
+            url.searchParams.set('attachmentId', data.attachmentId);
+
+            window.location.href = url.toString();
+        })
+    }
 
     if (window.addEventListener) {
         window.addEventListener("load", connectEditor);

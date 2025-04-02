@@ -19,10 +19,13 @@
 package onlyoffice.sdk.manager.url;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.webresource.api.UrlMode;
 import com.atlassian.webresource.api.WebResourceUrlProvider;
+import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
@@ -34,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
+    public static final String DOC_EDITOR_SERVLET = "/plugins/servlet/onlyoffice/doceditor";
     private static final String CALLBACK_SERVLET = "/plugins/servlet/onlyoffice/save";
     private static final String API_SERVLET = "/plugins/servlet/onlyoffice/api";
     private static final String TEST_SERVLET = "/plugins/servlet/onlyoffice/test";
@@ -41,14 +45,17 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     private final WebResourceUrlProvider webResourceUrlProvider;
     private final AttachmentUtil attachmentUtil;
     private final JwtManager jwtManager;
+    private final DocumentManager documentManager;
 
     public UrlManagerImpl(final SettingsManager settingsManager, final WebResourceUrlProvider webResourceUrlProvider,
-                          final AttachmentUtil attachmentUtil, final JwtManager jwtManager) {
+                          final AttachmentUtil attachmentUtil, final JwtManager jwtManager,
+                          final DocumentManager documentManager) {
         super(settingsManager);
 
         this.webResourceUrlProvider = webResourceUrlProvider;
         this.attachmentUtil = attachmentUtil;
         this.jwtManager = jwtManager;
+        this.documentManager = documentManager;
     }
 
     @Override
@@ -91,6 +98,25 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
         String issueKey = attachmentUtil.getIssueKey(Long.parseLong(fileId));
 
         return getJiraBaseUrl(false) + "/browse/" + issueKey;
+    }
+
+    @Override
+    public String getCreateUrl(final String fileId) {
+        Attachment attachment = attachmentUtil.getAttachment(Long.parseLong(fileId));
+        Issue issue = attachment.getIssue();
+        JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+        ApplicationUser applicationUser = jiraAuthenticationContext.getLoggedInUser();
+
+        if (attachmentUtil.checkCreateAccess(issue, applicationUser)) {
+            String fileName = documentManager.getDocumentName(fileId);
+            DocumentType documentType = documentManager.getDocumentType(fileName);
+
+            return getJiraBaseUrl(false) + DOC_EDITOR_SERVLET
+                    + "?issueId=" + issue.getId()
+                    + "&documentType=" + documentType.toString().toLowerCase();
+        }
+
+        return null;
     }
 
     @Override

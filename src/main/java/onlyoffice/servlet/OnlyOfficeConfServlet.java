@@ -94,6 +94,15 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         try {
             Map<String, String> settings = settingsManager.getSettings();
+
+            if (settings.get("customization.help") == null || settings.get("customization.help").isEmpty()) {
+                settings.put("customization.help", "true");
+            }
+
+            if (settings.get("customization.chat") == null || settings.get("customization.chat").isEmpty()) {
+                settings.put("customization.chat", "true");
+            }
+
             defaults.put("settings", settings);
         } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
