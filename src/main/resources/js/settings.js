@@ -33,7 +33,8 @@
                 "innerUrl": $("#docInnerUrlField").attr("value"),
                 "productInnerUrl": $("#confUrlField").attr("value"),
                 "security": {
-                    "key": $("#jwtSecretField").attr("value")
+                    "key": $("#jwtSecretField").attr("value"),
+                    "header": $("#authorizationHeader").attr("value")
                 },
                 "ignoreSSLCertificate": $("#ignoreCertificate").is(":checked"),
                 "customization": {
