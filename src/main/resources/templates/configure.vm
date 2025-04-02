@@ -118,6 +118,17 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
                     <label for="macros">$i18n.getText('onlyoffice.configuration.customization.macros')</label>
                 </div>
             </div>
+            <div class="field-group">
+                <label>$i18n.getText('onlyoffice.configuration.protect.label')</label>
+                <div class="radio">
+                    <input type="radio" class="radio" id="protect.all" name="protect" value="all" #if($!settings.get('protect') == "all") checked="checked" #end>
+                    <label for="protect.all">$i18n.getText('onlyoffice.configuration.protect.option.all')</label>
+                </div>
+                <div class="radio">
+                    <input  type="radio" class="radio" id="protect.owner" name="protect" value="owner" #if($!settings.get('protect') == "owner") checked="checked" #end>
+                    <label for="protect.owner">$i18n.getText('onlyoffice.configuration.protect.option.owner')</label>
+                </div>
+            </div>
 
             <div class="field-group">
                 <input id="onlyofficeSubmitBtn" type="submit" value="$i18n.getText('onlyoffice.configuration.save')" class="button">
