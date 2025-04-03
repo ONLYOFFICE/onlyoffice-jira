@@ -41,7 +41,9 @@
                     "compactHeader": $("#compactHeader").is(":checked"),
                     "feedback": $("#feedback").is(":checked"),
                     "help": $("#helpMenu").is(":checked"),
-                    "toolbarNoTabs": $("#toolbarNoTabs").is(":checked")
+                    "toolbarNoTabs": $("#toolbarNoTabs").is(":checked"),
+                    "macros": $("#macros").is(":checked"),
+                    "plugins": $("#plugins").is(":checked")
                 },
                 "demo": $("#onlyofficeDemo").is(":checked"),
                 "lossyEdit": editingTypes
