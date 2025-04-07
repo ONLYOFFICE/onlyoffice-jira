@@ -42,6 +42,10 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
                 <label for="jwtSecretField">$i18n.getText('onlyoffice.configuration.jwt-secret')</label>
                 <input type="text" id="jwtSecretField" value="$!{settings.get('security.key')}" name="jwtSecretField" class="text">
             </div>
+            <div class="field-group">
+                <label for="authorizationHeader">$i18n.getText('onlyoffice.configuration.authorization-header')</label>
+                <input type="text" id="authorizationHeader" value="$!{settings.get('security.header')}" name="authorizationHeader" class="text">
+            </div>
 
             <div class="field-group">
                 <div class="checkbox">
