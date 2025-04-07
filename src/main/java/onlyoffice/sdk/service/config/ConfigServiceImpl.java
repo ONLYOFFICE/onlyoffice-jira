@@ -19,6 +19,7 @@
 package onlyoffice.sdk.service.config;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.onlyoffice.manager.document.DocumentManager;
@@ -67,15 +68,22 @@ public class ConfigServiceImpl extends DefaultConfigService {
     public Permissions getPermissions(final String fileId) {
         JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
         ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+        Long attachmentId = Long.parseLong(fileId);
+        Attachment attachment = attachmentUtil.getAttachment(attachmentId);
 
         String fileName = getDocumentManager().getDocumentName(fileId);
 
-        Boolean editPermission = attachmentUtil.checkAccess(Long.parseLong(fileId), user, true);
+        Boolean editPermission = attachmentUtil.checkAccess(attachmentId, user, true);
         Boolean isEditable = super.getDocumentManager().isEditable(fileName);
+
+        boolean protect = user != null;
+        if ("owner".equals(getSettingsManager().getSetting("protect")) && user != null) {
+            protect = user.getKey().equals(attachment.getAuthorKey());
+        }
 
         return Permissions.builder()
                 .edit(editPermission && isEditable)
-                .protect(user != null)
+                .protect(protect)
                 .chat(user != null
                         && getSettingsManager().getSettingBoolean("customization.chat", true))
                 .build();

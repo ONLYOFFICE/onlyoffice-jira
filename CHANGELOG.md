@@ -11,7 +11,7 @@
 - protection tab on the toolbar and the protect button in the left menu hidden for anonymous
 - don't request name for anonymous user in view mode
 - create new document from editor
-- settings(Run document macros, Enable plugins)
+- settings(Run document macros, Enable plugins, Enable document protection for)
 
 ## Changed
 - com.onlyoffice:documentserver-sdk-java

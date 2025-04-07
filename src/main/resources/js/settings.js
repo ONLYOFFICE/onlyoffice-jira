@@ -45,6 +45,7 @@
                     "macros": $("#macros").is(":checked"),
                     "plugins": $("#plugins").is(":checked")
                 },
+                "protect":  $('input[name="protect"]:checked').val(),
                 "demo": $("#onlyofficeDemo").is(":checked"),
                 "lossyEdit": editingTypes
             };
