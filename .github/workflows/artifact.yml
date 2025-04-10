@@ -37,7 +37,7 @@ jobs:
           cd ./target
           mv ${{ steps.info.outputs.artifact }}-${{ steps.info.outputs.version }}.jar $cwd
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.info.outputs.artifact }}-${{ steps.info.outputs.version }}
           path: ${{ steps.info.outputs.artifact }}-${{ steps.info.outputs.version }}.jar
