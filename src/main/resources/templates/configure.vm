@@ -42,6 +42,10 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
                 <label for="jwtSecretField">$i18n.getText('onlyoffice.configuration.jwt-secret')</label>
                 <input type="text" id="jwtSecretField" value="$!{settings.get('security.key')}" name="jwtSecretField" class="text">
             </div>
+            <div class="field-group">
+                <label for="authorizationHeader">$i18n.getText('onlyoffice.configuration.authorization-header')</label>
+                <input type="text" id="authorizationHeader" value="$!{settings.get('security.header')}" name="authorizationHeader" class="text">
+            </div>
 
             <div class="field-group">
                 <div class="checkbox">
@@ -104,6 +108,30 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
                     <label for="toolbarNoTabs">$i18n.getText('onlyoffice.configuration.interface.toolbarNoTabs')</label>
                 </div>
                 <div class="description">$i18n.getText('onlyoffice.configuration.interface.description')</div>
+            </div>
+
+            <h3>$i18n.getText('onlyoffice.configuration.section.security')</h3>
+
+            <div class="field-group">
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="plugins" #if($!settings.get('customization.plugins') == "true") checked="checked" #end />
+                    <label for="plugins">$i18n.getText('onlyoffice.configuration.customization.plugins')</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="checkbox" id="macros" #if($!settings.get('customization.macros') == "true") checked="checked" #end />
+                    <label for="macros">$i18n.getText('onlyoffice.configuration.customization.macros')</label>
+                </div>
+            </div>
+            <div class="field-group">
+                <label>$i18n.getText('onlyoffice.configuration.protect.label')</label>
+                <div class="radio">
+                    <input type="radio" class="radio" id="protect.all" name="protect" value="all" #if($!settings.get('protect') == "all") checked="checked" #end>
+                    <label for="protect.all">$i18n.getText('onlyoffice.configuration.protect.option.all')</label>
+                </div>
+                <div class="radio">
+                    <input  type="radio" class="radio" id="protect.owner" name="protect" value="owner" #if($!settings.get('protect') == "owner") checked="checked" #end>
+                    <label for="protect.owner">$i18n.getText('onlyoffice.configuration.protect.option.owner')</label>
+                </div>
             </div>
 
             <div class="field-group">

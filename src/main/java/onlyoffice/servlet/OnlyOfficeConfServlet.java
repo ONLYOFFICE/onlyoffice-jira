@@ -94,6 +94,7 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
         try {
             Map<String, String> settings = settingsManager.getSettings();
+            settings.put("protect", settingsManager.getSetting("protect"));
 
             if (settings.get("customization.help") == null || settings.get("customization.help").isEmpty()) {
                 settings.put("customization.help", "true");
@@ -101,6 +102,18 @@ public class OnlyOfficeConfServlet extends HttpServlet {
 
             if (settings.get("customization.chat") == null || settings.get("customization.chat").isEmpty()) {
                 settings.put("customization.chat", "true");
+            }
+
+            if (settings.get("customization.macros") == null || settings.get("customization.macros").isEmpty()) {
+                settings.put("customization.macros", "true");
+            }
+
+            if (settings.get("customization.plugins") == null || settings.get("customization.plugins").isEmpty()) {
+                settings.put("customization.plugins", "true");
+            }
+
+            if (settings.get("protect") == null || settings.get("protect").isEmpty()) {
+                settings.put("protect", "all");
             }
 
             defaults.put("settings", settings);
@@ -145,6 +158,10 @@ public class OnlyOfficeConfServlet extends HttpServlet {
         }
 
         try {
+            Map<String, Object> extraSettings = settings.getExtra();
+            settingsManager.setSetting("protect", (String) extraSettings.get("protect"));
+
+            settings.setExtra(null);
             settingsManager.setSettings(settings);
         } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);

@@ -33,7 +33,8 @@
                 "innerUrl": $("#docInnerUrlField").attr("value"),
                 "productInnerUrl": $("#confUrlField").attr("value"),
                 "security": {
-                    "key": $("#jwtSecretField").attr("value")
+                    "key": $("#jwtSecretField").attr("value"),
+                    "header": $("#authorizationHeader").attr("value")
                 },
                 "ignoreSSLCertificate": $("#ignoreCertificate").is(":checked"),
                 "customization": {
@@ -41,8 +42,11 @@
                     "compactHeader": $("#compactHeader").is(":checked"),
                     "feedback": $("#feedback").is(":checked"),
                     "help": $("#helpMenu").is(":checked"),
-                    "toolbarNoTabs": $("#toolbarNoTabs").is(":checked")
+                    "toolbarNoTabs": $("#toolbarNoTabs").is(":checked"),
+                    "macros": $("#macros").is(":checked"),
+                    "plugins": $("#plugins").is(":checked")
                 },
+                "protect":  $('input[name="protect"]:checked').val(),
                 "demo": $("#onlyofficeDemo").is(":checked"),
                 "lossyEdit": editingTypes
             };

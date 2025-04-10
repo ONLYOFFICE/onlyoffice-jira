@@ -5,12 +5,14 @@
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - user image in editor
 - link to docs cloud
+- authorization header setting
 - editor interface settings
 - ability to get links to bookmarks in document
 - chat hidden for anonymous
 - protection tab on the toolbar and the protect button in the left menu hidden for anonymous
 - don't request name for anonymous user in view mode
 - create new document from editor
+- settings(Run document macros, Enable plugins, Enable document protection for)
 
 ## Changed
 - com.onlyoffice:documentserver-sdk-java
