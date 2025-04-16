@@ -26,6 +26,7 @@
 - create pdf instead docxf
 - remove filling for oform
 - fixed work with plugin for anonymous user
+- ui (action buttons as primary in convert dialog, file-create dialog and settings page)
 
 ## 2.3.0
 ## Added
