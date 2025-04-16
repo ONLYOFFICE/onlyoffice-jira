@@ -17,9 +17,11 @@
  */
 
 jQuery(function () {
-    var dialog = new AJS.FormPopup({
-        id: "onlyoffice-conversion-dialog",
-        trigger: ".onlyoffice-conversion"
+    var dialog = new JIRA.FormDialog({
+            type: "ajax",
+            id: "onlyoffice-conversion-dialog",
+            trigger: ".onlyoffice-conversion",
+            isIssueDialog: true
     });
 
     dialog.onContentReady(function() {

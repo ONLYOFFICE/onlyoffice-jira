@@ -35,10 +35,10 @@
 
     </div>
 
-    <div class="buttons-container content-footer">
+    <div class="buttons-container form-footer">
         <div class="buttons">
-            <input class="button" type="submit" value="$i18n.getText('onlyoffice.connector.dialog.create-file.button.create')" />
-            <a href="#" class="cancel">$i18n.getText('onlyoffice.connector.dialog.create-file.button.cancel')</a>
+            <button class="aui-button aui-button-primary" type="submit">$i18n.getText('onlyoffice.connector.dialog.create-file.button.create')</button>
+            <button class="aui-button aui-button-link cancel" id="aui-dialog-close">$i18n.getText('onlyoffice.connector.dialog.create-file.button.cancel')</button>
         </div>
     </div>
 

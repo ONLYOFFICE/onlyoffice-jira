@@ -135,7 +135,7 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
             </div>
 
             <div class="field-group">
-                <input id="onlyofficeSubmitBtn" type="submit" value="$i18n.getText('onlyoffice.configuration.save')" class="button">
+                <input id="onlyofficeSubmitBtn" type="submit" value="$i18n.getText('onlyoffice.configuration.save')" class="aui-button aui-button-primary">
             </div>
         </form>
 
