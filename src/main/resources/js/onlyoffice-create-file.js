@@ -18,11 +18,9 @@
 
 jQuery(function () {
 
-    new JIRA.FormDialog({
-        type: "ajax",
+    new AJS.FormPopup({
         id: "onlyoffice-create-file-dialog",
-        trigger: "#onlyoffice-create-file-button",
-        isIssueDialog: true
+        trigger: "#onlyoffice-create-file-button"
     });
 
 });
