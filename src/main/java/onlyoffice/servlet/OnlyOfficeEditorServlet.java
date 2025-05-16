@@ -29,11 +29,8 @@ import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.webresource.api.assembler.WebResourceAssembler;
 import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
@@ -43,7 +40,6 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import onlyoffice.sdk.manager.url.UrlManager;
 import onlyoffice.utils.AttachmentUtil;
-import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,6 +49,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -68,6 +65,8 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final UrlManager urlManager;
     private final SettingsManager settingsManager;
     private final ConfigService configService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                    final I18nResolver i18nResolver, final TemplateRenderer templateRenderer,
@@ -167,32 +166,16 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         config.getEditorConfig().setLang(localeManager.getLocaleFor(user).toLanguageTag());
         config.getEditorConfig().setActionLink(getActionLink(actionDataString));
 
-        ObjectMapper mapper = createObjectMapper();
         String shardKey = config.getDocument().getKey();
 
         context.put("docserviceApiUrl", urlManager.getDocumentServerApiUrl(shardKey));
         context.put("documentType", documentType.toString().toLowerCase());
-        context.put("config", mapper.writeValueAsString(config));
+        context.put("config", objectMapper.writeValueAsString(config));
         context.put("demo", settingsManager.isDemoActive());
         context.put("favicon", urlManager.getFaviconUrl(documentType));
         context.put("canSaveAs", config.getDocument().getPermissions().getEdit());
 
         render(context, response);
-    }
-
-    private ObjectMapper createObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(JSONObject.class, new JsonSerializer<JSONObject>() {
-            @Override
-            public void serialize(final JSONObject jsonObject, final JsonGenerator jsonGenerator,
-                                  final SerializerProvider serializerProvider) throws IOException {
-                jsonGenerator.writeObject(jsonObject.toMap());
-            }
-        });
-        objectMapper.registerModule(module);
-
-        return objectMapper;
     }
 
     private Map<String, Object> getDefaultContext() {
@@ -222,11 +205,11 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
         response.sendRedirect("/login.jsp" + query);
     }
 
-    private JSONObject getActionLink(final String actionData) {
-        if (actionData != null && !actionData.isEmpty()) {
-            return new JSONObject(actionData);
+    private Object getActionLink(final String actionData) throws JsonProcessingException {
+        if (Objects.isNull(actionData) || actionData.isEmpty()) {
+            return null;
         }
 
-        return null;
+        return objectMapper.readValue(actionData, Object.class);
     }
 }
