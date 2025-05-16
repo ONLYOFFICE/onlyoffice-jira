@@ -148,7 +148,7 @@ $webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:onlyoffice-j
                  <p>$i18n.getText('onlyoffice.configuration.banner.message')</p>
             </div>
             <div class="onlyoffice-docs-cloud-banner-section">
-                <a class="aui-button aui-button-primary default-submit" href="https://www.onlyoffice.com/docs-registration.aspx?referer=confluence" target="_blank">$i18n.getText('onlyoffice.configuration.banner.button')</a>
+                <a class="aui-button aui-button-primary default-submit" href="https://www.onlyoffice.com/docs-registration.aspx?referer=jira" target="_blank">$i18n.getText('onlyoffice.configuration.banner.button')</a>
             </div>
         </div>
 
