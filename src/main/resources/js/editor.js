@@ -28,6 +28,14 @@
         docEditor.setActionLink(actionLink.toString());
     };
 
+    const onOutdatedVersion = function () {
+        location.reload(true);
+    };
+
+    const onRequestRefreshFile = function () {
+        location.reload(true);
+    };
+
     var onRequestSaveAs = function (event) {
         var url = event.data.url;
         var fileType = event.data.fileType ? event.data.fileType : event.data.title.split(".").pop();
@@ -142,6 +150,8 @@
         config.events = {
             "onAppReady": onAppReady,
             "onMakeActionLink": onMakeActionLink,
+            "onOutdatedVersion": onOutdatedVersion,
+            "onRequestRefreshFile": onRequestRefreshFile,
             "onRequestUsers": onRequestUsers
         };
 
