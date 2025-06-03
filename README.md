@@ -64,7 +64,7 @@ http://documentserver/
 ```
 Starting from version 7.2, JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. 
 Specify your own **Secret key** on the Jira administration page. 
-In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/editors/signature/), specify the same secret key and enable the validation.
+In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/), specify the same secret key and enable the validation.
 
 Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Document Server using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Document Server address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Document Server. 
 
@@ -91,7 +91,7 @@ After the editing session is over, a document with all the changes will be saved
  
 ## How it works
 
-The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/editors/basic):
+The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/docs/docs-api/get-started/basic-concepts/):
 
 * User navigates to the Jira attachments and selects the `Edit in ONLYOFFICE` action.
 * Jira makes a request to OnlyOfficeEditorServlet (URL of the form: `/plugins/servlet/onlyoffice/doceditor?attachmentId=$attachment.id`).
