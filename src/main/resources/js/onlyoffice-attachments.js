@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,6 @@ jQuery(function() {
 
         if (AJS.Onlyoffice.FormatManager.isEditable(ext) && dropZone.length != 0) {
             titleButton = AJS.I18n.getText("onlyoffice.connector.editlink");
-        } else if (AJS.Onlyoffice.FormatManager.isFillForm(ext) && dropZone.length != 0){
-            titleButton = AJS.I18n.getText("onlyoffice.connector.fillFormlink");;
         } else if (AJS.Onlyoffice.FormatManager.isViewable(ext)) {
             titleButton = AJS.I18n.getText("onlyoffice.connector.viewlink");
         }
@@ -44,8 +42,6 @@ jQuery(function() {
     }
 
     function CreateOnlyofficeConversionButton(el) {
-        var dropZone = jQuery("div[duitype='dndattachment/dropzones/AttachmentsDropZone']");
-
         var attachmentId = getAttachmentId(el);
         var attachmentTitle = getAttachmentTitle(el);
         var ext = attachmentTitle.toLowerCase().split(".").pop();

@@ -35,7 +35,7 @@
     <resource type="download" name="onlyoffice-attachments.css" location="/css/onlyoffice-attachments.css"/>
     <resource type="download" name="edit_icon.svg" location="/images/edit_icon.svg"/>
     <resource type="download" name="conversion_icon.svg" location="/images/conversion_icon.svg"/>
-    <resource type="download" name="сreate_icon.svg" location="/images/сreate_icon.svg"/>
+    <resource type="download" name="create_icon.svg" location="/images/create_icon.svg"/>
     <resource type="download" name="conversion.soy.js" location="/templates/actions/conversion.soy"/>
 
     <context>jira.view.issue</context>
@@ -44,13 +44,28 @@
   </web-resource>
 
   <web-resource key="editor-page-resources" name="Editor Page Web Resources">
-    <resource type="download" name="text.ico" location="/images/word.ico"/>
-    <resource type="download" name="spreadsheet.ico" location="/images/cell.ico"/>
-    <resource type="download" name="presentation.ico" location="/images/slide.ico"/>
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+    <resource type="download" name="editor.js" location="js/editor.js"/>
+    <resource type="download" name="editor.css" location="css/editor.css"/>
+    <resource type="download" name="banner.css" location="css/banner/banner.css"/>
+    <resource type="download" name="word.ico" location="/images/word.ico"/>
+    <resource type="download" name="cell.ico" location="/images/cell.ico"/>
+    <resource type="download" name="slide.ico" location="/images/slide.ico"/>
+    <resource type="download" name="pdf.ico" location="/images/pdf.ico"/>
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
 
   <web-resource key="onlyoffice-jira-app-resources-configure" name="Web Resources container for the configuration page">
+    <dependency>jira.webresources:jira-global</dependency>
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+    <resource type="download" name="settings.js" location="js/settings.js"/>
+    <resource type="download" name="banner.css" location="css/banner/banner.css"/>
+    <resource type="download" name="background.svg" location="images/banner/background.svg"/>
+    <resource type="download" name="logo.svg" location="images/banner/logo.svg"/>
     <resource type="download" name="configure.css" location="css/configure.css"/>
   </web-resource>
 
@@ -80,26 +95,42 @@
     </actions>
   </webwork1>
 
-  <servlet key="OnlyOfficeDocEditor" class="onlyoffice.OnlyOfficeEditorServlet" name="Document Editor">
+  <component name="Attachment Util" key="onlyoffice-attachment-util" class="onlyoffice.utils.AttachmentUtil" public="false" />
+
+  <component name="ONLYOFFICE Docs Integration SDK Configuration" key="onlyoffice-integration-sdk-configuration" class="onlyoffice.sdk.configuration.JiraDocsIntegrationSdkConfiguration" public="false">
+    <interface>com.onlyoffice.configuration.DocsIntegrationSdkConfiguration</interface>
+  </component>
+  <component name="ONLYOFFICE Docs Integration SDK Context" key="onlyoffice-integration-sdk-context" class="com.onlyoffice.context.DocsIntegrationSdkContext" public="false" />
+
+  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
+  <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer"/>
+  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+  <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+
+  <servlet key="OnlyOfficeDocEditor" class="onlyoffice.servlet.OnlyOfficeEditorServlet" name="Document Editor">
     <description>The fully functional editor for most known formats of text documents, spreadsheets and presentations used to open these types of documents for editing or preview.</description>
     <url-pattern>/onlyoffice/doceditor</url-pattern>
   </servlet>
-  <servlet key="OnlyOfficeSaveFileHandler" class="onlyoffice.OnlyOfficeSaveFileServlet" name="Save File Handler">
+  <servlet key="OnlyOfficeSaveFileHandler" class="onlyoffice.servlet.OnlyOfficeSaveFileServlet" name="Save File Handler">
     <description>The callback URL, used to inform the document storage service about the end of the document editing and return the link to the modified document so that it could be saved correctly.</description>
     <url-pattern>/onlyoffice/save</url-pattern>
   </servlet>
-  <servlet key="OnlyOfficeConfigure" class="onlyoffice.OnlyOfficeConfServlet" name="Configuration Page">
+  <servlet key="OnlyOfficeConfigure" class="onlyoffice.servlet.OnlyOfficeConfServlet" name="Configuration Page">
     <description>The configuration page.</description>
     <url-pattern>/onlyoffice/configure</url-pattern>
   </servlet>
-  <servlet key="OnlyOfficeAPI" class="onlyoffice.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
+  <servlet key="OnlyOfficeAPI" class="onlyoffice.servlet.OnlyOfficeAPIServlet" name="ONLYOFFICE API Handler">
     <description>ONLYOFFICE API Handler.</description>
     <url-pattern>/onlyoffice/api</url-pattern>
   </servlet>
 
-  <servlet key="OnlyOfficeFormatsInfo" class="onlyoffice.OnlyOfficeFormatsInfoServlet" name="ONLYOFFICE Formats Information">
+  <servlet key="OnlyOfficeFormatsInfo" class="onlyoffice.servlet.OnlyOfficeFormatsInfoServlet" name="ONLYOFFICE Formats Information">
     <description>ONLYOFFICE Formats Information.</description>
     <url-pattern>/onlyoffice/formats/info</url-pattern>
+  </servlet>
+  <servlet key="OnlyOfficeTest" class="onlyoffice.servlet.OnlyOfficeTestServlet" name="ONLYOFFICE Test">
+    <description>The ONLYOFFICE Test.</description>
+    <url-pattern>/onlyoffice/test</url-pattern>
   </servlet>
 
   <web-item key="onlyoffice-admin-link" name="OnlyOfficeConfigureLink" section="system.admin/globalsettings" weight="10" application="jira">

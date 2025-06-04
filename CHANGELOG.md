@@ -1,5 +1,33 @@
 # Change Log
 
+## 3.0.0
+## Added
+- core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
+- user image in editor
+- link to docs cloud
+- authorization header setting
+- editor interface settings
+- ability to get links to bookmarks in document
+- chat hidden for anonymous
+- protection tab on the toolbar and the protect button in the left menu hidden for anonymous
+- don't request name for anonymous user in view mode
+- create new document from editor
+- settings(Run document macros, Enable plugins, Enable document protection for)
+
+## Changed
+- com.onlyoffice:documentserver-sdk-java
+    - address of the convert service, /converter instead /ConvertService.ashx
+    - apache httpclient 5
+    - default token lifetime is 5 minutes
+    - shardkey parameter
+    - default template for create new blank file
+    - demo server address changed
+    - extended list supported formats
+- create pdf instead docxf
+- remove filling for oform
+- fixed work with plugin for anonymous user
+- ui (action buttons as primary on settings page)
+
 ## 2.3.0
 ## Added
 - compatible with JIRA 9.9.*

@@ -1,0 +1,21 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background: #fff;
+    height: 100%;
+    margin: 0;
+    overflow-y: hidden;
+    padding: 0;
+}
+
+.form {
+    height: 100%;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
