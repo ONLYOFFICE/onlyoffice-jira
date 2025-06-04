@@ -1,3 +1,4 @@
+$webResourceManager.requireResource("onlyoffice.onlyoffice-jira-app:editor-page-resources")
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -38,6 +39,8 @@
         <meta name="ajs-onlyoffice-error" content="$!{errorMessage}">
         <meta name="ajs-onlyoffice-api-path" content="$!{apiPath}">
         <meta name="ajs-onlyoffice-can-save-as" content="$!{canSaveAs}">
+
+        <meta name="decorator" content="atl.general" />
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
     </head>

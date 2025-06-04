@@ -18,6 +18,7 @@
 
 package onlyoffice.servlet;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.avatar.Avatar;
@@ -60,6 +61,7 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 
+@AnonymousSiteAccess
 public class OnlyOfficeAPIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

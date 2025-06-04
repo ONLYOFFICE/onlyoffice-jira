@@ -1,7 +1,8 @@
 # Change Log
 
-## 3.0.0
+## 4.0.0
 ## Added
+- compatible with JIRA 10.*
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - user image in editor
 - link to docs cloud

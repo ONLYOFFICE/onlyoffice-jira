@@ -18,6 +18,7 @@
 
 package onlyoffice.action;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.request.RequestMethod;
@@ -30,6 +31,7 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@AnonymousSiteAccess
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
     private final JiraAuthenticationContext jiraAuthenticationContext;

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>onlyoffice</groupId>
     <artifactId>onlyoffice-jira-app</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
 
     <organization>
         <name>Ascensio System SIA</name>
@@ -27,6 +27,10 @@
                     <artifactId>jta</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
                 </exclusion>
@@ -45,6 +49,14 @@
                 <exclusion>
                     <groupId>jndi</groupId>
                     <artifactId>jndi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -144,7 +156,7 @@
     </pluginRepositories>
 
     <properties>
-        <jira.version>9.0.0</jira.version>
+        <jira.version>10.0.0</jira.version>
         <amps.version>8.0.2</amps.version>
         <plugin.testrunner.version>2.0.1</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
