@@ -1,5 +1,10 @@
 # Change Log
 
+##
+## Changed
+- updated list supported formats, see [ONLYOFFICE/document-formats v3.0.0](https://github.com/ONLYOFFICE/document-formats/releases/tag/v3.0.0)
+- fix CVE-2025-27820
+
 ## 3.0.0
 ## Added
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
