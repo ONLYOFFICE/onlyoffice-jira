@@ -19,6 +19,8 @@
 package onlyoffice.utils;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
@@ -53,6 +55,7 @@ public class AttachmentUtil {
 
     private final Logger log = LogManager.getLogger(this.getClass());
 
+    private final ApplicationProperties applicationProperties;
     private final AttachmentManager attachmentManager;
     private final IssueManager issueManager;
     private final PermissionManager permissionManager;
@@ -61,9 +64,11 @@ public class AttachmentUtil {
 
     private final OfBizDelegator ofBizDelegator;
 
-    public AttachmentUtil(final AttachmentManager attachmentManager, final IssueManager issueManager,
-                          final PermissionManager permissionManager, final I18nResolver i18nResolver) {
+    public AttachmentUtil(final ApplicationProperties applicationProperties, final AttachmentManager attachmentManager,
+                          final IssueManager issueManager, final PermissionManager permissionManager,
+                          final I18nResolver i18nResolver) {
 
+        this.applicationProperties = applicationProperties;
         this.attachmentManager = attachmentManager;
         this.issueManager = issueManager;
         this.permissionManager = permissionManager;
@@ -95,7 +100,8 @@ public class AttachmentUtil {
     public boolean checkAccess(final Attachment attachment, final ApplicationUser user, final boolean forEdit) {
         Issue issue = attachment.getIssue();
         if (forEdit) {
-            return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
+            return applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)
+                    && permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
                     && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
@@ -103,7 +109,8 @@ public class AttachmentUtil {
     }
 
     public boolean checkCreateAccess(final Issue issue, final ApplicationUser user) {
-        return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
+        return applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)
+                && permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
                 && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
     }
 

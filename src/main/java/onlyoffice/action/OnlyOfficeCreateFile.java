@@ -18,6 +18,8 @@
 
 package onlyoffice.action;
 
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.request.RequestMethod;
@@ -32,21 +34,25 @@ import java.io.IOException;
 
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
 public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
+    private final ApplicationProperties applicationProperties;
     private final JiraAuthenticationContext jiraAuthenticationContext;
     private final DocumentManager documentManager;
 
     private String documentType;
     private String fileName;
 
-    public OnlyOfficeCreateFile(final JiraAuthenticationContext jiraAuthenticationContext,
+    public OnlyOfficeCreateFile(final ApplicationProperties applicationProperties,
+                                final JiraAuthenticationContext jiraAuthenticationContext,
                                 final DocsIntegrationSdkContext docsIntegrationSdkContext) {
+        this.applicationProperties = applicationProperties;
         this.jiraAuthenticationContext = jiraAuthenticationContext;
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }
 
     @Override
     public String doDefault() throws IOException {
-        if (!hasIssuePermission(ProjectPermissions.BROWSE_PROJECTS, getIssueObject())
+        if (!applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)
+                || !hasIssuePermission(ProjectPermissions.BROWSE_PROJECTS, getIssueObject())
                 || !hasIssuePermission(ProjectPermissions.CREATE_ATTACHMENTS, getIssueObject())) {
             HttpServletResponse response = this.getHttpResponse();
             if (jiraAuthenticationContext.isLoggedInUser()) {
@@ -61,7 +67,8 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
     @Override
     protected void doValidation() {
-        if (!hasIssuePermission(ProjectPermissions.BROWSE_PROJECTS, getIssueObject())
+        if (!applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)
+                || !hasIssuePermission(ProjectPermissions.BROWSE_PROJECTS, getIssueObject())
                 || !hasIssuePermission(ProjectPermissions.CREATE_ATTACHMENTS, getIssueObject())) {
             addErrorMessage(getText("onlyoffice.connector.dialog.create-file.error.permission"));
             return;
