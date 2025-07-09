@@ -99,9 +99,13 @@ public class AttachmentUtil {
 
     public boolean checkAccess(final Attachment attachment, final ApplicationUser user, final boolean forEdit) {
         Issue issue = attachment.getIssue();
+
+        if (!applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)) {
+            return false;
+        }
+
         if (forEdit) {
-            return applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)
-                    && permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
+            return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user)
                     && permissionManager.hasPermission(ProjectPermissions.CREATE_ATTACHMENTS, issue, user);
         } else {
             return permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, issue, user);
