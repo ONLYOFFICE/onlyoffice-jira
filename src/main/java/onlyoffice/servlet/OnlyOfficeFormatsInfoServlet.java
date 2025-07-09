@@ -18,6 +18,8 @@
 
 package onlyoffice.servlet;
 
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
@@ -28,17 +30,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    private final ApplicationProperties applicationProperties;
     private final DocumentManager documentManager;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public OnlyOfficeFormatsInfoServlet(final DocsIntegrationSdkContext docsIntegrationSdkContext) {
+    public OnlyOfficeFormatsInfoServlet(final ApplicationProperties applicationProperties,
+                                        final DocsIntegrationSdkContext docsIntegrationSdkContext) {
+        this.applicationProperties = applicationProperties;
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
     }
 
@@ -47,8 +53,13 @@ public class OnlyOfficeFormatsInfoServlet extends HttpServlet {
         try {
             Map<String, Object> result = new HashMap<>();
 
-            result.put("supportedFormats", documentManager.getFormats());
-            result.put("lossyEditableMap", documentManager.getLossyEditableMap());
+            if (applicationProperties.getOption(APKeys.JIRA_OPTION_ALLOWATTACHMENTS)) {
+                result.put("supportedFormats", documentManager.getFormats());
+                result.put("lossyEditableMap", documentManager.getLossyEditableMap());
+            } else {
+                result.put("supportedFormats", new ArrayList<>());
+                result.put("lossyEditableMap", new ArrayList<>());
+            }
 
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
