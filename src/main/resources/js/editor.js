@@ -1,4 +1,9 @@
 (function(AJS) {
+    var icons = document.querySelectorAll("link[rel~='icon'][href$='favicon.ico']");
+    for (var i = 0; i < icons.length; i++) {
+        icons[i].remove();
+    }
+
     var docEditor;
 
     var onAppReady = function() {
