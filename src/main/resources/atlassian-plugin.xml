@@ -54,6 +54,7 @@
     <resource type="download" name="cell.ico" location="/images/cell.ico"/>
     <resource type="download" name="slide.ico" location="/images/slide.ico"/>
     <resource type="download" name="pdf.ico" location="/images/pdf.ico"/>
+    <resource type="download" name="diagram.ico" location="/images/diagram.ico"/>
     <dependency>jira.webresources:messages</dependency>
   </web-resource>
 
@@ -75,9 +76,14 @@
     <label key="onlyoffice.connector.dialog.create-file.header.title" />
     <link linkId="onlyoffice-create-file-button">/OnlyOfficeCreateFile!default.jspa?id=${issue.id}</link>
     <styleClass>aui-button</styleClass>
-    <condition class="com.atlassian.jira.plugin.webfragment.conditions.HasIssuePermissionCondition">
-      <param name="permission" value="attach"/>
-    </condition>
+    <conditions type="AND">
+      <condition class="com.atlassian.jira.plugin.webfragment.conditions.HasIssuePermissionCondition">
+        <param name="permission" value="attach"/>
+      </condition>
+      <condition class="com.atlassian.jira.plugin.webfragment.conditions.IsApplicationPropertySetCondition">
+        <param name="property" value="jira.option.allowattachments" />
+      </condition>
+    </conditions>
   </web-item>
 
   <webwork1 key="OnlyOfficeCreateFile" name="Create File Action" class="java.lang.Object">
