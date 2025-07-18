@@ -61,7 +61,7 @@ jQuery(function() {
         }
     };
 
-    jQuery.get("/plugins/servlet/onlyoffice/formats/info", function(data) {
+    jQuery.get(AJS.contextPath() + "/plugins/servlet/onlyoffice/formats/info", function(data) {
         AJS.Onlyoffice.FormatManager.supportedFormats = data.supportedFormats;
         AJS.Onlyoffice.FormatManager.lossyEditableMap = data.lossyEditableMap;
     });

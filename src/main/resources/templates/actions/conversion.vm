@@ -14,7 +14,7 @@
        </ul>
     </div>
     <div class="aui-item dialog-pane">
-        <form class="aui" action="OnlyOfficeConversion.jspa" method="post">
+        <form class="aui" action="$req.contextPath/OnlyOfficeConversion.jspa" method="post">
             <div class="form-body">
                 <input type="hidden" id="atl-token" name="atl_token" value="${atl_token}" />
                 <input type="hidden" id="action-id" name="id" value="$action.id" />
