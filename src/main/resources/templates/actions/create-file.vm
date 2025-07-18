@@ -1,6 +1,6 @@
 <h2 class="dialog-title">$i18n.getText('onlyoffice.connector.dialog.create-file.header.title')</h2>
 
-<form class="aui" action="OnlyOfficeCreateFile.jspa" method="post">
+<form class="aui" action="$req.contextPath/OnlyOfficeCreateFile.jspa" method="post">
 
     <input type="hidden" name="atl_token" value="${atl_token}" />
     <input type="hidden" name="id" value="$action.id" />

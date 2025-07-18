@@ -57,7 +57,7 @@ jQuery(function () {
         submitButton.click(function (e) {
             e.preventDefault();
 
-            var actionUrl = "/" + form.attr("action");
+            var actionUrl = form.attr("action");
 
             var data = {
                 "atl_token": form.find("#atl-token").attr("value"),
