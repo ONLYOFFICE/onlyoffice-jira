@@ -49,7 +49,7 @@
             type: "save-as"
         });
 
-        fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+        fetch(AJS.contextPath() + AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -102,7 +102,7 @@
                     type: "users-info"
                 });
 
-                fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+                fetch(AJS.contextPath() + AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -172,7 +172,7 @@
             type: "create-new"
         });
 
-        fetch(AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
+        fetch(AJS.contextPath() + AJS.Meta.get("onlyoffice-api-path") + "?" + queryParams.toString(), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

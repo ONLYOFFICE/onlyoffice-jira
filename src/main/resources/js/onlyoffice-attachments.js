@@ -25,7 +25,7 @@ jQuery(function() {
         var ext = attachmentTitle.toLowerCase().split(".").pop();
 
         var nameButton = "onlyoffice-editor";
-        var hrefButton = "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + attachmentId;
+        var hrefButton = AJS.contextPath() + "/plugins/servlet/onlyoffice/doceditor?attachmentId=" + attachmentId;
         var iconButton = "icon-onlyoffice-edit";
         var titleButton;
 
@@ -47,7 +47,7 @@ jQuery(function() {
         var ext = attachmentTitle.toLowerCase().split(".").pop();
 
         var nameButton = "onlyoffice-conversion";
-        var hrefButton = "/OnlyOfficeConversion!default.jspa?id=" + JIRA.Issue.getIssueId() + "&attachmentId=" + attachmentId;
+        var hrefButton = AJS.contextPath() + "/OnlyOfficeConversion!default.jspa?id=" + JIRA.Issue.getIssueId() + "&attachmentId=" + attachmentId;
         var iconButton = "icon-onlyoffice-conversion";
         var titleButton = AJS.I18n.getText("onlyoffice.connector.dialog.conversion.header.title");
 
