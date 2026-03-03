@@ -250,9 +250,9 @@
 - - :approve
   - jfreechart
   - :who:
-    :why: LGPL
+    :why: GNU Lesser General Public Licence
     :versions:
-    - 1.0.13
+    - 1.5.5-atlassian-6
     :when: 2025-11-19 08:28:41.280734200 Z
 - - :approve
   - jgrapht-core
