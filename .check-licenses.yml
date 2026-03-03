@@ -277,3 +277,63 @@
     :versions:
     - '1.1'
     :when: 2025-11-19 08:54:42.981467000 Z
+- - :approve
+  - atlassian-image-consumer
+  - :who:
+    :why: LGPL 2.1
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - commons-digester
+  - :who:
+    :why: Apache 2.0
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - h2
+  - :who:
+    :why: MPL 2.0 or EPL 1.0
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - hsqldb
+  - :who:
+    :why: HSQLDB License, a BSD open source license
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - jna
+  - :who:
+    :why: ASL, version 2, LGPL, version 2.1
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - jna-platform
+  - :who:
+    :why: ASL, version 2, LGPL, version 2.1
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - jsr311-api
+  - :who:
+    :why: CDDL 1.0
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - jstyleparser
+  - :who:
+    :why: LGPL 3.0
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - oshi-core
+  - :who:
+    :why: MIT
+    :versions: [ ]
+    :when: 2025-11-05 11:49:18.660587500 Z
+- - :approve
+  - wsdl4j
+  - :who:
+    :why: CPL 1.0
+    :versions: []
+    :when: 2025-11-05 11:49:18.660587500 Z
