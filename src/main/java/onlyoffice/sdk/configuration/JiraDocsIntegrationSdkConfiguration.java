@@ -31,6 +31,7 @@ import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import com.onlyoffice.service.documenteditor.config.ConfigService;
 import com.onlyoffice.service.settings.SettingsValidationService;
+import onlyoffice.sdk.client.ApacheHttpclientDocumentServerClient;
 import onlyoffice.utils.AttachmentUtil;
 import onlyoffice.sdk.manager.document.DocumentManagerImpl;
 import onlyoffice.sdk.manager.security.JwtManagerImpl;
@@ -62,8 +63,9 @@ public class JiraDocsIntegrationSdkConfiguration implements DocsIntegrationSdkCo
     @Override
     public DocumentServerClient documentServerClient(final SettingsManager settingsManager,
                                               final UrlManager urlManager) {
-        this.documentServerClient = DocsIntegrationSdkConfiguration.super
-                .documentServerClient(settingsManager, urlManager);
+//        this.documentServerClient = DocsIntegrationSdkConfiguration.super
+//                .documentServerClient(settingsManager, urlManager);
+        this.documentServerClient = new ApacheHttpclientDocumentServerClient(settingsManager, urlManager);
 
         return this.documentServerClient;
     }

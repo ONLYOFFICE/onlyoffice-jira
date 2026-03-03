@@ -30,7 +30,7 @@ import com.onlyoffice.context.DocsIntegrationSdkContext;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @AnonymousSiteAccess
