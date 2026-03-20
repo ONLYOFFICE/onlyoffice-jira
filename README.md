@@ -55,7 +55,7 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 ### ☁️ Cloud option
 
-If you prefer not to host and maintain your own server, use **ONLYOFFICE Docs Cloud**, which requires neither installation nor configuration.  
+If you prefer not to host and maintain your own server, use **ONLYOFFICE Docs Cloud**, which requires neither installation nor configuration.
 
 👉 [Get started here](https://www.onlyoffice.com/docs-registration)
 
@@ -81,7 +81,7 @@ http://documentserver/
 
 Configuration settings include JWT, enabled by default to protect the editors from unauthorized access. If setting a custom **Secret key**, ensure it matches the one in the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) for proper validation.
 
-Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Docs using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Docs address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Docs. 
+Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Docs using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Docs address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Docs.
 
 ## Compiling ONLYOFFICE app for Jira
 
@@ -110,7 +110,7 @@ When editing ends:
 
 - The updated file is saved as a **new attachment** with the same name and a postfix.
 - If multiple users co-edit, the document is updated after **the last user closes** the editor.
- 
+
 ## How it works
 
 The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/docs/docs-api/get-started/basic-concepts/):
@@ -131,7 +131,7 @@ The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/
 * After 10 seconds of inactivity, ONLYOFFICE Document Server sends a POST to the `callback` URL letting Jira know that the clients have finished editing the document and closed it.
 * The document with all the changes is saved as a new attachment with the postfix added to the file name.
 
-## ONLYOFFICE Docs editions 
+## ONLYOFFICE Docs editions
 
 ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers.
 
