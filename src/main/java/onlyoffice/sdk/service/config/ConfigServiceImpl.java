@@ -116,6 +116,8 @@ public class ConfigServiceImpl extends DefaultConfigService {
                 getSettingsManager().getSettingBoolean("customization.plugins", true)
         );
 
+        customization.setToolbarNoTabs(null);
+
         return customization;
     }
 }

@@ -32,6 +32,9 @@ import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @AnonymousSiteAccess
 @SupportedMethods({RequestMethod.GET, RequestMethod.POST})
@@ -87,11 +90,15 @@ public class OnlyOfficeCreateFile extends AbstractIssueSelectAction {
 
     @Override
     public String doExecute() {
-        return returnCompleteWithInlineRedirect(
-                "/plugins/servlet/onlyoffice/doceditor?issueId=" + getId()
-                + "&documentType=" + documentType
-                + "&fileName=" + fileName
-        );
+        try {
+            return returnCompleteWithInlineRedirect(
+                    "/plugins/servlet/onlyoffice/doceditor?issueId=" + getId()
+                            + "&documentType=" + documentType
+                            + "&fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8.name())
+            );
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("UTF-8 not supported", e);
+        }
     }
 
     public void setDocumentType(final String documentType) {
