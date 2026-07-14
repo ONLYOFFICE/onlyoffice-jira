@@ -18,17 +18,14 @@
 
 package onlyoffice.servlet;
 
+import com.atlassian.annotations.security.AnonymousSiteAccess;
 import com.atlassian.jira.config.LocaleManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.plugin.webresource.UrlMode;
-import com.atlassian.plugin.webresource.assembler.UrlModeUtils;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.webresource.api.assembler.WebResourceAssembler;
-import com.atlassian.webresource.api.assembler.WebResourceAssemblerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.context.DocsIntegrationSdkContext;
@@ -51,6 +48,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@AnonymousSiteAccess
 public class OnlyOfficeEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -58,7 +56,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     private final TemplateRenderer templateRenderer;
     private final LocaleManager localeManager;
     private final I18nResolver i18nResolver;
-    private final WebResourceAssemblerFactory webResourceAssemblerFactory;
     private final AttachmentUtil attachmentUtil;
 
     private final DocumentManager documentManager;
@@ -71,7 +68,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     public OnlyOfficeEditorServlet(final JiraAuthenticationContext jiraAuthenticationContext,
                                    final I18nResolver i18nResolver, final TemplateRenderer templateRenderer,
                                    final LocaleManager localeManager,
-                                   final WebResourceAssemblerFactory webResourceAssemblerFactory,
                                    final AttachmentUtil attachmentUtil,
                                    final DocsIntegrationSdkContext docsIntegrationSdkContext) {
         this.jiraAuthenticationContext = jiraAuthenticationContext;
@@ -79,7 +75,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
 
         this.templateRenderer = templateRenderer;
         this.localeManager = localeManager;
-        this.webResourceAssemblerFactory = webResourceAssemblerFactory;
         this.attachmentUtil = attachmentUtil;
 
         this.documentManager = docsIntegrationSdkContext.getDocumentManager();
@@ -188,13 +183,6 @@ public class OnlyOfficeEditorServlet extends HttpServlet {
     }
 
     private void render(final Map<String, Object> context, final HttpServletResponse response) throws IOException {
-        WebResourceAssembler webResourceAssembler =
-                webResourceAssemblerFactory.create().includeSuperbatchResources(true).build();
-        webResourceAssembler.resources().requireWebResource("onlyoffice.onlyoffice-jira-app:editor-page-resources");
-        webResourceAssembler.assembled().drainIncludedResources()
-                .writeHtmlTags(response.getWriter(), UrlModeUtils.convert(UrlMode.AUTO));
-
-        response.setContentType("text/html;charset=UTF-8");
         templateRenderer.render("templates/editor.vm", context, response.getWriter());
     }
 

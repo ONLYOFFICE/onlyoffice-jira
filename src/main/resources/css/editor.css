@@ -19,3 +19,16 @@ div {
     margin: 0;
     padding: 0;
 }
+
+#header {
+    display: none;
+}
+
+#content, #page {
+    width: 100%;
+    height: 100%;
+}
+
+#footer {
+    display: none;
+}

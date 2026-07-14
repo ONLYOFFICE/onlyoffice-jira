@@ -1,23 +1,28 @@
 # Change Log
 
 ##
+## Added
+- compatible with JIRA 10.7.4
+
 ## Changed
 - updated com.onlyoffice:docs-integration-sdk to v1.7.1, see [ONLYOFFICE/docs-integration-sdk-java v1.7.0](https://github.com/ONLYOFFICE/docs-integration-sdk-java/releases/tag/v1.7.0)
   and see [ONLYOFFICE/docs-integration-sdk-java v1.7.1](https://github.com/ONLYOFFICE/docs-integration-sdk-java/releases/tag/v1.7.1)
 - fixed bug link generation when the document server or product URL contains a context path
 - delete setting toolbarNoTabs
 
-## 3.1.1
+## 4.1.1
 ## Changed
 - fixed a bug with plugin http requests when deploying Jira by a context path
 
-## 3.1.0
+## 4.1.0
 ## Changed
+- compatible with JIRA 10.7.2
 - updated list supported formats, see [ONLYOFFICE/document-formats v3.0.0](https://github.com/ONLYOFFICE/document-formats/releases/tag/v3.0.0)
 - fix CVE-2025-27820
 
-## 3.0.0
+## 4.0.0
 ## Added
+- compatible with JIRA 10.*
 - core of the plugin has been moved to com.onlyoffice.docs-integration-sdk (https://github.com/ONLYOFFICE/docs-integration-sdk-java)
 - user image in editor
 - link to docs cloud
