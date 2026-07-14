@@ -83,6 +83,24 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Pin Jackson to the 2.18 LTS line (last one supporting Java 8) to pull in
+             fixes for CVE-2026-54512/54513/54514/54515/54518/59888/59889, overriding
+             the 2.17.2 versions transitively pulled in by com.atlassian.jira:jira-api. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -157,6 +175,7 @@
 
     <properties>
         <jira.version>10.0.0</jira.version>
+        <jackson.version>2.18.9</jackson.version>
         <amps.version>8.0.2</amps.version>
         <plugin.testrunner.version>2.0.1</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
