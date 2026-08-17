@@ -17,6 +17,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Jira platform pins httpclient5 to an older, vulnerable version (CVE-2026-64607);
+            force the version required by com.onlyoffice:docs-integration-sdk instead. -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>5.6.3</version>
+            </dependency>
             <!-- Force a patched version to fix CVE-2026-54399/CVE-2026-54428 (DoS via
                  unbounded HTTP/1 header/line length and HTTP/2 HPACK decompression),
                  pulled in transitively as 5.3 via jira-core -> opensearch-java. -->
