@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>onlyoffice</groupId>
     <artifactId>onlyoffice-jira-app</artifactId>
-    <version>4.2.0</version>
+    <version>5.2.0</version>
 
     <organization>
         <name>Ascensio System SIA</name>
@@ -14,6 +14,31 @@
     <name>ONLYOFFICE app for Jira</name>
     <description>ONLYOFFICE app for Jira allows you to work on all kinds of office documents within Jira using ONLYOFFICE Online Editors with the enhanced formatting toolset. View, create and co-edit the documents in real-time.</description>
     <packaging>atlassian-plugin</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Jira platform pins httpclient5 to an older, vulnerable version (CVE-2026-64607);
+            force the version required by com.onlyoffice:docs-integration-sdk instead. -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>5.6.4</version>
+            </dependency>
+            <!-- Force a patched version to fix CVE-2026-54399/CVE-2026-54428 (DoS via
+                 unbounded HTTP/1 header/line length and HTTP/2 HPACK decompression),
+                 pulled in transitively as 5.3 via jira-core -> opensearch-java. -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>5.4.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>5.4.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -58,6 +83,42 @@
                     <groupId>commons-httpclient</groupId>
                     <artifactId>commons-httpclient</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.istack</groupId>
+                    <artifactId>istack-commons-runtime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.fastinfoset</groupId>
+                    <artifactId>FastInfoset</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-saml-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-saml-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -71,7 +132,7 @@
             <artifactId>atlassian-template-renderer-api</artifactId>
             <version>2.0.0</version>
             <scope>provided</scope>
-          </dependency>
+        </dependency>
         <dependency>
             <groupId>com.onlyoffice</groupId>
             <artifactId>docs-integration-sdk</artifactId>
@@ -81,25 +142,23 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
             </exclusions>
-        </dependency>
-        <!-- Pin Jackson to the 2.18 LTS line (last one supporting Java 8) to pull in
-             fixes for CVE-2026-54512/54513/54514/54515/54518/59888/59889, overriding
-             the 2.17.2 versions transitively pulled in by com.atlassian.jira:jira-api. -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -174,9 +233,8 @@
     </pluginRepositories>
 
     <properties>
-        <jira.version>10.0.0</jira.version>
-        <jackson.version>2.18.10</jackson.version>
-        <amps.version>8.0.2</amps.version>
+        <jira.version>11.0.1</jira.version>
+        <amps.version>9.11.2</amps.version>
         <plugin.testrunner.version>2.0.1</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
         <!-- This property ensures consistency between the key in atlassian-plugin.xml and the OSGi bundle's key. -->
@@ -184,7 +242,7 @@
         <!-- TestKit version 6.x for JIRA 6.x -->
         <testkit.version>6.3.11</testkit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 </project>

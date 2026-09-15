@@ -1,8 +1,8 @@
 # Change Log
 
-## 4.2.0
+## 5.2.0
 ## Added
-- compatible with JIRA 10.7.4
+- compatible with JIRA 11.3.10
 
 ## Changed
 - updated com.onlyoffice:docs-integration-sdk to v1.10.1, see [ONLYOFFICE/docs-integration-sdk-java v1.7.0](https://github.com/ONLYOFFICE/docs-integration-sdk-java/releases/tag/v1.7.0)

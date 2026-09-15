@@ -60,12 +60,12 @@ jQuery(function () {
             var actionUrl = form.attr("action");
 
             var data = {
-                "atl_token": form.find("#atl-token").attr("value"),
-                "id": form.find("#action-id").attr("value"),
-                "attachmentId": form.find("#attachment-id").attr("value"),
-                "actionType": form.find("#action-type").attr("value"),
-                "fileName": form.find("#file-name").attr("value"),
-                "targetFileType": form.find("#target-file-type").attr("value")
+                "atl_token": form.find("#atl-token").val(),
+                "id": form.find("#action-id").val(),
+                "attachmentId": form.find("#attachment-id").val(),
+                "actionType": form.find("#action-type").val(),
+                "fileName": form.find("#file-name").val(),
+                "targetFileType": form.find("#target-file-type").val()
 
             };
 
