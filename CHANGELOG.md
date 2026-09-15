@@ -1,6 +1,6 @@
 # Change Log
 
-##
+## 5.2.0
 ## Added
 - compatible with JIRA 11.3.10
 
