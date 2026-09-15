@@ -1,15 +1,23 @@
 # ONLYOFFICE app for Jira
 
-This app enables users to edit office documents from [Jira Software](https://www.atlassian.com/software/jira) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
+This app enables users to view, edit, and collaborate on office documents directly within [Jira Software](https://www.atlassian.com/software/jira) using [ONLYOFFICE Docs](https://www.onlyoffice.com/docs).
 
-## Features
+<p align="center">
+  <a href="https://www.onlyoffice.com/office-for-jira">
+    <img width="800" src="https://static-site.onlyoffice.com/public/images/templates/office-for-jira/hero/hero@2x.png" alt="ONLYOFFICE Docs for Jira">
+  </a>
+</p>
 
-The app allows to:
+## Features ✨
 
-* Edit text documents, spreadsheets, and presentations.
-* Co-edit documents in real-time: use two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.
+- Create, view, and edit text **documents**, **spreadsheets**, **presentations**, and **PDFs** directly in Jira.
+- Collaborate in real time using:
+  - Two co-editing modes (**Fast** and **Strict**)
+  - **Track Changes**, version history, and comments
+  - Built-in **chat 💬** for discussions within documents
+- **JWT (JSON Web Token)** support to secure your traffic — ensuring that only authorized users have access to your documents.
 
-Supported formats:
+### Supported formats 📁
 
 **For viewing:**
 
@@ -34,15 +42,22 @@ Supported formats:
 
 ## Installing ONLYOFFICE Docs
 
-You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Jira and any end clients. ONLYOFFICE Document Server must also be able to POST to Jira directly.
+This integration requires a running instance of **ONLYOFFICE Docs (Document Server)** accessible to both your **Jira instance** and **client browsers**. The server must also be able to send **POST callbacks** to Jira for document status updates.
 
-You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
+You can deploy either version below:
 
-To install free Community version, use [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or follow [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx) for Debian, Ubuntu, or derivatives.  
+### 🖥️ Self-hosted version
 
-To install Enterprise Edition, follow the instructions [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
+- **Community Edition (Free):** [Docker guide](https://github.com/onlyoffice/Docker-DocumentServer) or [manual installation](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-ubuntu.aspx)
+- **Enterprise Edition:** [Installation guide](https://helpcenter.onlyoffice.com/docs/installation/enterprise)
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
+
+### ☁️ Cloud option
+
+If you prefer not to host and maintain your own server, use **ONLYOFFICE Docs Cloud**, which requires neither installation nor configuration.
+
+👉 [Get started here](https://www.onlyoffice.com/docs-registration)
 
 ## Installing ONLYOFFICE app for Jira
 
@@ -57,17 +72,16 @@ You can also install the app from the Jira administration panel:
 3. Locate **ONLYOFFICE Connector for Jira** using search.
 4. Click **Install** to download and install the app.
 
-## Configuring ONLYOFFICE app for Jira
+## Configuring ONLYOFFICE app for Jira ⚙️
 
-Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Document Server installed:
+Find the uploaded app on the `Manage apps` page. Click `Configure` and enter the name of the server with ONLYOFFICE Docs installed:
 ```
 http://documentserver/
 ```
-Starting from version 7.2, JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. 
-Specify your own **Secret key** on the Jira administration page. 
-In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/), specify the same secret key and enable the validation.
 
-Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Document Server using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Document Server address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Document Server. 
+Configuration settings include JWT, enabled by default to protect the editors from unauthorized access. If setting a custom **Secret key**, ensure it matches the one in the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) for proper validation.
+
+Sometimes your network configuration might not allow the requests between Jira and ONLYOFFICE Docs using the public addresses. The **Advanced server settings** section allows you to set the ONLYOFFICE Docs address for internal requests from Jira and the returning Jira address for internal requests from ONLYOFFICE Docs.
 
 ## Compiling ONLYOFFICE app for Jira
 
@@ -84,12 +98,19 @@ You will need:
 
 ## Using ONLYOFFICE app for Jira
 
-With the ONLYOFFICE app, you can view, edit and co-author office files attached to tasks right within your Jira dashboard. 
+Once installed, you can **view**, **edit**, and **co-author** office documents attached to Jira tasks — without leaving your dashboard.
 
-To edit documents, click the ONLYOFFICE Docs icon next to the name of an attachment - the corresponding online editor will be opened in a new tab.
+To edit a document:
 
-After the editing session is over, a document with all the changes will be saved as a new attachment. You will recognize it by the same name with a postfix. If you're editing an attachment collaboratively, the changes are saved only after the last user quits the editor.
- 
+- Open a Jira task with a document attachment.
+- Click the **ONLYOFFICE Docs** icon next to the file name.
+- The editor will open in a new browser tab.
+
+When editing ends:
+
+- The updated file is saved as a **new attachment** with the same name and a postfix.
+- If multiple users co-edit, the document is updated after **the last user closes** the editor.
+
 ## How it works
 
 The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/docs/docs-api/get-started/basic-concepts/):
@@ -110,38 +131,38 @@ The ONLYOFFICE app follows the API documented [here](https://api.onlyoffice.com/
 * After 10 seconds of inactivity, ONLYOFFICE Document Server sends a POST to the `callback` URL letting Jira know that the clients have finished editing the document and closed it.
 * The document with all the changes is saved as a new attachment with the postfix added to the file name.
 
-## ONLYOFFICE Docs editions 
+## ONLYOFFICE Docs editions
 
 ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers.
 
-**ONLYOFFICE Docs** packaged as Document Server: 
+* Community Edition 🆓 (`onlyoffice-documentserver` package)
+* Enterprise Edition 🏢 (`onlyoffice-documentserver-ee` package)
 
-* Community Edition (`onlyoffice-documentserver` package)
-* Enterprise Edition (`onlyoffice-documentserver-ee` package)
-
-The table below will help you make the right choice.
+The table below will help you to make the right choice.
 
 | Pricing and licensing | Community Edition | Enterprise Edition |
 | ------------- | ------------- | ------------- |
-| | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
-| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
-| Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
+| | [Get it now](https://www.onlyoffice.com/download-community?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
+| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira)  |
 | Number of users | up to 20 recommended | As in chosen pricing plan |
 | License | GNU AGPL v.3 | Proprietary |
 | **Support** | **Community Edition** | **Enterprise Edition** |
-| Documentation | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx) |
-| Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or paid | One year support included |
+| Documentation | [Help Center](https://helpcenter.onlyoffice.com/docs/installation/community) | [Help Center](https://helpcenter.onlyoffice.com/docs/installation/enterprise) |
+| Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or [Community](https://community.onlyoffice.com/) | 1 or 3 years support included |
 | Premium support | [Contact us](mailto:sales@onlyoffice.com) | [Contact us](mailto:sales@onlyoffice.com) |
 | **Services** | **Community Edition** | **Enterprise Edition** |
 | Conversion Service                | + | + |
-| Document Builder Service          | + | + |
+| Live Viewer                       | + | + |
+| Document Builder Service          | - | - |
+| Automation API                    | - | - |
 | **Interface** | **Community Edition** | **Enterprise Edition** |
-| Tabbed interface                       | + | + |
-| Dark theme                             | + | + |
-| 125%, 150%, 175%, 200% scaling         | + | + |
-| White Label                            | - | - |
-| Integrated test example (node.js)      | + | + |
-| Mobile web editors                     | - | +* |
+| Tabbed interface                  | + | + |
+| Dark theme                        | + | + |
+| 125%, 150%, 175%, 200% scaling    | + | + |
+| White Label                       | - | - |
+| Integrated test example (node.js) | + | + |
+| Admin Panel                       | - | + |
+| Mobile web editors                | - | +* |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
 | Plugins                           | + | + |
 | Macros                            | + | + |
@@ -155,23 +176,25 @@ The table below will help you make the right choice.
 | **Document Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
-| Adding Content control          | + | + | 
-| Editing Content control         | + | + | 
+| Adding Content control          | + | + |
+| Editing Content control         | + | + |
 | Layout tools                    | + | + |
 | Table of contents               | + | + |
 | Navigation panel                | + | + |
 | Mail Merge                      | + | + |
-| Comparing Documents             | + | + |
+| Comparing documents             | + | + |
+| Multipage View                  | + | + |
 | **Spreadsheet Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
 | Functions, formulas, equations  | + | + |
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
-| Data validation           | + | + |
+| Data validation                 | + | + |
 | Conditional formatting          | + | + |
-| Sparklines                   | + | + |
+| Sparklines                      | + | + |
 | Sheet Views                     | + | + |
+| Solver                          | + | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
@@ -179,15 +202,27 @@ The table below will help you make the right choice.
 | Animations                      | + | + |
 | Presenter mode                  | + | + |
 | Notes                           | + | + |
+| Slide Master                    | + | + |
 | **Form creator features** | **Community Edition** | **Enterprise Edition** |
-| Adding form fields           | + | + |
+| Adding form fields              | + | + |
 | Form preview                    | + | + |
 | Saving as PDF                   | + | + |
-| **Working with PDF**      | **Community Edition** | **Enterprise Edition** |
-| Text annotations (highlight, underline, cross out) | + | + |
+| Role-matching colors for fields | + | + |
+| **PDF Editor features**      | **Community Edition** | **Enterprise Edition** |
+| Text editing and co-editing                                | + | + |
+| Work with pages (adding, deleting, rotating)               | + | + |
+| Inserting objects (shapes, images, hyperlinks, etc.)       | + | + |
+| Text annotations (highlight, underline, cross out, stamps) | + | + |
+| Redact                          | + | + |
 | Comments                        | + | + |
 | Freehand drawings               | + | + |
 | Form filling                    | + | + |
-| | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
+| | [Get it now](https://www.onlyoffice.com/download-community?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download?utm_source=github&utm_medium=cpc&utm_campaign=GitHubJira#docs-enterprise)  |
 
 \* If supported by DMS.
+
+## Need help? User Feedback and Support 💡
+
+* **🐞 Found a bug?** Please report it by creating an [issue](https://github.com/ONLYOFFICE/onlyoffice-jira/issues).
+* **❓ Have a question?** Ask our community and developers on the [ONLYOFFICE Forum](https://community.onlyoffice.com).
+* **👨‍💻 Need help for developers?** Check our [API documentation](https://api.onlyoffice.com).

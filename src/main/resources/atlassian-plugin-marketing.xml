@@ -1,6 +1,6 @@
 <atlassian-plugin-marketing>
     <compatibility>
-        <product name="jira" min="10.0.0" max="10.7.2" />
+        <product name="jira" min="10.0.0" max="10.7.4" />
     </compatibility>
 
     <logo image="images/144.png"/>
